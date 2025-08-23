@@ -64,17 +64,25 @@ Diese Community Node verwendet die öffentliche LearningSuite API und ist nicht 
 
 Der LearningSuite Trigger unterstützt folgende Events:
 
-- ✅ **Lesson Completed** - Wenn eine Lektion abgeschlossen wird
-- ✅ **Progress Changed** - Bei Fortschrittsänderungen
-- ✅ **Feedback Created** - Neues Feedback erhalten
-- ✅ **New Login** - Neuer Benutzer-Login
+- ✅ **Access Request Created** - Wenn ein Benutzer Zugang zu einem Modul im Kurs anfordert
+- ✅ **Bundle Created** - Wenn ein neues Bundle erstellt wird
+- ✅ **Community Area Created** - Wenn ein neuer Community-Bereich erstellt wird
+- ✅ **Community Post Created** - Neuer Community-Post erstellt
+- ✅ **Community Post Moderated** - Community-Post moderiert
+- ✅ **Course Progress Changed Above Threshold** - Kursfortschritt über Schwellenwert geändert
+- ✅ **Custom Popup Created** - Neues benutzerdefiniertes Popup erstellt
+- ✅ **Custom Popup Interaction** - Popup-Interaktion
 - ✅ **Exam Completed** - Prüfung abgeschlossen
 - ✅ **Exam Graded** - Prüfung bewertet
-- ✅ **Custom Popup Interaction** - Popup-Interaktion
-- ✅ **Community Post Created** - Neuer Community-Post
-- ✅ **Community Post Moderated** - Community-Post moderiert
+- ✅ **Feedback Created** - Neues Feedback erhalten
+- ✅ **Group Created** - Neue Gruppe erstellt
 - ✅ **Group User Access Changed** - Gruppenzugriff geändert
-- ✅ **Member Not Logged In for X Days** - Benutzer inaktiv
+- ✅ **Lesson Completed** - Lektion abgeschlossen
+- ✅ **Member Not Logged In for X Days** - Benutzer X Tage inaktiv
+- ✅ **New Login** - Neuer Benutzer-Login
+- ✅ **Progress Changed** - Fortschritt geändert
+- ✅ **Submission Created** - Neue Einreichung erstellt (Datei, Text, Audio, Video)
+- ✅ **User Created** - Neuer Benutzer erstellt
 
 ## 💡 Beispiele für Anwendungsfälle
 

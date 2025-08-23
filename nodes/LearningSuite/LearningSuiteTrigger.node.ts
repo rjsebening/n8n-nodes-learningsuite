@@ -62,6 +62,22 @@ export class LearningSuiteTrigger implements INodeType {
 				description: 'The event type to listen for',
 				options: [
 					{
+						name: 'Access Request Created',
+						value: 'accessRequest.created',
+						description:
+							'Triggered when a user requests access to a module in the course.',
+					},
+					{
+						name: 'Bundle Created',
+						value: 'bundle.created',
+						description: 'Triggered when a new bundle is created.',
+					},
+					{
+						name: 'Community Area Created',
+						value: 'community.area.created',
+						description: 'Triggered when a new community area is created.',
+					},
+					{
 						name: 'Community Post Created',
 						value: 'communityPost.created',
 						description: 'Triggered when a community post is created.',
@@ -70,6 +86,17 @@ export class LearningSuiteTrigger implements INodeType {
 						name: 'Community Post Moderated',
 						value: 'communityPost.moderated',
 						description: 'Triggered when a community post is moderated.',
+					},
+					{
+						name: 'Course Progress Changed Above Threshold',
+						value: 'course.progress.changedAboveThreshold',
+						description:
+							'Triggered when the course progress of a member is updated higher than a given threshold.',
+					},
+					{
+						name: 'Custom Popup Created',
+						value: 'custom.popup.created',
+						description: 'Triggered when a new custom popup is created.',
 					},
 					{
 						name: 'Custom Popup Interaction',
@@ -90,6 +117,11 @@ export class LearningSuiteTrigger implements INodeType {
 						name: 'Feedback Created',
 						value: 'feedback.created',
 						description: 'Triggered when feedback is created.',
+					},
+					{
+						name: 'Group Created',
+						value: 'group.created',
+						description: 'Triggered when a new group is created.',
 					},
 					{
 						name: 'Group User Access Changed',
@@ -116,6 +148,17 @@ export class LearningSuiteTrigger implements INodeType {
 						name: 'Progress Changed',
 						value: 'progress.changed',
 						description: 'Triggered when a user’s progress changes.',
+					},
+					{
+						name: 'Submission Created',
+						value: 'submission.created',
+						description:
+							'Triggered when a submission (file, text, audio, video) is created.',
+					},
+					{
+						name: 'User Created',
+						value: 'user.created',
+						description: 'Triggered when a new user is created.',
 					},
 				],
 			},
@@ -227,8 +270,52 @@ export class LearningSuiteTrigger implements INodeType {
 				name: 'includeNeverLoggedIn',
 				type: 'boolean',
 				default: false,
+				required: true,
 				displayOptions: { show: { event: ['member.notLoggedInXDays'] } },
 				description: 'Whether to include members who have never logged in',
+			},
+			// Course Filter (für submissions, access requests, progress threshold)
+			{
+				displayName: 'Course ID',
+				name: 'courseId',
+				type: 'string',
+				default: '',
+				displayOptions: {
+					show: {
+						event: [
+							'submission.created',
+							'accessRequest.created',
+							'course.progress.changedAboveThreshold',
+						],
+					},
+				},
+				description: 'Filter by course ID',
+			},
+
+			// Module Filter (für access requests)
+			{
+				displayName: 'Module ID',
+				name: 'moduleId',
+				type: 'string',
+				default: '',
+				displayOptions: {
+					show: { event: ['accessRequest.created'] },
+				},
+				description: 'Filter by module ID',
+			},
+
+			// Threshold für Course Progress
+			{
+				displayName: 'Progress Threshold (%)',
+				name: 'threshold',
+				type: 'number',
+				default: 50,
+				required: true,
+				typeOptions: { minValue: 1, maxValue: 100 },
+				displayOptions: {
+					show: { event: ['course.progress.changedAboveThreshold'] },
+				},
+				description: 'Trigger when progress is above this percentage',
 			},
 		],
 	};
@@ -372,6 +459,32 @@ export class LearningSuiteTrigger implements INodeType {
 					filter.includeNeverLoggedIn = includeNeverLoggedIn;
 					hasFilter = true;
 				}
+				// Access Request
+				if (event === 'accessRequest.created') {
+					const courseId = this.getNodeParameter('courseId', '') as string;
+					const moduleId = this.getNodeParameter('moduleId', '') as string;
+					if (courseId) filter.courseId = courseId;
+					if (moduleId) filter.moduleId = moduleId;
+					hasFilter = true;
+				}
+
+				// Submission Created
+				if (event === 'submission.created') {
+					const courseId = this.getNodeParameter('courseId', '') as string;
+					if (courseId) {
+						filter.courseId = courseId;
+						hasFilter = true;
+					}
+				}
+
+				// Course Progress Threshold
+				if (event === 'course.progress.changedAboveThreshold') {
+					const courseId = this.getNodeParameter('courseId', '') as string;
+					const threshold = this.getNodeParameter('threshold', 50) as number;
+					if (courseId) filter.courseId = courseId;
+					filter.threshold = threshold;
+					hasFilter = true;
+				}
 
 				if (hasFilter) {
 					body.filter = filter;
@@ -429,8 +542,9 @@ export class LearningSuiteTrigger implements INodeType {
 
 	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
 		const body = this.getBodyData();
+		const events = Array.isArray(body) ? body : [body];
 
-		if (!body || (Array.isArray(body) && body.length === 0)) {
+		if (!events || events.length === 0) {
 			return {
 				workflowData: [
 					this.helpers.returnJsonArray([{ error: 'No data received' }]),
@@ -439,7 +553,7 @@ export class LearningSuiteTrigger implements INodeType {
 		}
 
 		return {
-			workflowData: [this.helpers.returnJsonArray(body)],
+			workflowData: [this.helpers.returnJsonArray(events)],
 		};
 	}
 }

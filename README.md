@@ -64,17 +64,25 @@ This node uses the public LearningSuite API and is not affiliated with, endorsed
 
 The LearningSuite Trigger supports the following events:
 
-- ✅ **Lesson Completed** - When a lesson is completed
-- ✅ **Progress Changed** - On progress updates
-- ✅ **Feedback Created** - New feedback received
-- ✅ **New Login** - New user login
+- ✅ **Access Request Created** - When a user requests access to a module in the course
+- ✅ **Bundle Created** - When a new bundle is created
+- ✅ **Community Area Created** - When a new community area is created
+- ✅ **Community Post Created** - New community post created
+- ✅ **Community Post Moderated** - Community post moderated
+- ✅ **Course Progress Changed Above Threshold** - When course progress exceeds a defined threshold
+- ✅ **Custom Popup Created** - When a new custom popup is created
+- ✅ **Custom Popup Interaction** - Popup interaction triggered
 - ✅ **Exam Completed** - Exam completion
 - ✅ **Exam Graded** - Exam graded
-- ✅ **Custom Popup Interaction** - Popup interaction
-- ✅ **Community Post Created** - New community post
-- ✅ **Community Post Moderated** - Community post moderated
+- ✅ **Feedback Created** - New feedback received
+- ✅ **Group Created** - When a new group is created
 - ✅ **Group User Access Changed** - Group access changed
-- ✅ **Member Not Logged In for X Days** - User inactivity
+- ✅ **Lesson Completed** - When a lesson is completed
+- ✅ **Member Not Logged In for X Days** - User inactive for X days
+- ✅ **New Login** - New user login
+- ✅ **Progress Changed** - On progress updates
+- ✅ **Submission Created** - New submission created (file, text, audio, video)
+- ✅ **User Created** - When a new user is created
 
 ## 💡 Use Case Examples
 
