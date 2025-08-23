@@ -18,9 +18,9 @@ Diese Community Node verwendet die öffentliche LearningSuite API und ist nicht 
 
 ## 🚀 Features
 
-- **11 Ressourcen** vollständig unterstützt (Member, Course, Group, Bundle, Hub, Module, Community, Popup, Webhook, Role, API Call)
+- **19 Ressourcen** vollständig unterstützt (Member, Course, Group, Bundle, Hub, Module, Community, Popup, Webhook, Role, API Call)
 - **57+ Operationen** für maximale Flexibilität
-- **Webhook Trigger** mit 11 Event-Types für Real-Time Automatisierung
+- **Webhook Trigger** mit 19 Event-Types für Real-Time Automatisierung
 - **TypeScript** Implementation für beste Entwicklererfahrung
 - **Flexible API Call** Resource für custom Endpunkte
 

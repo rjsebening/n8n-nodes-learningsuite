@@ -18,9 +18,9 @@ This node uses the public LearningSuite API and is not affiliated with, endorsed
 
 ## 🚀 Features
 
-- **11 Resources** fully supported (Member, Course, Group, Bundle, Hub, Module, Community, Popup, Webhook, Role, API Call)
+- **19 Resources** fully supported (Member, Course, Group, Bundle, Hub, Module, Community, Popup, Webhook, Role, API Call)
 - **57+ Operations** for maximum flexibility
-- **Webhook Trigger** with 11 event types for real-time automation
+- **Webhook Trigger** with 19 event types for real-time automation
 - **TypeScript** implementation for best developer experience
 - **Flexible API Call** resource for custom endpoints
 
