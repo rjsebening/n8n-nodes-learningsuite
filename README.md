@@ -4,11 +4,17 @@
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-A community node for n8n that integrates with the **LearningSuite API**, enabling seamless automation workflows with your LearningSuite instance.
+A n8n node that integrates with the **LearningSuite API**, enabling seamless automation workflows with your LearningSuite instance.
 
 ## What is n8n?
 
 n8n is an easy-to-use workflow automation tool that lets you connect different web applications like LearningSuite. By creating workflows between apps, you can automate many manual tasks, saving you and your team significant time and effort.
+
+## ⚖️ Legal Notice
+
+This node uses the public LearningSuite API and is not affiliated with, endorsed by, or sponsored by LearningSuite. All trademarks belong to their respective owners.
+
+**Note**: This is a community-developed node for the LearningSuite API. For official support, please contact LearningSuite directly.
 
 ## 🚀 Features
 
@@ -86,10 +92,10 @@ Automatically monitor your participants' learning progress and send personalized
 
 ## 🛠️ Installation
 
-### Option 1: n8n Community Nodes (Recommended)
+### Option 1: n8n Nodes (Recommended)
 
 1. Open your n8n instance
-2. Go to **Settings** → **Community Nodes**
+2. Go to **Settings** → **Nodes**
 3. Install: `n8n-nodes-learningsuite`
 4. Restart n8n
 
@@ -164,7 +170,7 @@ This node is based on **LearningSuite API v1.9.0** and supports all publicly ava
 
 **Authentication**: API Key via `x-api-key` header
 
-Full API documentation available at: [LearningSuite API Docs](https://api.learningsuite.io/api/v1)
+Full API documentation available at: [LearningSuite API Docs](https://api.learningsuite.io/api/v1/docs/)
 
 ## 🤝 Contributing
 
@@ -253,3 +259,13 @@ A: Yes, most webhook events support filtering by various parameters like course 
 ⭐ **Like this node?** Give us a star on GitHub!
 
 💡 **Feature request?** Open an issue - we're always open to improvements!
+
+## 📋 Disclaimer
+
+This unofficial node is not affiliated with, endorsed by, or sponsored by LearningSuite. It uses only the publicly available LearningSuite API in accordance with their terms of service.
+
+**Important Notes:**
+- This node is developed and maintained independently
+- For LearningSuite API issues, contact official LearningSuite support
+- All LearningSuite trademarks and logos belong to LearningSuite
+- This node merely provides an interface to the public API

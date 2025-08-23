@@ -10,6 +10,12 @@ Eine n8n Community Node für die **LearningSuite API**, die es ermöglicht, dein
 
 n8n ist ein einfach zu bedienendes Tool, mit dem du Aktionen zwischen verschiedenen Web-Apps, wie LearningSuite, automatisieren kannst. Das Erstellen von sogenannten "Workflows" zwischen Apps automatisiert viele der manuellen Aufgaben. So kannst du dir oder deinen Mitarbeitern enorm viel Zeit sparen.
 
+## ⚖️ Rechtlicher Hinweis
+
+Diese Community Node verwendet die öffentliche LearningSuite API und ist nicht mit LearningSuite verbunden oder von LearningSuite gesponsert. Alle Markenzeichen gehören ihren jeweiligen Eigentümern.
+
+**Hinweis**: Dies ist eine von der Community entwickelte Node für die LearningSuite API. Für offiziellen Support wende dich bitte direkt an LearningSuite.
+
 ## 🚀 Features
 
 - **11 Ressourcen** vollständig unterstützt (Member, Course, Group, Bundle, Hub, Module, Community, Popup, Webhook, Role, API Call)
@@ -164,7 +170,7 @@ Die Node basiert auf der **LearningSuite API v1.9.0** und unterstützt alle öff
 
 **Authentifizierung**: API Key über `x-api-key` Header
 
-Vollständige API Dokumentation verfügbar unter: [LearningSuite API Docs](https://api.learningsuite.io/api/v1)
+Vollständige API Dokumentation verfügbar unter: [LearningSuite API Docs](https://api.learningsuite.io/api/v1/docs/)
 
 ## 🤝 Contributing
 
@@ -247,3 +253,13 @@ A: Die Standard URL ist `https://api.learningsuite.io/api/v1`. Bei Custom Domain
 ⭐ **Gefällt dir diese Node?** Gib uns einen Stern auf GitHub!
 
 💡 **Feature Request?** Öffne ein Issue - wir sind immer offen für Verbesserungen!
+
+## 📋 Haftungsausschluss
+
+Diese inoffizielle Community Node ist nicht mit LearningSuite verbunden, von LearningSuite unterstützt oder gesponsert. Sie nutzt ausschließlich die öffentlich verfügbare LearningSuite API gemäß deren Nutzungsbedingungen.
+
+**Wichtige Hinweise:**
+- Diese Node wird von der Community entwickelt und gepflegt
+- Für Probleme mit der LearningSuite API wende dich an den offiziellen LearningSuite Support
+- Alle LearningSuite Markenzeichen und Logos gehören LearningSuite
+- Diese Node stellt lediglich eine Schnittstelle zur öffentlichen API dar
