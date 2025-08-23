@@ -27,7 +27,7 @@ export class LearningSuiteTrigger implements INodeType {
 		group: ['trigger'],
 		version: 1,
 		description: 'Trigger node for LearningSuite events',
-		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
+		subtitle: '={{$parameter["event"]}}',
 		defaults: {
 			name: 'LearningSuite Trigger',
 			// @ts-expect-error -- description is required by nodelinter but missing in type definition
@@ -61,29 +61,62 @@ export class LearningSuiteTrigger implements INodeType {
 				required: true,
 				description: 'The event type to listen for',
 				options: [
-					{ name: 'Community Post Created', value: 'communityPost.created' },
+					{
+						name: 'Community Post Created',
+						value: 'communityPost.created',
+						description: 'Triggered when a community post is created.',
+					},
 					{
 						name: 'Community Post Moderated',
 						value: 'communityPost.moderated',
+						description: 'Triggered when a community post is moderated.',
 					},
 					{
 						name: 'Custom Popup Interaction',
 						value: 'custom.popup.interaction',
+						description: 'Triggered when a user interacts with a custom popup.',
 					},
-					{ name: 'Exam Completed', value: 'exam.completed' },
-					{ name: 'Exam Graded', value: 'exam.graded' },
-					{ name: 'Feedback Created', value: 'feedback.created' },
+					{
+						name: 'Exam Completed',
+						value: 'exam.completed',
+						description: 'Triggered when a user completes an exam.',
+					},
+					{
+						name: 'Exam Graded',
+						value: 'exam.graded',
+						description: 'Triggered when an exam is graded.',
+					},
+					{
+						name: 'Feedback Created',
+						value: 'feedback.created',
+						description: 'Triggered when feedback is created.',
+					},
 					{
 						name: 'Group User Access Changed',
 						value: 'group.userAccessChanged',
+						description: 'Triggered when group user access rights change.',
 					},
-					{ name: 'Lesson Completed', value: 'lesson.completed' },
+					{
+						name: 'Lesson Completed',
+						value: 'lesson.completed',
+						description: 'Triggered when a user completes a lesson.',
+					},
 					{
 						name: 'Member Not Logged In for X Days',
 						value: 'member.notLoggedInXDays',
+						description:
+							'Triggered when a member hasn’t logged in for a defined number of days.',
 					},
-					{ name: 'New Login', value: 'new.login' },
-					{ name: 'Progress Changed', value: 'progress.changed' },
+					{
+						name: 'New Login',
+						value: 'new.login',
+						description: 'Triggered when a user logs in.',
+					},
+					{
+						name: 'Progress Changed',
+						value: 'progress.changed',
+						description: 'Triggered when a user’s progress changes.',
+					},
 				],
 			},
 
