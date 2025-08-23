@@ -117,7 +117,7 @@ export class LearningSuite implements INodeType {
 				name: 'operation',
 				type: 'options',
 				noDataExpression: true,
-				default: 'getByEmail',				
+				default: 'getByEmail',
 				displayOptions: {
 					show: {
 						resource: ['member'],
@@ -257,7 +257,8 @@ export class LearningSuite implements INodeType {
 					{
 						name: 'Get Modules for Member',
 						value: 'getModulesForMember',
-						description: 'Get modules for a course with member-specific access info',
+						description:
+							'Get modules for a course with member-specific access info',
 						action: 'Get course modules for member',
 					},
 					{
@@ -636,7 +637,22 @@ export class LearningSuite implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['member', 'course', 'popup'],
-						operation: ['getById', 'update', 'delete', 'activateDeactivate', 'addToCourses', 'removeFromCourses', 'getCourses', 'getCourseInfo', 'addToBundles', 'removeFromBundles', 'getBundles', 'getModulesForMember', 'triggerForMember', 'removeTriggerForMember'],
+						operation: [
+							'getById',
+							'update',
+							'delete',
+							'activateDeactivate',
+							'addToCourses',
+							'removeFromCourses',
+							'getCourses',
+							'getCourseInfo',
+							'addToBundles',
+							'removeFromBundles',
+							'getBundles',
+							'getModulesForMember',
+							'triggerForMember',
+							'removeTriggerForMember',
+						],
 					},
 				},
 				default: '',
@@ -651,7 +667,15 @@ export class LearningSuite implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['course', 'member'],
-						operation: ['getModules', 'getModulesForMember', 'getMembers', 'getAccessRequests', 'getSubmissions', 'createLesson', 'getCourseInfo'],
+						operation: [
+							'getModules',
+							'getModulesForMember',
+							'getMembers',
+							'getAccessRequests',
+							'getSubmissions',
+							'createLesson',
+							'getCourseInfo',
+						],
 					},
 				},
 				default: '',
@@ -681,7 +705,13 @@ export class LearningSuite implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['group'],
-						operation: ['delete', 'getCourses', 'addCourses', 'removeCourses', 'addBundles'],
+						operation: [
+							'delete',
+							'getCourses',
+							'addCourses',
+							'removeCourses',
+							'addBundles',
+						],
 					},
 				},
 				default: '',
@@ -889,7 +919,11 @@ export class LearningSuite implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['webhook'],
-						operation: ['getSubscription', 'updateSubscription', 'deleteSubscription'],
+						operation: [
+							'getSubscription',
+							'updateSubscription',
+							'deleteSubscription',
+						],
 					},
 				},
 				default: '',
@@ -979,7 +1013,12 @@ export class LearningSuite implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['member', 'group'],
-						operation: ['addToCourses', 'removeFromCourses', 'addCourses', 'removeCourses'],
+						operation: [
+							'addToCourses',
+							'removeFromCourses',
+							'addCourses',
+							'removeCourses',
+						],
 					},
 				},
 				default: '',
@@ -995,7 +1034,13 @@ export class LearningSuite implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['member', 'group', 'hub'],
-						operation: ['addToBundles', 'removeFromBundles', 'addBundles', 'addAccess', 'removeAccess'],
+						operation: [
+							'addToBundles',
+							'removeFromBundles',
+							'addBundles',
+							'addAccess',
+							'removeAccess',
+						],
 					},
 				},
 				default: '',
@@ -1041,7 +1086,12 @@ export class LearningSuite implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['group', 'hub'],
-						operation: ['addMembers', 'removeMembers', 'addAccess', 'removeAccess'],
+						operation: [
+							'addMembers',
+							'removeMembers',
+							'addAccess',
+							'removeAccess',
+						],
 					},
 				},
 				default: '',
@@ -1143,41 +1193,50 @@ export class LearningSuite implements INodeType {
 				description: 'URL to send webhook events to',
 			},
 			{
-			displayName: 'Event Type',
-			name: 'eventType',
-			type: 'options',
-			required: true,
-			default: 'new.login',
-			displayOptions: {
-				show: {
-				resource: ['webhook'],
-				operation: ['createSubscription', 'updateSubscription'],
+				displayName: 'Event Type',
+				name: 'eventType',
+				type: 'options',
+				required: true,
+				default: 'new.login',
+				displayOptions: {
+					show: {
+						resource: ['webhook'],
+						operation: ['createSubscription', 'updateSubscription'],
+					},
 				},
-			},
-			options: [
-				{ name: 'Community Post Created', value: 'communityPost.created' },
-				{ name: 'Community Post Moderated', value: 'communityPost.moderated' },
-				{ name: 'Custom Popup Interaction', value: 'custom.popup.interaction' },
-				{ name: 'Exam Completed', value: 'exam.completed' },
-				{ name: 'Exam Graded', value: 'exam.graded' },
-				{ name: 'Feedback Created', value: 'feedback.created' },
-				{ name: 'Group User Access Changed', value: 'group.userAccessChanged' },
-				{ name: 'Lesson Completed', value: 'lesson.completed' },
-				{ name: 'New Login', value: 'new.login' },
-				{ name: 'Progress Changed', value: 'progress.changed' },
-			],
-			description: 'Type of event to subscribe to',
+				options: [
+					{ name: 'Community Post Created', value: 'communityPost.created' },
+					{
+						name: 'Community Post Moderated',
+						value: 'communityPost.moderated',
+					},
+					{
+						name: 'Custom Popup Interaction',
+						value: 'custom.popup.interaction',
+					},
+					{ name: 'Exam Completed', value: 'exam.completed' },
+					{ name: 'Exam Graded', value: 'exam.graded' },
+					{ name: 'Feedback Created', value: 'feedback.created' },
+					{
+						name: 'Group User Access Changed',
+						value: 'group.userAccessChanged',
+					},
+					{ name: 'Lesson Completed', value: 'lesson.completed' },
+					{ name: 'New Login', value: 'new.login' },
+					{ name: 'Progress Changed', value: 'progress.changed' },
+				],
+				description: 'Type of event to subscribe to',
 			},
 			{
-			displayName: 'Sample Data Type',
-			name: 'sampleDataType',
-			type: 'options',
-			default: 'feedback-events',
-			displayOptions: {
-				show: {
-				resource: ['webhook'],
-				operation: ['getSampleData'],
-				},
+				displayName: 'Sample Data Type',
+				name: 'sampleDataType',
+				type: 'options',
+				default: 'feedback-events',
+				displayOptions: {
+					show: {
+						resource: ['webhook'],
+						operation: ['getSampleData'],
+					},
 				},
 				options: [
 					{
@@ -1221,8 +1280,8 @@ export class LearningSuite implements INodeType {
 						value: 'progress-changed-events',
 					},
 				],
-			required: true,
-			description: 'Type of sample data to retrieve',
+				required: true,
+				description: 'Type of sample data to retrieve',
 			},
 
 			// Pagination options
@@ -1279,7 +1338,8 @@ export class LearningSuite implements INodeType {
 						name: 'daysNotLoggedInGte',
 						type: 'number',
 						default: 7,
-						description: 'Filter members by days not logged in (greater than or equal)',
+						description:
+							'Filter members by days not logged in (greater than or equal)',
 					},
 					{
 						displayName: 'Include Never Logged In',
@@ -1356,45 +1416,44 @@ export class LearningSuite implements INodeType {
 						operation: ['create', 'findOrCreate'],
 					},
 				},
-			options: [
-				{
-					displayName: 'About',
-					name: 'about',
-					type: 'string',
-					default: '',
-					description: 'About text for the member',
-				},
-				{
-					displayName: 'City',
-					name: 'city',
-					type: 'string',
-					default: '',
-					description: 'City of the member',
-				},
-				{
-					displayName: 'Enabled',
-					name: 'enabled',
-					type: 'boolean',
-					default: true,
-					description: 'Whether the member account is enabled',
-				},
-				{
-					displayName: 'Phone',
-					name: 'phone',
-					type: 'string',
-					default: '',
-					description: 'Phone number of the member',
-				},
-				{
-					displayName: 'Position',
-					name: 'position',
-					type: 'string',
-					default: '',
-					description: 'Position/job title of the member',
-				},
-			],
+				options: [
+					{
+						displayName: 'About',
+						name: 'about',
+						type: 'string',
+						default: '',
+						description: 'About text for the member',
+					},
+					{
+						displayName: 'City',
+						name: 'city',
+						type: 'string',
+						default: '',
+						description: 'City of the member',
+					},
+					{
+						displayName: 'Enabled',
+						name: 'enabled',
+						type: 'boolean',
+						default: true,
+						description: 'Whether the member account is enabled',
+					},
+					{
+						displayName: 'Phone',
+						name: 'phone',
+						type: 'string',
+						default: '',
+						description: 'Phone number of the member',
+					},
+					{
+						displayName: 'Position',
+						name: 'position',
+						type: 'string',
+						default: '',
+						description: 'Position/job title of the member',
+					},
+				],
 			},
-
 
 			// Additional options for groups
 			{
@@ -1460,7 +1519,8 @@ export class LearningSuite implements INodeType {
 						name: 'immediatelyPublishCourse',
 						type: 'boolean',
 						default: false,
-						description: 'Whether: Automatically publish course after creating lesson',
+						description:
+							'Whether: Automatically publish course after creating lesson',
 					},
 				],
 			},
@@ -1522,7 +1582,7 @@ export class LearningSuite implements INodeType {
 		],
 	};
 
-		methods = {
+	methods = {
 		credentialTest: {
 			async learningSuiteApiTest(
 				this: ICredentialTestFunctions,
@@ -1568,7 +1628,6 @@ export class LearningSuite implements INodeType {
 		},
 	};
 
-
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
 		const returnData: IDataObject[] = [];
@@ -1596,7 +1655,10 @@ export class LearningSuite implements INodeType {
 
 					if (operation === 'getById') {
 						const memberId = this.getNodeParameter('memberId', i) as string;
-						const includeGroups = this.getNodeParameter('includeGroups', i) as boolean;
+						const includeGroups = this.getNodeParameter(
+							'includeGroups',
+							i,
+						) as boolean;
 
 						const qs: IDataObject = {};
 						if (includeGroups) {
@@ -1615,14 +1677,18 @@ export class LearningSuite implements INodeType {
 					}
 
 					if (operation === 'getAll') {
-						const additionalOptions = this.getNodeParameter('additionalOptions', i) as IDataObject;
+						const additionalOptions = this.getNodeParameter(
+							'additionalOptions',
+							i,
+						) as IDataObject;
 						const qs: IDataObject = {};
 
 						if (additionalOptions.daysNotLoggedInGte) {
 							qs.days_not_logged_in_gte = additionalOptions.daysNotLoggedInGte;
 						}
 						if (additionalOptions.includeNeverLoggedIn) {
-							qs.include_never_logged_in = additionalOptions.includeNeverLoggedIn;
+							qs.include_never_logged_in =
+								additionalOptions.includeNeverLoggedIn;
 						}
 
 						responseData = await this.helpers.requestWithAuthentication.call(
@@ -1658,7 +1724,10 @@ export class LearningSuite implements INodeType {
 						const memberId = this.getNodeParameter('memberId', i) as string;
 						const firstName = this.getNodeParameter('firstName', i) as string;
 						const lastName = this.getNodeParameter('lastName', i) as string;
-						const additionalOptions = this.getNodeParameter('additionalOptions', i) as IDataObject;
+						const additionalOptions = this.getNodeParameter(
+							'additionalOptions',
+							i,
+						) as IDataObject;
 
 						const body: IDataObject = {
 							firstName,
@@ -1667,8 +1736,12 @@ export class LearningSuite implements INodeType {
 						};
 
 						// Remove empty values
-						Object.keys(body).forEach(key => {
-							if (body[key] === '' || body[key] === null || body[key] === undefined) {
+						Object.keys(body).forEach((key) => {
+							if (
+								body[key] === '' ||
+								body[key] === null ||
+								body[key] === undefined
+							) {
 								delete body[key];
 							}
 						});
@@ -1699,7 +1772,10 @@ export class LearningSuite implements INodeType {
 
 					if (operation === 'activateDeactivate') {
 						const memberId = this.getNodeParameter('memberId', i) as string;
-						const activateAction = this.getNodeParameter('activateAction', i) as string;
+						const activateAction = this.getNodeParameter(
+							'activateAction',
+							i,
+						) as string;
 
 						const body: IDataObject = {
 							enabled: activateAction === 'activate',
@@ -1718,7 +1794,9 @@ export class LearningSuite implements INodeType {
 
 					if (operation === 'addToCourses') {
 						const memberId = this.getNodeParameter('memberId', i) as string;
-						const courseIds = (this.getNodeParameter('courseIds', i) as string).split(',').map(id => id.trim());
+						const courseIds = (this.getNodeParameter('courseIds', i) as string)
+							.split(',')
+							.map((id) => id.trim());
 
 						responseData = await this.helpers.requestWithAuthentication.call(
 							this,
@@ -1733,7 +1811,9 @@ export class LearningSuite implements INodeType {
 
 					if (operation === 'removeFromCourses') {
 						const memberId = this.getNodeParameter('memberId', i) as string;
-						const courseIds = (this.getNodeParameter('courseIds', i) as string).split(',').map(id => id.trim());
+						const courseIds = (this.getNodeParameter('courseIds', i) as string)
+							.split(',')
+							.map((id) => id.trim());
 
 						responseData = await this.helpers.requestWithAuthentication.call(
 							this,
@@ -1775,7 +1855,9 @@ export class LearningSuite implements INodeType {
 
 					if (operation === 'addToBundles') {
 						const memberId = this.getNodeParameter('memberId', i) as string;
-						const bundleIds = (this.getNodeParameter('bundleIds', i) as string).split(',').map(id => id.trim());
+						const bundleIds = (this.getNodeParameter('bundleIds', i) as string)
+							.split(',')
+							.map((id) => id.trim());
 
 						responseData = await this.helpers.requestWithAuthentication.call(
 							this,
@@ -1790,7 +1872,9 @@ export class LearningSuite implements INodeType {
 
 					if (operation === 'removeFromBundles') {
 						const memberId = this.getNodeParameter('memberId', i) as string;
-						const bundleIds = (this.getNodeParameter('bundleIds', i) as string).split(',').map(id => id.trim());
+						const bundleIds = (this.getNodeParameter('bundleIds', i) as string)
+							.split(',')
+							.map((id) => id.trim());
 
 						responseData = await this.helpers.requestWithAuthentication.call(
 							this,
@@ -1818,7 +1902,7 @@ export class LearningSuite implements INodeType {
 
 					if (operation === 'findOrCreate') {
 						const email = this.getNodeParameter('email', i) as string;
-						
+
 						// First try to find by email
 						try {
 							responseData = await this.helpers.requestWithAuthentication.call(
@@ -1834,23 +1918,26 @@ export class LearningSuite implements INodeType {
 							// If not found, create new member
 							const err = error as IDataObject;
 							if (err.httpCode === 404 || err.statusCode === 404) {
-								const firstName = this.getNodeParameter('firstName', i) as string;
+								const firstName = this.getNodeParameter(
+									'firstName',
+									i,
+								) as string;
 								const lastName = this.getNodeParameter('lastName', i) as string;
 
-								responseData = await this.helpers.requestWithAuthentication.call(
-									this,
-									'learningSuiteApi',
-									{
-										method: 'POST',
-										url: '/members',
-										body: { email, firstName, lastName },
-									},
-								);
+								responseData =
+									await this.helpers.requestWithAuthentication.call(
+										this,
+										'learningSuiteApi',
+										{
+											method: 'POST',
+											url: '/members',
+											body: { email, firstName, lastName },
+										},
+									);
 							} else {
 								throw error;
 							}
 						}
-						
 					}
 				}
 
@@ -1936,7 +2023,10 @@ export class LearningSuite implements INodeType {
 						const courseId = this.getNodeParameter('courseId', i) as string;
 						const sectionId = this.getNodeParameter('sectionId', i) as string;
 						const lessonName = this.getNodeParameter('lessonName', i) as string;
-						const additionalOptions = this.getNodeParameter('additionalOptions', i) as IDataObject;
+						const additionalOptions = this.getNodeParameter(
+							'additionalOptions',
+							i,
+						) as IDataObject;
 
 						const body: IDataObject = {
 							name: lessonName,
@@ -1957,7 +2047,10 @@ export class LearningSuite implements INodeType {
 
 				if (resource === 'group') {
 					if (operation === 'getAll') {
-						const additionalOptions = this.getNodeParameter('additionalOptions', i) as IDataObject;
+						const additionalOptions = this.getNodeParameter(
+							'additionalOptions',
+							i,
+						) as IDataObject;
 						const qs: IDataObject = {};
 
 						if (additionalOptions.includeUsers) {
@@ -2004,7 +2097,10 @@ export class LearningSuite implements INodeType {
 
 					if (operation === 'findByName') {
 						const groupName = this.getNodeParameter('groupName', i) as string;
-						const additionalOptions = this.getNodeParameter('additionalOptions', i) as IDataObject;
+						const additionalOptions = this.getNodeParameter(
+							'additionalOptions',
+							i,
+						) as IDataObject;
 						const qs: IDataObject = { name: groupName };
 
 						if (additionalOptions.includeUsers) {
@@ -2024,10 +2120,13 @@ export class LearningSuite implements INodeType {
 
 					if (operation === 'findOrCreate') {
 						const groupName = this.getNodeParameter('groupName', i) as string;
-						
+
 						// First try to find by name
 						try {
-							const additionalOptions = this.getNodeParameter('additionalOptions', i) as IDataObject;
+							const additionalOptions = this.getNodeParameter(
+								'additionalOptions',
+								i,
+							) as IDataObject;
 							const qs: IDataObject = { name: groupName };
 
 							if (additionalOptions.includeUsers) {
@@ -2046,16 +2145,20 @@ export class LearningSuite implements INodeType {
 
 							// If array is empty, create new group
 							if (Array.isArray(responseData) && responseData.length === 0) {
-								responseData = await this.helpers.requestWithAuthentication.call(
-									this,
-									'learningSuiteApi',
-									{
-										method: 'POST',
-										url: '/groups',
-										body: { name: groupName },
-									},
-								);
-							} else if (Array.isArray(responseData) && responseData.length > 0) {
+								responseData =
+									await this.helpers.requestWithAuthentication.call(
+										this,
+										'learningSuiteApi',
+										{
+											method: 'POST',
+											url: '/groups',
+											body: { name: groupName },
+										},
+									);
+							} else if (
+								Array.isArray(responseData) &&
+								responseData.length > 0
+							) {
 								// Return first found group
 								responseData = responseData[0];
 							}
@@ -2074,8 +2177,12 @@ export class LearningSuite implements INodeType {
 					}
 
 					if (operation === 'addMembers') {
-						const userIds = (this.getNodeParameter('userIds', i) as string).split(',').map(id => id.trim());
-						const groupIds = (this.getNodeParameter('groupIds', i) as string).split(',').map(id => id.trim());
+						const userIds = (this.getNodeParameter('userIds', i) as string)
+							.split(',')
+							.map((id) => id.trim());
+						const groupIds = (this.getNodeParameter('groupIds', i) as string)
+							.split(',')
+							.map((id) => id.trim());
 
 						responseData = await this.helpers.requestWithAuthentication.call(
 							this,
@@ -2089,8 +2196,12 @@ export class LearningSuite implements INodeType {
 					}
 
 					if (operation === 'removeMembers') {
-						const userIds = (this.getNodeParameter('userIds', i) as string).split(',').map(id => id.trim());
-						const groupIds = (this.getNodeParameter('groupIds', i) as string).split(',').map(id => id.trim());
+						const userIds = (this.getNodeParameter('userIds', i) as string)
+							.split(',')
+							.map((id) => id.trim());
+						const groupIds = (this.getNodeParameter('groupIds', i) as string)
+							.split(',')
+							.map((id) => id.trim());
 
 						responseData = await this.helpers.requestWithAuthentication.call(
 							this,
@@ -2118,7 +2229,9 @@ export class LearningSuite implements INodeType {
 
 					if (operation === 'addCourses') {
 						const groupId = this.getNodeParameter('groupId', i) as string;
-						const courseIds = (this.getNodeParameter('courseIds', i) as string).split(',').map(id => id.trim());
+						const courseIds = (this.getNodeParameter('courseIds', i) as string)
+							.split(',')
+							.map((id) => id.trim());
 
 						responseData = await this.helpers.requestWithAuthentication.call(
 							this,
@@ -2133,7 +2246,9 @@ export class LearningSuite implements INodeType {
 
 					if (operation === 'removeCourses') {
 						const groupId = this.getNodeParameter('groupId', i) as string;
-						const courseIds = (this.getNodeParameter('courseIds', i) as string).split(',').map(id => id.trim());
+						const courseIds = (this.getNodeParameter('courseIds', i) as string)
+							.split(',')
+							.map((id) => id.trim());
 
 						responseData = await this.helpers.requestWithAuthentication.call(
 							this,
@@ -2148,7 +2263,9 @@ export class LearningSuite implements INodeType {
 
 					if (operation === 'addBundles') {
 						const groupId = this.getNodeParameter('groupId', i) as string;
-						const bundleIds = (this.getNodeParameter('bundleIds', i) as string).split(',').map(id => id.trim());
+						const bundleIds = (this.getNodeParameter('bundleIds', i) as string)
+							.split(',')
+							.map((id) => id.trim());
 
 						responseData = await this.helpers.requestWithAuthentication.call(
 							this,
@@ -2227,7 +2344,10 @@ export class LearningSuite implements INodeType {
 					if (operation === 'create') {
 						const templateId = this.getNodeParameter('templateId', i) as string;
 						const hubName = this.getNodeParameter('hubName', i) as string;
-						const additionalOptions = this.getNodeParameter('additionalOptions', i) as IDataObject;
+						const additionalOptions = this.getNodeParameter(
+							'additionalOptions',
+							i,
+						) as IDataObject;
 
 						const body: IDataObject = {
 							templateId,
@@ -2253,17 +2373,27 @@ export class LearningSuite implements INodeType {
 						);
 					}
 
-
 					if (operation === 'addAccess') {
 						const hubId = this.getNodeParameter('hubId', i) as string;
-						const memberIds = this.getNodeParameter('memberIds', i, '') as string;
+						const memberIds = this.getNodeParameter(
+							'memberIds',
+							i,
+							'',
+						) as string;
 						const groupIds = this.getNodeParameter('groupIds', i, '') as string;
-						const bundleIds = this.getNodeParameter('bundleIds', i, '') as string;
+						const bundleIds = this.getNodeParameter(
+							'bundleIds',
+							i,
+							'',
+						) as string;
 
 						const body: IDataObject = {};
-						if (memberIds) body.memberIds = memberIds.split(',').map(id => id.trim());
-						if (groupIds) body.groupIds = groupIds.split(',').map(id => id.trim());
-						if (bundleIds) body.bundleIds = bundleIds.split(',').map(id => id.trim());
+						if (memberIds)
+							body.memberIds = memberIds.split(',').map((id) => id.trim());
+						if (groupIds)
+							body.groupIds = groupIds.split(',').map((id) => id.trim());
+						if (bundleIds)
+							body.bundleIds = bundleIds.split(',').map((id) => id.trim());
 
 						responseData = await this.helpers.requestWithAuthentication.call(
 							this,
@@ -2278,14 +2408,25 @@ export class LearningSuite implements INodeType {
 
 					if (operation === 'removeAccess') {
 						const hubId = this.getNodeParameter('hubId', i) as string;
-						const memberIds = this.getNodeParameter('memberIds', i, '') as string;
+						const memberIds = this.getNodeParameter(
+							'memberIds',
+							i,
+							'',
+						) as string;
 						const groupIds = this.getNodeParameter('groupIds', i, '') as string;
-						const bundleIds = this.getNodeParameter('bundleIds', i, '') as string;
+						const bundleIds = this.getNodeParameter(
+							'bundleIds',
+							i,
+							'',
+						) as string;
 
 						const body: IDataObject = {};
-						if (memberIds) body.memberIds = memberIds.split(',').map(id => id.trim());
-						if (groupIds) body.groupIds = groupIds.split(',').map(id => id.trim());
-						if (bundleIds) body.bundleIds = bundleIds.split(',').map(id => id.trim());
+						if (memberIds)
+							body.memberIds = memberIds.split(',').map((id) => id.trim());
+						if (groupIds)
+							body.groupIds = groupIds.split(',').map((id) => id.trim());
+						if (bundleIds)
+							body.bundleIds = bundleIds.split(',').map((id) => id.trim());
 
 						responseData = await this.helpers.requestWithAuthentication.call(
 							this,
@@ -2450,7 +2591,10 @@ export class LearningSuite implements INodeType {
 					}
 
 					if (operation === 'getSubscription') {
-						const subscriptionId = this.getNodeParameter('subscriptionId', i) as string;
+						const subscriptionId = this.getNodeParameter(
+							'subscriptionId',
+							i,
+						) as string;
 
 						responseData = await this.helpers.requestWithAuthentication.call(
 							this,
@@ -2465,7 +2609,10 @@ export class LearningSuite implements INodeType {
 					if (operation === 'createSubscription') {
 						const hookUrl = this.getNodeParameter('hookUrl', i) as string;
 						const eventType = this.getNodeParameter('eventType', i) as string;
-						const additionalOptions = this.getNodeParameter('additionalOptions', i) as IDataObject;
+						const additionalOptions = this.getNodeParameter(
+							'additionalOptions',
+							i,
+						) as IDataObject;
 
 						const body: IDataObject = {
 							hookUrl,
@@ -2473,7 +2620,9 @@ export class LearningSuite implements INodeType {
 						};
 
 						if (additionalOptions.courseInstanceId) {
-							body.filter = { courseInstanceId: additionalOptions.courseInstanceId };
+							body.filter = {
+								courseInstanceId: additionalOptions.courseInstanceId,
+							};
 						}
 
 						responseData = await this.helpers.requestWithAuthentication.call(
@@ -2488,10 +2637,16 @@ export class LearningSuite implements INodeType {
 					}
 
 					if (operation === 'updateSubscription') {
-						const subscriptionId = this.getNodeParameter('subscriptionId', i) as string;
+						const subscriptionId = this.getNodeParameter(
+							'subscriptionId',
+							i,
+						) as string;
 						const hookUrl = this.getNodeParameter('hookUrl', i) as string;
 						const eventType = this.getNodeParameter('eventType', i) as string;
-						const additionalOptions = this.getNodeParameter('additionalOptions', i) as IDataObject;
+						const additionalOptions = this.getNodeParameter(
+							'additionalOptions',
+							i,
+						) as IDataObject;
 
 						const body: IDataObject = {
 							hookUrl,
@@ -2499,7 +2654,9 @@ export class LearningSuite implements INodeType {
 						};
 
 						if (additionalOptions.courseInstanceId) {
-							body.filter = { courseInstanceId: additionalOptions.courseInstanceId };
+							body.filter = {
+								courseInstanceId: additionalOptions.courseInstanceId,
+							};
 						}
 
 						responseData = await this.helpers.requestWithAuthentication.call(
@@ -2514,7 +2671,10 @@ export class LearningSuite implements INodeType {
 					}
 
 					if (operation === 'deleteSubscription') {
-						const subscriptionId = this.getNodeParameter('subscriptionId', i) as string;
+						const subscriptionId = this.getNodeParameter(
+							'subscriptionId',
+							i,
+						) as string;
 
 						responseData = await this.helpers.requestWithAuthentication.call(
 							this,
@@ -2527,7 +2687,10 @@ export class LearningSuite implements INodeType {
 					}
 
 					if (operation === 'getSampleData') {
-						const sampleDataType = this.getNodeParameter('sampleDataType', i) as string;
+						const sampleDataType = this.getNodeParameter(
+							'sampleDataType',
+							i,
+						) as string;
 
 						responseData = await this.helpers.requestWithAuthentication.call(
 							this,
@@ -2544,15 +2707,21 @@ export class LearningSuite implements INodeType {
 					if (operation === 'makeRequest') {
 						const httpMethod = this.getNodeParameter('httpMethod', i) as string;
 						const endpoint = this.getNodeParameter('endpoint', i) as string;
-						const queryParameters = this.getNodeParameter('queryParameters', i) as IDataObject;
-						
+						const queryParameters = this.getNodeParameter(
+							'queryParameters',
+							i,
+						) as IDataObject;
+
 						const options: IDataObject = {
 							method: httpMethod,
 							url: endpoint.startsWith('/') ? endpoint : `/${endpoint}`,
 						};
 
 						// Add query parameters
-						if (queryParameters.parameter && Array.isArray(queryParameters.parameter)) {
+						if (
+							queryParameters.parameter &&
+							Array.isArray(queryParameters.parameter)
+						) {
 							const qs: IDataObject = {};
 							for (const param of queryParameters.parameter) {
 								if (param.name && param.value) {
@@ -2566,11 +2735,18 @@ export class LearningSuite implements INodeType {
 
 						// Add request body for POST/PUT/PATCH
 						if (['POST', 'PUT', 'PATCH'].includes(httpMethod)) {
-							const requestBody = this.getNodeParameter('requestBody', i, '{}') as string;
+							const requestBody = this.getNodeParameter(
+								'requestBody',
+								i,
+								'{}',
+							) as string;
 							try {
 								options.body = JSON.parse(requestBody);
 							} catch (error) {
-								throw new NodeOperationError(this.getNode(), `Invalid JSON in request body: ${error}`);
+								throw new NodeOperationError(
+									this.getNode(),
+									`Invalid JSON in request body: ${error}`,
+								);
 							}
 						}
 

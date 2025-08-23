@@ -16,7 +16,7 @@ import {
 // Lokaler Typ, da nicht exportiert in allen n8n-Versionen
 export interface INodeCredentialTestResult {
 	status: 'OK' | 'Error';
-	message: string;   // Pflichtfeld!
+	message: string; // Pflichtfeld!
 }
 
 export class LearningSuiteTrigger implements INodeType {
@@ -62,14 +62,26 @@ export class LearningSuiteTrigger implements INodeType {
 				description: 'The event type to listen for',
 				options: [
 					{ name: 'Community Post Created', value: 'communityPost.created' },
-					{ name: 'Community Post Moderated', value: 'communityPost.moderated' },
-					{ name: 'Custom Popup Interaction', value: 'custom.popup.interaction' },
+					{
+						name: 'Community Post Moderated',
+						value: 'communityPost.moderated',
+					},
+					{
+						name: 'Custom Popup Interaction',
+						value: 'custom.popup.interaction',
+					},
 					{ name: 'Exam Completed', value: 'exam.completed' },
 					{ name: 'Exam Graded', value: 'exam.graded' },
 					{ name: 'Feedback Created', value: 'feedback.created' },
-					{ name: 'Group User Access Changed', value: 'group.userAccessChanged' },
+					{
+						name: 'Group User Access Changed',
+						value: 'group.userAccessChanged',
+					},
 					{ name: 'Lesson Completed', value: 'lesson.completed' },
-					{ name: 'Member Not Logged In for X Days', value: 'member.notLoggedInXDays' },
+					{
+						name: 'Member Not Logged In for X Days',
+						value: 'member.notLoggedInXDays',
+					},
 					{ name: 'New Login', value: 'new.login' },
 					{ name: 'Progress Changed', value: 'progress.changed' },
 				],
@@ -81,7 +93,9 @@ export class LearningSuiteTrigger implements INodeType {
 				name: 'areaId',
 				type: 'string',
 				default: '',
-				displayOptions: { show: { event: ['communityPost.created', 'communityPost.moderated'] } },
+				displayOptions: {
+					show: { event: ['communityPost.created', 'communityPost.moderated'] },
+				},
 				description: 'Filter by community area ID',
 			},
 			{
@@ -89,7 +103,9 @@ export class LearningSuiteTrigger implements INodeType {
 				name: 'forumId',
 				type: 'string',
 				default: '',
-				displayOptions: { show: { event: ['communityPost.created', 'communityPost.moderated'] } },
+				displayOptions: {
+					show: { event: ['communityPost.created', 'communityPost.moderated'] },
+				},
 				description: 'Filter by forum ID',
 			},
 			{
@@ -135,7 +151,17 @@ export class LearningSuiteTrigger implements INodeType {
 				name: 'courseInstanceId',
 				type: 'string',
 				default: '',
-				displayOptions: { show: { event: ['lesson.completed', 'feedback.created', 'progress.changed', 'exam.completed', 'exam.graded'] } },
+				displayOptions: {
+					show: {
+						event: [
+							'lesson.completed',
+							'feedback.created',
+							'progress.changed',
+							'exam.completed',
+							'exam.graded',
+						],
+					},
+				},
 				description: 'Filter by course instance ID',
 			},
 
@@ -230,10 +256,13 @@ export class LearningSuiteTrigger implements INodeType {
 				let hasFilter = false;
 
 				// Community Post filters
-				if (event === 'communityPost.created' || event === 'communityPost.moderated') {
+				if (
+					event === 'communityPost.created' ||
+					event === 'communityPost.moderated'
+				) {
 					const areaId = this.getNodeParameter('areaId', '') as string;
 					const forumId = this.getNodeParameter('forumId', '') as string;
-					
+
 					if (areaId) {
 						filter.areaId = areaId;
 						hasFilter = true;
@@ -242,9 +271,11 @@ export class LearningSuiteTrigger implements INodeType {
 						filter.forumId = forumId;
 						hasFilter = true;
 					}
-					
+
 					if (event === 'communityPost.moderated') {
-						const approved = this.getNodeParameter('approved', '') as string | boolean;
+						const approved = this.getNodeParameter('approved', '') as
+							| string
+							| boolean;
 						if (approved !== '') {
 							filter.approved = approved;
 							hasFilter = true;
@@ -256,7 +287,7 @@ export class LearningSuiteTrigger implements INodeType {
 				if (event === 'group.userAccessChanged') {
 					const groupId = this.getNodeParameter('groupId', '') as string;
 					const actionType = this.getNodeParameter('actionType', '') as string;
-					
+
 					if (groupId) {
 						filter.groupId = groupId;
 						hasFilter = true;
@@ -268,8 +299,19 @@ export class LearningSuiteTrigger implements INodeType {
 				}
 
 				// Course Instance filter
-				if (['lesson.completed', 'progress.changed', 'feedback.created', 'exam.completed', 'exam.graded'].includes(event)) {
-					const courseInstanceId = this.getNodeParameter('courseInstanceId', '') as string;
+				if (
+					[
+						'lesson.completed',
+						'progress.changed',
+						'feedback.created',
+						'exam.completed',
+						'exam.graded',
+					].includes(event)
+				) {
+					const courseInstanceId = this.getNodeParameter(
+						'courseInstanceId',
+						'',
+					) as string;
 					if (courseInstanceId) {
 						filter.courseInstanceId = courseInstanceId;
 						hasFilter = true;
@@ -288,8 +330,11 @@ export class LearningSuiteTrigger implements INodeType {
 				// Member Not Logged In filter
 				if (event === 'member.notLoggedInXDays') {
 					const days = this.getNodeParameter('days') as number;
-					const includeNeverLoggedIn = this.getNodeParameter('includeNeverLoggedIn', false) as boolean;
-					
+					const includeNeverLoggedIn = this.getNodeParameter(
+						'includeNeverLoggedIn',
+						false,
+					) as boolean;
+
 					filter.days = days;
 					filter.includeNeverLoggedIn = includeNeverLoggedIn;
 					hasFilter = true;
@@ -322,19 +367,19 @@ export class LearningSuiteTrigger implements INodeType {
 
 			async delete(this: IHookFunctions): Promise<boolean> {
 				const webhookData = this.getWorkflowStaticData('node');
-				
+
 				if (!webhookData.subscriptionId) {
 					return true;
 				}
 
 				try {
 					await this.helpers.requestWithAuthentication.call(
-						this, 
-						'learningSuiteApi', 
+						this,
+						'learningSuiteApi',
 						{
 							method: 'DELETE',
 							url: `/webhooks/subscription/${webhookData.subscriptionId}`,
-						}
+						},
 					);
 
 					delete webhookData.subscriptionId;
@@ -351,10 +396,12 @@ export class LearningSuiteTrigger implements INodeType {
 
 	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
 		const body = this.getBodyData();
-		
+
 		if (!body || (Array.isArray(body) && body.length === 0)) {
 			return {
-				workflowData: [this.helpers.returnJsonArray([{ error: 'No data received' }])],
+				workflowData: [
+					this.helpers.returnJsonArray([{ error: 'No data received' }]),
+				],
 			};
 		}
 
