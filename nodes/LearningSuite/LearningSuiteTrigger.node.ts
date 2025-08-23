@@ -49,7 +49,7 @@ export class LearningSuiteTrigger implements INodeType {
 				name: 'default',
 				httpMethod: 'POST',
 				responseMode: 'onReceived',
-				path: 'webhook',
+				path: '/',
 			},
 		],
 		properties: [
@@ -66,6 +66,7 @@ export class LearningSuiteTrigger implements INodeType {
 					{ name: 'Custom Popup Interaction', value: 'custom.popup.interaction' },
 					{ name: 'Exam Completed', value: 'exam.completed' },
 					{ name: 'Exam Graded', value: 'exam.graded' },
+					{ name: 'Feedback Created', value: 'feedback.created' },
 					{ name: 'Group User Access Changed', value: 'group.userAccessChanged' },
 					{ name: 'Lesson Completed', value: 'lesson.completed' },
 					{ name: 'Member Not Logged In for X Days', value: 'member.notLoggedInXDays' },
@@ -134,7 +135,7 @@ export class LearningSuiteTrigger implements INodeType {
 				name: 'courseInstanceId',
 				type: 'string',
 				default: '',
-				displayOptions: { show: { event: ['lesson.completed', 'progress.changed', 'exam.completed', 'exam.graded'] } },
+				displayOptions: { show: { event: ['lesson.completed', 'feedback.created', 'progress.changed', 'exam.completed', 'exam.graded'] } },
 				description: 'Filter by course instance ID',
 			},
 
@@ -267,7 +268,7 @@ export class LearningSuiteTrigger implements INodeType {
 				}
 
 				// Course Instance filter
-				if (['lesson.completed', 'progress.changed', 'exam.completed', 'exam.graded'].includes(event)) {
+				if (['lesson.completed', 'progress.changed', 'feedback.created', 'exam.completed', 'exam.graded'].includes(event)) {
 					const courseInstanceId = this.getNodeParameter('courseInstanceId', '') as string;
 					if (courseInstanceId) {
 						filter.courseInstanceId = courseInstanceId;
