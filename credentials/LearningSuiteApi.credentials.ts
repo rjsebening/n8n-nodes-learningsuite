@@ -9,6 +9,7 @@ export class LearningSuiteApi implements ICredentialType {
 	name = 'learningSuiteApi';
 	displayName = 'LearningSuite API';
 	documentationUrl = 'https://api.learningsuite.io/api/v1/docs/';
+
 	properties: INodeProperties[] = [
 		{
 			displayName: 'API Key',
@@ -17,6 +18,7 @@ export class LearningSuiteApi implements ICredentialType {
 			typeOptions: { password: true },
 			required: true,
 			default: '',
+			description: 'API key provided by LearningSuite',
 		},
 		{
 			displayName: 'Base URL',
@@ -39,7 +41,7 @@ export class LearningSuiteApi implements ICredentialType {
 	test: ICredentialTestRequest = {
 		request: {
 			baseURL: '={{$credentials.baseUrl}}',
-			url: '/users',
+			url: '/auth',
 			method: 'GET',
 		},
 	};

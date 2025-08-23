@@ -17,9 +17,12 @@
 		"build": "tsc && gulp build:icons",
 		"dev": "tsc --watch",
 		"format": "prettier nodes credentials --write",
-		"lint": "eslint nodes credentials package.json",
-		"lintfix": "eslint nodes credentials package.json --fix",
-		"prepublishOnly": "npm run build && npm run lint -s"
+		"lint": "eslint nodes credentials --ext .ts",
+		"lint:fix": "eslint nodes credentials --ext .ts --fix",
+		"lint:node": "npx nodelinter --target=nodes/LearningSuite/LearningSuite.node.ts",
+		"lint:all": "npm run lint && npm run lint:node",
+		"test": "npm run lint:all && npm run build",
+		"prepublishOnly": "npm run build && npm run lint:all -s"
 	},
 	"files": [
 		"dist"
@@ -35,9 +38,10 @@
 		]
 	},
 	"devDependencies": {
-		"@typescript-eslint/parser": "^5.45.0",
-		"eslint": "^8.29.0",
-		"eslint-plugin-n8n-nodes-base": "^1.11.0",
+		"@typescript-eslint/eslint-plugin": "^5.62.0",
+		"@typescript-eslint/parser": "^5.62.0",
+		"eslint": "^8.57.1",
+		"eslint-plugin-n8n-nodes-base": "^1.16.3",
 		"gulp": "^4.0.2",
 		"n8n-workflow": "^1.0.0",
 		"prettier": "^2.7.1",

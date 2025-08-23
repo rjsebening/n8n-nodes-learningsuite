@@ -1,10 +1,15 @@
 import {
+	ICredentialTestFunctions,
+	ICredentialsDecrypted,
+	ICredentialDataDecryptedObject,
+	INodeCredentialTestResult,
 	IExecuteFunctions,
 	INodeExecutionData,
 	INodeType,
 	INodeTypeDescription,
 	IDataObject,
 	NodeConnectionType,
+	NodeOperationError,
 } from 'n8n-workflow';
 
 export class LearningSuite implements INodeType {
@@ -18,6 +23,8 @@ export class LearningSuite implements INodeType {
 		description: 'Interact with LearningSuite API',
 		defaults: {
 			name: 'LearningSuite',
+			// @ts-expect-error -- description is required by nodelinter but missing in type definition
+			description: 'Interact with LearningSuite API',
 		},
 		inputs: [NodeConnectionType.Main],
 		outputs: [NodeConnectionType.Main],
@@ -25,6 +32,9 @@ export class LearningSuite implements INodeType {
 			{
 				name: 'learningSuiteApi',
 				required: true,
+				testedBy: 'learningSuiteApiTest',
+				// @ts-expect-error -- description is required by nodelinter but missing in type definition
+				description: 'LearningSuite API Test',
 			},
 		],
 		requestDefaults: {
@@ -42,48 +52,60 @@ export class LearningSuite implements INodeType {
 				noDataExpression: true,
 				options: [
 					{
-						name: 'Member',
-						value: 'member',
-					},
-					{
-						name: 'Course',
-						value: 'course',
-					},
-					{
-						name: 'Group',
-						value: 'group',
+						name: 'API Call',
+						value: 'apiCall',
+						description: 'API Call LearningSuite API',
 					},
 					{
 						name: 'Bundle',
 						value: 'bundle',
-					},
-					{
-						name: 'Hub',
-						value: 'hub',
-					},
-					{
-						name: 'Module',
-						value: 'module',
+						description: 'Bundle LearningSuite API',
 					},
 					{
 						name: 'Community',
 						value: 'community',
+						description: 'Communtiy LearningSuite API',
 					},
+					{
+						name: 'Course',
+						value: 'course',
+						description: 'Course LearningSuite API',
+					},
+					{
+						name: 'Group',
+						value: 'group',
+						description: 'Group LearningSuite API',
+					},
+					{
+						name: 'Hub',
+						value: 'hub',
+						description: 'Hub LearningSuite API',
+					},
+					{
+						name: 'Member',
+						value: 'member',
+						description: 'Member LearningSuite API',
+					},
+					{
+						name: 'Module',
+						value: 'module',
+						description: 'Moudle LearningSuite API',
+					},
+
 					{
 						name: 'Popup',
 						value: 'popup',
-					},
-					{
-						name: 'Webhook',
-						value: 'webhook',
+						description: 'Popup LearningSuite API',
 					},
 					{
 						name: 'Role',
 						value: 'role',
+						description: 'Role LearningSuite API',
 					},
 					{
-						name: 'API Call',
-						value: 'apiCall',
+						name: 'Webhook',
+						value: 'webhook',
+						description: 'Webhook LearningSuite API',
 					},
 				],
 				default: 'member',
@@ -95,12 +117,73 @@ export class LearningSuite implements INodeType {
 				name: 'operation',
 				type: 'options',
 				noDataExpression: true,
+				default: 'getByEmail',				
 				displayOptions: {
 					show: {
 						resource: ['member'],
 					},
 				},
 				options: [
+					{
+						name: 'Activate or Deactivate',
+						value: 'activateDeactivate',
+						description: 'Activate or deactivate a member',
+						action: 'Activate/deactivate member',
+					},
+					{
+						name: 'Add to Bundles',
+						value: 'addToBundles',
+						description: 'Add member to bundles',
+						action: 'Add member to bundles',
+					},
+					{
+						name: 'Add to Courses',
+						value: 'addToCourses',
+						description: 'Add member to courses',
+						action: 'Add member to courses',
+					},
+					{
+						name: 'Create',
+						value: 'create',
+						description: 'Create a new member',
+						action: 'Create a member',
+					},
+					{
+						name: 'Delete',
+						value: 'delete',
+						description: 'Delete a member',
+						action: 'Delete a member',
+					},
+					{
+						name: 'Find or Create',
+						value: 'findOrCreate',
+						description: 'Find member by email or create if not found',
+						action: 'Find or create member',
+					},
+					{
+						name: 'Get All',
+						value: 'getAll',
+						description: 'Get all members',
+						action: 'Get all members',
+					},
+					{
+						name: 'Get Bundles',
+						value: 'getBundles',
+						description: 'Get all bundles for a member',
+						action: 'Get member bundles',
+					},
+					{
+						name: 'Get Course Info',
+						value: 'getCourseInfo',
+						description: 'Get member course access and progress info',
+						action: 'Get member course info',
+					},
+					{
+						name: 'Get Courses',
+						value: 'getCourses',
+						description: 'Get all courses for a member',
+						action: 'Get member courses',
+					},
 					{
 						name: 'Get by Email',
 						value: 'getByEmail',
@@ -114,16 +197,16 @@ export class LearningSuite implements INodeType {
 						action: 'Get member by ID',
 					},
 					{
-						name: 'Get All',
-						value: 'getAll',
-						description: 'Get all members',
-						action: 'Get all members',
+						name: 'Remove From Bundles',
+						value: 'removeFromBundles',
+						description: 'Remove member from bundles',
+						action: 'Remove member from bundles',
 					},
 					{
-						name: 'Create',
-						value: 'create',
-						description: 'Create a new member',
-						action: 'Create a member',
+						name: 'Remove From Courses',
+						value: 'removeFromCourses',
+						description: 'Remove member from courses',
+						action: 'Remove member from courses',
 					},
 					{
 						name: 'Update',
@@ -131,68 +214,7 @@ export class LearningSuite implements INodeType {
 						description: 'Update a member',
 						action: 'Update a member',
 					},
-					{
-						name: 'Delete',
-						value: 'delete',
-						description: 'Delete a member',
-						action: 'Delete a member',
-					},
-					{
-						name: 'Activate/Deactivate',
-						value: 'activateDeactivate',
-						description: 'Activate or deactivate a member',
-						action: 'Activate/deactivate member',
-					},
-					{
-						name: 'Add to Courses',
-						value: 'addToCourses',
-						description: 'Add member to courses',
-						action: 'Add member to courses',
-					},
-					{
-						name: 'Remove from Courses',
-						value: 'removeFromCourses',
-						description: 'Remove member from courses',
-						action: 'Remove member from courses',
-					},
-					{
-						name: 'Get Courses',
-						value: 'getCourses',
-						description: 'Get all courses for a member',
-						action: 'Get member courses',
-					},
-					{
-						name: 'Get Course Info',
-						value: 'getCourseInfo',
-						description: 'Get member course access and progress info',
-						action: 'Get member course info',
-					},
-					{
-						name: 'Add to Bundles',
-						value: 'addToBundles',
-						description: 'Add member to bundles',
-						action: 'Add member to bundles',
-					},
-					{
-						name: 'Remove from Bundles',
-						value: 'removeFromBundles',
-						description: 'Remove member from bundles',
-						action: 'Remove member from bundles',
-					},
-					{
-						name: 'Get Bundles',
-						value: 'getBundles',
-						description: 'Get all bundles for a member',
-						action: 'Get member bundles',
-					},
-					{
-						name: 'Find or Create',
-						value: 'findOrCreate',
-						description: 'Find member by email or create if not found',
-						action: 'Find or create member',
-					},
 				],
-				default: 'getByEmail',
 			},
 
 			// Course Operations
@@ -201,6 +223,7 @@ export class LearningSuite implements INodeType {
 				name: 'operation',
 				type: 'options',
 				noDataExpression: true,
+				default: 'getPublished',
 				displayOptions: {
 					show: {
 						resource: ['course'],
@@ -208,10 +231,22 @@ export class LearningSuite implements INodeType {
 				},
 				options: [
 					{
-						name: 'Get Published',
-						value: 'getPublished',
-						description: 'Get all published courses',
-						action: 'Get published courses',
+						name: 'Create Lesson',
+						value: 'createLesson',
+						description: 'Create a lesson in a course section',
+						action: 'Create lesson',
+					},
+					{
+						name: 'Get Access Requests',
+						value: 'getAccessRequests',
+						description: 'Get access requests for a course',
+						action: 'Get course access requests',
+					},
+					{
+						name: 'Get Members',
+						value: 'getMembers',
+						description: 'Get members of a course',
+						action: 'Get course members',
 					},
 					{
 						name: 'Get Modules',
@@ -226,16 +261,10 @@ export class LearningSuite implements INodeType {
 						action: 'Get course modules for member',
 					},
 					{
-						name: 'Get Members',
-						value: 'getMembers',
-						description: 'Get members of a course',
-						action: 'Get course members',
-					},
-					{
-						name: 'Get Access Requests',
-						value: 'getAccessRequests',
-						description: 'Get access requests for a course',
-						action: 'Get course access requests',
+						name: 'Get Published',
+						value: 'getPublished',
+						description: 'Get all published courses',
+						action: 'Get published courses',
 					},
 					{
 						name: 'Get Submissions',
@@ -243,14 +272,7 @@ export class LearningSuite implements INodeType {
 						description: 'Get submissions for a course',
 						action: 'Get course submissions',
 					},
-					{
-						name: 'Create Lesson',
-						value: 'createLesson',
-						description: 'Create a lesson in a course section',
-						action: 'Create lesson',
-					},
 				],
-				default: 'getPublished',
 			},
 
 			// Group Operations
@@ -259,6 +281,7 @@ export class LearningSuite implements INodeType {
 				name: 'operation',
 				type: 'options',
 				noDataExpression: true,
+				default: 'findOrCreate',
 				displayOptions: {
 					show: {
 						resource: ['group'],
@@ -266,10 +289,22 @@ export class LearningSuite implements INodeType {
 				},
 				options: [
 					{
-						name: 'Get All',
-						value: 'getAll',
-						description: 'Get all groups',
-						action: 'Get all groups',
+						name: 'Add Bundles',
+						value: 'addBundles',
+						description: 'Add bundles to group',
+						action: 'Add bundles to group',
+					},
+					{
+						name: 'Add Courses',
+						value: 'addCourses',
+						description: 'Add courses to group',
+						action: 'Add courses to group',
+					},
+					{
+						name: 'Add Members',
+						value: 'addMembers',
+						description: 'Add members to groups',
+						action: 'Add members to groups',
 					},
 					{
 						name: 'Create',
@@ -296,16 +331,10 @@ export class LearningSuite implements INodeType {
 						action: 'Find or create group',
 					},
 					{
-						name: 'Add Members',
-						value: 'addMembers',
-						description: 'Add members to groups',
-						action: 'Add members to groups',
-					},
-					{
-						name: 'Remove Members',
-						value: 'removeMembers',
-						description: 'Remove members from groups',
-						action: 'Remove members from groups',
+						name: 'Get All',
+						value: 'getAll',
+						description: 'Get all groups',
+						action: 'Get all groups',
 					},
 					{
 						name: 'Get Courses',
@@ -314,25 +343,18 @@ export class LearningSuite implements INodeType {
 						action: 'Get group courses',
 					},
 					{
-						name: 'Add Courses',
-						value: 'addCourses',
-						description: 'Add courses to group',
-						action: 'Add courses to group',
-					},
-					{
 						name: 'Remove Courses',
 						value: 'removeCourses',
 						description: 'Remove courses from group',
 						action: 'Remove courses from group',
 					},
 					{
-						name: 'Add Bundles',
-						value: 'addBundles',
-						description: 'Add bundles to group',
-						action: 'Add bundles to group',
+						name: 'Remove Members',
+						value: 'removeMembers',
+						description: 'Remove members from groups',
+						action: 'Remove members from groups',
 					},
 				],
-				default: 'getAll',
 			},
 
 			// Bundle Operations
@@ -341,6 +363,7 @@ export class LearningSuite implements INodeType {
 				name: 'operation',
 				type: 'options',
 				noDataExpression: true,
+				default: 'getAll',
 				displayOptions: {
 					show: {
 						resource: ['bundle'],
@@ -360,15 +383,14 @@ export class LearningSuite implements INodeType {
 						action: 'Get bundle members',
 					},
 				],
-				default: 'getAll',
 			},
-
 			// Role Operations
 			{
 				displayName: 'Operation',
 				name: 'operation',
 				type: 'options',
 				noDataExpression: true,
+				default: 'getAll',
 				displayOptions: {
 					show: {
 						resource: ['role'],
@@ -382,7 +404,6 @@ export class LearningSuite implements INodeType {
 						action: 'Get all roles',
 					},
 				],
-				default: 'getAll',
 			},
 
 			// API Call Operations
@@ -391,6 +412,7 @@ export class LearningSuite implements INodeType {
 				name: 'operation',
 				type: 'options',
 				noDataExpression: true,
+				default: 'makeRequest',
 				displayOptions: {
 					show: {
 						resource: ['apiCall'],
@@ -404,7 +426,6 @@ export class LearningSuite implements INodeType {
 						action: 'Make API call',
 					},
 				],
-				default: 'makeRequest',
 			},
 
 			// Hub Operations
@@ -413,12 +434,25 @@ export class LearningSuite implements INodeType {
 				name: 'operation',
 				type: 'options',
 				noDataExpression: true,
+				default: 'getAll',
 				displayOptions: {
 					show: {
 						resource: ['hub'],
 					},
 				},
 				options: [
+					{
+						name: 'Add Access',
+						value: 'addAccess',
+						description: 'Add hub access for members/groups/bundles',
+						action: 'Add hub access',
+					},
+					{
+						name: 'Create',
+						value: 'create',
+						description: 'Create a new hub',
+						action: 'Create a hub',
+					},
 					{
 						name: 'Get All',
 						value: 'getAll',
@@ -432,25 +466,12 @@ export class LearningSuite implements INodeType {
 						action: 'Get hub templates',
 					},
 					{
-						name: 'Create',
-						value: 'create',
-						description: 'Create a new hub',
-						action: 'Create a hub',
-					},
-					{
-						name: 'Add Access',
-						value: 'addAccess',
-						description: 'Add hub access for members/groups/bundles',
-						action: 'Add hub access',
-					},
-					{
 						name: 'Remove Access',
 						value: 'removeAccess',
 						description: 'Remove hub access',
 						action: 'Remove hub access',
 					},
 				],
-				default: 'getAll',
 			},
 
 			// Module Operations
@@ -459,12 +480,19 @@ export class LearningSuite implements INodeType {
 				name: 'operation',
 				type: 'options',
 				noDataExpression: true,
+				default: 'getLessons',
 				displayOptions: {
 					show: {
 						resource: ['module'],
 					},
 				},
 				options: [
+					{
+						name: 'Create Unlock Override',
+						value: 'createUnlockOverride',
+						description: 'Create module unlock override',
+						action: 'Create unlock override',
+					},
 					{
 						name: 'Get Lessons',
 						value: 'getLessons',
@@ -477,14 +505,7 @@ export class LearningSuite implements INodeType {
 						description: 'Get sections for a module',
 						action: 'Get module sections',
 					},
-					{
-						name: 'Create Unlock Override',
-						value: 'createUnlockOverride',
-						description: 'Create module unlock override',
-						action: 'Create unlock override',
-					},
 				],
-				default: 'getLessons',
 			},
 
 			// Community Operations
@@ -493,6 +514,7 @@ export class LearningSuite implements INodeType {
 				name: 'operation',
 				type: 'options',
 				noDataExpression: true,
+				default: 'getAreas',
 				displayOptions: {
 					show: {
 						resource: ['community'],
@@ -512,7 +534,6 @@ export class LearningSuite implements INodeType {
 						action: 'Get community forums',
 					},
 				],
-				default: 'getAreas',
 			},
 
 			// Popup Operations
@@ -521,6 +542,7 @@ export class LearningSuite implements INodeType {
 				name: 'operation',
 				type: 'options',
 				noDataExpression: true,
+				default: 'getAll',
 				displayOptions: {
 					show: {
 						resource: ['popup'],
@@ -540,19 +562,18 @@ export class LearningSuite implements INodeType {
 						action: 'Get a popup',
 					},
 					{
-						name: 'Trigger for Member',
-						value: 'triggerForMember',
-						description: 'Trigger a popup for a member',
-						action: 'Trigger popup for member',
-					},
-					{
 						name: 'Remove Trigger for Member',
 						value: 'removeTriggerForMember',
 						description: 'Remove popup trigger for a member',
 						action: 'Remove popup trigger for member',
 					},
+					{
+						name: 'Trigger for Member',
+						value: 'triggerForMember',
+						description: 'Trigger a popup for a member',
+						action: 'Trigger popup for member',
+					},
 				],
-				default: 'getAll',
 			},
 
 			// Webhook Operations
@@ -561,6 +582,7 @@ export class LearningSuite implements INodeType {
 				name: 'operation',
 				type: 'options',
 				noDataExpression: true,
+				default: 'getSubscriptions',
 				displayOptions: {
 					show: {
 						resource: ['webhook'],
@@ -568,28 +590,10 @@ export class LearningSuite implements INodeType {
 				},
 				options: [
 					{
-						name: 'Get All Subscriptions',
-						value: 'getSubscriptions',
-						description: 'Get all webhook subscriptions',
-						action: 'Get webhook subscriptions',
-					},
-					{
-						name: 'Get Subscription',
-						value: 'getSubscription',
-						description: 'Get a specific webhook subscription',
-						action: 'Get webhook subscription',
-					},
-					{
 						name: 'Create Subscription',
 						value: 'createSubscription',
 						description: 'Create a new webhook subscription',
 						action: 'Create webhook subscription',
-					},
-					{
-						name: 'Update Subscription',
-						value: 'updateSubscription',
-						description: 'Update a webhook subscription',
-						action: 'Update webhook subscription',
 					},
 					{
 						name: 'Delete Subscription',
@@ -598,13 +602,30 @@ export class LearningSuite implements INodeType {
 						action: 'Delete webhook subscription',
 					},
 					{
+						name: 'Get All Subscriptions',
+						value: 'getSubscriptions',
+						description: 'Get all webhook subscriptions',
+						action: 'Get webhook subscriptions',
+					},
+					{
 						name: 'Get Sample Data',
 						value: 'getSampleData',
 						description: 'Get sample data for webhook events',
 						action: 'Get webhook sample data',
 					},
+					{
+						name: 'Get Subscription',
+						value: 'getSubscription',
+						description: 'Get a specific webhook subscription',
+						action: 'Get webhook subscription',
+					},
+					{
+						name: 'Update Subscription',
+						value: 'updateSubscription',
+						description: 'Update a webhook subscription',
+						action: 'Update webhook subscription',
+					},
 				],
-				default: 'getSubscriptions',
 			},
 
 			// Common ID fields
@@ -681,8 +702,16 @@ export class LearningSuite implements INodeType {
 				},
 				options: [
 					{
+						name: 'DELETE',
+						value: 'DELETE',
+					},
+					{
 						name: 'GET',
 						value: 'GET',
+					},
+					{
+						name: 'PATCH',
+						value: 'PATCH',
 					},
 					{
 						name: 'POST',
@@ -691,14 +720,6 @@ export class LearningSuite implements INodeType {
 					{
 						name: 'PUT',
 						value: 'PUT',
-					},
-					{
-						name: 'DELETE',
-						value: 'DELETE',
-					},
-					{
-						name: 'PATCH',
-						value: 'PATCH',
 					},
 				],
 				default: 'GET',
@@ -1121,90 +1142,55 @@ export class LearningSuite implements INodeType {
 				placeholder: 'https://your-endpoint.com/webhook',
 				description: 'URL to send webhook events to',
 			},
-
 			{
-				displayName: 'Event Type',
-				name: 'eventType',
-				type: 'options',
-				displayOptions: {
-					show: {
-						resource: ['webhook'],
-						operation: ['createSubscription', 'updateSubscription'],
-					},
+			displayName: 'Event Type',
+			name: 'eventType',
+			type: 'options',
+			required: true,
+			default: 'new.login',
+			displayOptions: {
+				show: {
+				resource: ['webhook'],
+				operation: ['createSubscription', 'updateSubscription'],
 				},
-				options: [
-					{
-						name: 'Feedback Created',
-						value: 'feedback.created',
-					},
-					{
-						name: 'Progress Changed',
-						value: 'progress.changed',
-					},
-					{
-						name: 'Lesson Completed',
-						value: 'lesson.completed',
-					},
-					{
-						name: 'New Login',
-						value: 'new.login',
-					},
-					{
-						name: 'Exam Completed',
-						value: 'exam.completed',
-					},
-					{
-						name: 'Exam Graded',
-						value: 'exam.graded',
-					},
-					{
-						name: 'Custom Popup Interaction',
-						value: 'custom.popup.interaction',
-					},
-					{
-						name: 'Community Post Created',
-						value: 'communityPost.created',
-					},
-					{
-						name: 'Community Post Moderated',
-						value: 'communityPost.moderated',
-					},
-					{
-						name: 'Group User Access Changed',
-						value: 'group.userAccessChanged',
-					},
-				],
-				default: 'feedback.created',
-				required: true,
-				description: 'Type of event to subscribe to',
 			},
-
+			options: [
+				{ name: 'Community Post Created', value: 'communityPost.created' },
+				{ name: 'Community Post Moderated', value: 'communityPost.moderated' },
+				{ name: 'Custom Popup Interaction', value: 'custom.popup.interaction' },
+				{ name: 'Exam Completed', value: 'exam.completed' },
+				{ name: 'Exam Graded', value: 'exam.graded' },
+				{ name: 'Feedback Created', value: 'feedback.created' },
+				{ name: 'Group User Access Changed', value: 'group.userAccessChanged' },
+				{ name: 'Lesson Completed', value: 'lesson.completed' },
+				{ name: 'New Login', value: 'new.login' },
+				{ name: 'Progress Changed', value: 'progress.changed' },
+			],
+			description: 'Type of event to subscribe to',
+			},
 			{
-				displayName: 'Sample Data Type',
-				name: 'sampleDataType',
-				type: 'options',
-				displayOptions: {
-					show: {
-						resource: ['webhook'],
-						operation: ['getSampleData'],
-					},
+			displayName: 'Sample Data Type',
+			name: 'sampleDataType',
+			type: 'options',
+			default: 'feedback-events',
+			displayOptions: {
+				show: {
+				resource: ['webhook'],
+				operation: ['getSampleData'],
+				},
 				},
 				options: [
 					{
-						name: 'Feedback Events',
-						value: 'feedback-events',
+						name: 'Community Post Created Events',
+						value: 'community-post-created-events',
 					},
 					{
-						name: 'Progress Changed Events',
-						value: 'progress-changed-events',
+						name: 'Community Post Moderated Events',
+						value: 'community-post-moderated-events',
 					},
 					{
-						name: 'Lesson Completed Events',
-						value: 'lesson-completed-events',
-					},
-					{
-						name: 'New Login Events',
-						value: 'new-login-events',
+						name: 'Custom Popup Interaction Events',
+						value: 'custom-popup-interaction-events',
 					},
 					{
 						name: 'Exam Completed Events',
@@ -1215,25 +1201,28 @@ export class LearningSuite implements INodeType {
 						value: 'exam-graded-events',
 					},
 					{
-						name: 'Custom Popup Interaction Events',
-						value: 'custom-popup-interaction-events',
-					},
-					{
-						name: 'Community Post Created Events',
-						value: 'community-post-created-events',
-					},
-					{
-						name: 'Community Post Moderated Events',
-						value: 'community-post-moderated-events',
+						name: 'Feedback Events',
+						value: 'feedback-events',
 					},
 					{
 						name: 'Group User Access Changed Events',
 						value: 'group-user-access-changed-events',
 					},
+					{
+						name: 'Lesson Completed Events',
+						value: 'lesson-completed-events',
+					},
+					{
+						name: 'New Login Events',
+						value: 'new-login-events',
+					},
+					{
+						name: 'Progress Changed Events',
+						value: 'progress-changed-events',
+					},
 				],
-				default: 'feedback-events',
-				required: true,
-				description: 'Type of sample data to retrieve',
+			required: true,
+			description: 'Type of sample data to retrieve',
 			},
 
 			// Pagination options
@@ -1241,6 +1230,7 @@ export class LearningSuite implements INodeType {
 				displayName: 'Limit',
 				name: 'limit',
 				type: 'number',
+				description: 'Max number of results to return',
 				displayOptions: {
 					show: {
 						resource: ['community', 'popup'],
@@ -1251,8 +1241,7 @@ export class LearningSuite implements INodeType {
 					minValue: 1,
 					maxValue: 1000,
 				},
-				default: 100,
-				description: 'Maximum number of results to return',
+				default: 50,
 			},
 
 			{
@@ -1271,8 +1260,7 @@ export class LearningSuite implements INodeType {
 				default: 0,
 				description: 'Number of results to skip for pagination',
 			},
-
-			// Additional options for specific operations
+			// Additional Options (nur für getAll)
 			{
 				displayName: 'Additional Options',
 				name: 'additionalOptions',
@@ -1282,7 +1270,7 @@ export class LearningSuite implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['member'],
-						operation: ['getAll', 'update', 'create', 'findOrCreate'],
+						operation: ['getAll'],
 					},
 				},
 				options: [
@@ -1290,61 +1278,39 @@ export class LearningSuite implements INodeType {
 						displayName: 'Days Not Logged In (>=)',
 						name: 'daysNotLoggedInGte',
 						type: 'number',
-						default: '',
+						default: 7,
 						description: 'Filter members by days not logged in (greater than or equal)',
-						displayOptions: {
-							show: {
-								'/operation': ['getAll'],
-							},
-						},
 					},
 					{
 						displayName: 'Include Never Logged In',
 						name: 'includeNeverLoggedIn',
 						type: 'boolean',
 						default: false,
-						description: 'Include users who never logged in',
-						displayOptions: {
-							show: {
-								'/operation': ['getAll'],
-							},
-						},
+						description: 'Whether to include users who never logged in',
 					},
-					{
-						displayName: 'Phone',
-						name: 'phone',
-						type: 'string',
-						default: '',
-						description: 'Phone number of the member',
-						displayOptions: {
-							show: {
-								'/operation': ['update', 'create', 'findOrCreate'],
-							},
-						},
+				],
+			},
+
+			// Update Fields (für update)
+			{
+				displayName: 'Update Fields',
+				name: 'updateFields',
+				type: 'collection',
+				placeholder: 'Add Field',
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ['member'],
+						operation: ['update'],
 					},
+				},
+				options: [
 					{
 						displayName: 'About',
 						name: 'about',
 						type: 'string',
 						default: '',
 						description: 'About text for the member',
-						displayOptions: {
-							show: {
-								'/operation': ['update', 'create', 'findOrCreate'],
-							},
-						},
-					},
-					{
-						displayName: 'Position',
-						name: 'position',
-						type: 'string',
-						default: '',
-						description: 'Position/job title of the member',
-						displayOptions: {
-							show: {
-								'/operation': ['update', 'create', 'findOrCreate'],
-							},
-						},
 					},
 					{
 						displayName: 'City',
@@ -1352,11 +1318,6 @@ export class LearningSuite implements INodeType {
 						type: 'string',
 						default: '',
 						description: 'City of the member',
-						displayOptions: {
-							show: {
-								'/operation': ['update', 'create', 'findOrCreate'],
-							},
-						},
 					},
 					{
 						displayName: 'Enabled',
@@ -1364,14 +1325,76 @@ export class LearningSuite implements INodeType {
 						type: 'boolean',
 						default: true,
 						description: 'Whether the member account is enabled',
-						displayOptions: {
-							show: {
-								'/operation': ['update', 'create', 'findOrCreate'],
-							},
-						},
+					},
+					{
+						displayName: 'Phone',
+						name: 'phone',
+						type: 'string',
+						default: '',
+						description: 'Phone number of the member',
+					},
+					{
+						displayName: 'Position',
+						name: 'position',
+						type: 'string',
+						default: '',
+						description: 'Position/job title of the member',
 					},
 				],
 			},
+
+			// Additional Options (für create & findOrCreate)
+			{
+				displayName: 'Additional Options',
+				name: 'additionalOptions',
+				type: 'collection',
+				placeholder: 'Add Option',
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ['member'],
+						operation: ['create', 'findOrCreate'],
+					},
+				},
+			options: [
+				{
+					displayName: 'About',
+					name: 'about',
+					type: 'string',
+					default: '',
+					description: 'About text for the member',
+				},
+				{
+					displayName: 'City',
+					name: 'city',
+					type: 'string',
+					default: '',
+					description: 'City of the member',
+				},
+				{
+					displayName: 'Enabled',
+					name: 'enabled',
+					type: 'boolean',
+					default: true,
+					description: 'Whether the member account is enabled',
+				},
+				{
+					displayName: 'Phone',
+					name: 'phone',
+					type: 'string',
+					default: '',
+					description: 'Phone number of the member',
+				},
+				{
+					displayName: 'Position',
+					name: 'position',
+					type: 'string',
+					default: '',
+					description: 'Position/job title of the member',
+				},
+			],
+			},
+
 
 			// Additional options for groups
 			{
@@ -1392,7 +1415,7 @@ export class LearningSuite implements INodeType {
 						name: 'includeUsers',
 						type: 'boolean',
 						default: false,
-						description: 'Include users in group results',
+						description: 'Whether: Include users in group results',
 					},
 				],
 			},
@@ -1437,7 +1460,7 @@ export class LearningSuite implements INodeType {
 						name: 'immediatelyPublishCourse',
 						type: 'boolean',
 						default: false,
-						description: 'Automatically publish course after creating lesson',
+						description: 'Whether: Automatically publish course after creating lesson',
 					},
 				],
 			},
@@ -1468,7 +1491,7 @@ export class LearningSuite implements INodeType {
 						name: 'publishHub',
 						type: 'boolean',
 						default: false,
-						description: 'Publish the hub immediately',
+						description: 'Whether: Publish the hub immediately',
 					},
 				],
 			},
@@ -1498,6 +1521,53 @@ export class LearningSuite implements INodeType {
 			},
 		],
 	};
+
+		methods = {
+		credentialTest: {
+			async learningSuiteApiTest(
+				this: ICredentialTestFunctions,
+				credential: ICredentialsDecrypted<ICredentialDataDecryptedObject>,
+			): Promise<INodeCredentialTestResult> {
+				const baseUrl = credential.data?.baseUrl as string;
+				const apiKey = credential.data?.apiKey as string;
+
+				if (!baseUrl || !apiKey) {
+					return {
+						status: 'Error',
+						message: 'Missing credentials',
+					};
+				}
+
+				try {
+					const response = await this.helpers.request({
+						method: 'GET',
+						url: `${baseUrl}/auth`,
+						headers: {
+							'X-API-KEY': apiKey,
+						},
+					});
+
+					if (response) {
+						return {
+							status: 'OK',
+							message: 'Authentication successful!',
+						};
+					}
+
+					return {
+						status: 'Error',
+						message: 'No response from API',
+					};
+				} catch (error) {
+					return {
+						status: 'Error',
+						message: `Credential test failed: ${(error as Error).message}`,
+					};
+				}
+			},
+		},
+	};
+
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
@@ -1760,9 +1830,10 @@ export class LearningSuite implements INodeType {
 									qs: { email },
 								},
 							);
-						} catch (error) {
+						} catch (error: unknown) {
 							// If not found, create new member
-							if ((error as any).httpCode === 404 || (error as any).statusCode === 404) {
+							const err = error as IDataObject;
+							if (err.httpCode === 404 || err.statusCode === 404) {
 								const firstName = this.getNodeParameter('firstName', i) as string;
 								const lastName = this.getNodeParameter('lastName', i) as string;
 
@@ -1779,6 +1850,7 @@ export class LearningSuite implements INodeType {
 								throw error;
 							}
 						}
+						
 					}
 				}
 
@@ -2160,9 +2232,15 @@ export class LearningSuite implements INodeType {
 						const body: IDataObject = {
 							templateId,
 							name: hubName,
-							description: additionalOptions.hubDescription || '',
-							publish: additionalOptions.publishHub || false,
 						};
+
+						if (additionalOptions.hubDescription) {
+							body.description = additionalOptions.hubDescription as string;
+						}
+
+						if (additionalOptions.publishHub !== undefined) {
+							body.publish = additionalOptions.publishHub as boolean;
+						}
 
 						responseData = await this.helpers.requestWithAuthentication.call(
 							this,
@@ -2174,6 +2252,7 @@ export class LearningSuite implements INodeType {
 							},
 						);
 					}
+
 
 					if (operation === 'addAccess') {
 						const hubId = this.getNodeParameter('hubId', i) as string;
@@ -2491,7 +2570,7 @@ export class LearningSuite implements INodeType {
 							try {
 								options.body = JSON.parse(requestBody);
 							} catch (error) {
-								throw new Error(`Invalid JSON in request body: ${error}`);
+								throw new NodeOperationError(this.getNode(), `Invalid JSON in request body: ${error}`);
 							}
 						}
 

@@ -1,0 +1,24 @@
+[
+  {
+    "message": "Default value missing for param",
+    "lintAreas": [
+      "default"
+    ],
+    "lintIssue": "missing",
+    "line": 2473,
+    "excerpt": "type: eventType",
+    "sourceFilePath": "nodes/LearningSuite/LearningSuite.node.ts",
+    "logLevel": "error"
+  },
+  {
+    "message": "Default value missing for param",
+    "lintAreas": [
+      "default"
+    ],
+    "lintIssue": "missing",
+    "line": 2499,
+    "excerpt": "type: eventType",
+    "sourceFilePath": "nodes/LearningSuite/LearningSuite.node.ts",
+    "logLevel": "error"
+  }
+]
