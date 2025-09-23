@@ -1,8 +1,8 @@
 {
 	"name": "n8n-nodes-learningsuite",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "n8n node for LearningSuite API",
-		"keywords": [
+	"keywords": [
 		"n8n-community-node-package",
 		"learningsuite",
 		"learningsuite.io",
@@ -34,8 +34,8 @@
 	},
 	"files": [
 		"dist",
-    	"README.md",
-    	"LICENSE"
+		"README.md",
+		"LICENSE"
 	],
 	"n8n": {
 		"n8nNodesApiVersion": 1,
@@ -49,12 +49,12 @@
 		]
 	},
 	"devDependencies": {
-    "@typescript-eslint/parser": "~8.32.0",
-    "eslint": "^8.57.0",
-    "eslint-plugin-n8n-nodes-base": "^1.16.3",
-    "gulp": "^5.0.0",
-    "prettier": "^3.5.3",
-    "typescript": "^5.8.2"
+		"@typescript-eslint/parser": "~8.32.0",
+		"eslint": "^8.57.0",
+		"eslint-plugin-n8n-nodes-base": "^1.16.3",
+		"gulp": "^5.0.0",
+		"prettier": "^3.5.3",
+		"typescript": "^5.8.2"
 	},
 	"peerDependencies": {
 		"n8n-workflow": "*"
