@@ -179,12 +179,12 @@ export class LearningSuiteTrigger implements INodeType {
 		group: ['trigger'],
 		version: 1,
 		// WICHTIG: KEIN polling:true -> sonst zeigt n8n immer das Polling-Panel
-		description: 'Webhook Trigger node for LearningSuite API (powered by agentur-systeme.de)',
+		description: 'Interact with LearningSuite API (powered by agentur-systeme.de)',
 		subtitle: '={{$parameter["event"]}}',
 		defaults: {
 			name: 'LearningSuite Polling Trigger',
 			// @ts-expect-error -- some linters require this
-			description: 'Webhook Trigger node for LearningSuite API (powered by agentur-systeme.de)',
+			description: 'Interact with LearningSuite API (powered by agentur-systeme.de)',
 		},
 		inputs: [],
 		outputs: [NodeConnectionType.Main],

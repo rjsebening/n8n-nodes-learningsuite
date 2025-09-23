@@ -49,22 +49,4 @@ export const popupProperties: INodeProperties[] = [
 		description:
 			'Member to trigger/remove popup for. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 	},
-	{
-		displayName: 'Limit',
-		name: 'limit',
-		type: 'number',
-		description: 'Max number of results to return',
-		displayOptions: { show: { resource: ['popup'], operation: ['getAll'] } },
-		typeOptions: { minValue: 1 },
-		default: 50,
-	},
-	{
-		displayName: 'Offset',
-		name: 'offset',
-		type: 'number',
-		displayOptions: { show: { resource: ['popup'], operation: ['getAll'] } },
-		typeOptions: { minValue: 0 },
-		default: 0,
-		description: 'Number of results to skip for pagination',
-	},
 ];
