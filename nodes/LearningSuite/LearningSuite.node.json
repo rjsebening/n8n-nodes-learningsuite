@@ -1,0 +1,18 @@
+{
+	"node": "n8n-nodes-base.learningsuite",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Marketing & Content", "Communication"],
+	"resources": {
+		"credentialDocumentation": [
+			{
+				"url": "https://github.com/rjsebening/n8n-nodes-learningsuite/blob/main/CREDENTIALS.md"
+			}
+		],
+		"primaryDocumentation": [
+			{
+				"url": "https://github.com/rjsebening/n8n-nodes-learningsuite/blob/main/README.md"
+			}
+		]
+	}
+}

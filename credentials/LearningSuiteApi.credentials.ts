@@ -1,14 +1,9 @@
-import {
-	ICredentialType,
-	INodeProperties,
-	IAuthenticate,
-	ICredentialTestRequest,
-} from 'n8n-workflow';
+import { ICredentialType, INodeProperties, IAuthenticate, ICredentialTestRequest } from 'n8n-workflow';
 
 export class LearningSuiteApi implements ICredentialType {
 	name = 'learningSuiteApi';
 	displayName = 'LearningSuite API';
-	documentationUrl = 'https://api.learningsuite.io/api/v1/docs/';
+	documentationUrl = 'https://github.com/rjsebening/n8n-nodes-learningsuite/blob/main/CREDENTIALS.md';
 
 	properties: INodeProperties[] = [
 		{
@@ -25,6 +20,7 @@ export class LearningSuiteApi implements ICredentialType {
 			name: 'baseUrl',
 			type: 'string',
 			default: 'https://api.learningsuite.io/api/v1',
+			required: true,
 			description: 'Base URL of the LearningSuite API',
 		},
 	];
@@ -43,6 +39,9 @@ export class LearningSuiteApi implements ICredentialType {
 			baseURL: '={{$credentials.baseUrl}}',
 			url: '/auth',
 			method: 'GET',
+			headers: {
+				accept: 'application/json',
+			},
 		},
 	};
 }
