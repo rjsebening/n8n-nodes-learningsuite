@@ -182,7 +182,7 @@ export class LearningSuiteTrigger implements INodeType {
 		description: 'Interact with LearningSuite API (powered by agentur-systeme.de)',
 		subtitle: '={{$parameter["event"]}}',
 		defaults: {
-			name: 'LearningSuite Polling Trigger',
+			name: 'LearningSuite Trigger',
 			// @ts-expect-error -- some linters require this
 			description: 'Interact with LearningSuite API (powered by agentur-systeme.de)',
 		},
