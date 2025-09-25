@@ -62,8 +62,10 @@ export class LearningSuite implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'LearningSuite',
 		name: 'learningSuite',
-		icon: 'file:icon.svg',
-		/*icon: 'fa:graduation-cap',*/
+		icon: {
+			light: 'file:icon-light.svg',
+			dark: 'file:icon-dark.svg',
+		},
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',

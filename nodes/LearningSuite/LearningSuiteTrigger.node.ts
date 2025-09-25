@@ -38,144 +38,144 @@ const INSTANT_EVENTS = new Set<string>([
 	'submission.created',
 ]);
 
-// Sichere Helper-Funktion: greift auf verschachtelte Parameter zu, ohne Exceptions zu werfen.
-// Gibt immer einen string zurück ('' wenn nicht gesetzt).
-function getParamSafe(self: IHookFunctions, path: string): string {
-	try {
-		const v = self.getNodeParameter(path) as unknown;
-		if (v === null || v === undefined) return '';
-		// Strings direkt trimmen
-		if (typeof v === 'string') return v.trim();
-		// Booleans/Numbers zu string
-		if (typeof v === 'number' || typeof v === 'boolean') return String(v);
-		// Objekte/Arrays → leer lassen; wir erwarten in Filtern nur Skalare
-		return '';
-	} catch {
-		return '';
-	}
-}
-
 /**
  * Baut den gewünschten Filter für Webhook-Subscriptions anhand der UI-Parameter.
  * Achtung: liest NUR noch aus den neuen "Additional"-Collections.
  */
 function buildDesiredFilter(this: IHookFunctions, event: string): { filter: IDataObject; hasFilter: boolean } {
 	const filter: IDataObject = {};
-	let hasFilter = false;
 
-	// Neuer Setter: kann optional auch leere Strings zulassen (includeEmpty)
-	const set = (k: string, v: any, opts: { includeEmpty?: boolean } = {}) => {
-		const isEmpty = v === '' || v === undefined || v === null;
-		if (isEmpty && !opts.includeEmpty) return;
-		filter[k] = v;
-		hasFilter = true;
+	const getCol = (path: string): IDataObject => {
+		try {
+			const v = this.getNodeParameter(path) as IDataObject | undefined;
+			return v && typeof v === 'object' ? v : {};
+		} catch {
+			return {};
+		}
 	};
 
-	// ---------- Community Post Created ----------
-	if (event === 'communityPost.created') {
-		const areaId = getParamSafe(this, 'additionalCommunityPostCreated.areaId');
-		const forumId = getParamSafe(this, 'additionalCommunityPostCreated.forumId');
-		const publishStatus = getParamSafe(this, 'additionalCommunityPostCreated.publishStatus');
-		const userId = getParamSafe(this, 'additionalCommunityPostCreated.userId');
-		set('areaId', areaId, { includeEmpty: true });
-		set('forumId', forumId, { includeEmpty: true });
-		set('publishStatus', publishStatus, { includeEmpty: true });
-		set('userId', userId, { includeEmpty: true });
+	const getStr = (path: string): string => {
+		try {
+			const v = this.getNodeParameter(path) as string | undefined;
+			return (v ?? '').toString().trim();
+		} catch {
+			return '';
+		}
+	};
+
+	const getNum = (path: string, fallback = 0): number => {
+		try {
+			const v = this.getNodeParameter(path) as number | undefined;
+			return Number.isFinite(v as number) ? (v as number) : fallback;
+		} catch {
+			return fallback;
+		}
+	};
+
+	switch (event) {
+		// ---------------- Community
+		case 'communityPost.created': {
+			const col = getCol('additionalCommunityPostCreated');
+			if (col.areaId) filter.areaId = String(col.areaId);
+			if (col.forumId) filter.forumId = String(col.forumId);
+			if (col.publishStatus && col.publishStatus !== 'both') filter.publishStatus = String(col.publishStatus);
+			if (col.userId) filter.userId = String(col.userId);
+			break;
+		}
+		case 'communityPost.moderated': {
+			const col = getCol('additionalCommunityPostModerated');
+			if (col.areaId) filter.areaId = String(col.areaId);
+			if (col.forumId) filter.forumId = String(col.forumId);
+			if (col.approved && col.approved !== 'both') filter.approved = col.approved === 'approved'; // boolean
+			if (col.userId) filter.userId = String(col.userId);
+			break;
+		}
+
+		// ---------------- Login
+		case 'login.new': {
+			const col = getCol('additionalLoginNew');
+			if (col.loginType) filter.loginType = String(col.loginType);
+			if (col.userId) filter.userId = String(col.userId);
+			break;
+		}
+
+		// ---------------- Custom Popup
+		case 'customPopup.interaction': {
+			const col = getCol('additionalPopupInteraction');
+			if (col.customPopupId) filter.customPopupId = String(col.customPopupId); // Key an API angepasst
+			if (col.interactionType) filter.interactionType = String(col.interactionType);
+			// userId nur mitgeben, wenn popup gewählt (wie in Action)
+			if (col.customPopupId && col.userId) filter.userId = String(col.userId);
+			break;
+		}
+
+		// ---------------- Progress
+		case 'courseProgress.changed': {
+			// API: threshold + optional courseInstanceId
+			const aboveRaw = getNum('threshold', 0);
+			filter.above = Math.max(0, Math.floor(aboveRaw)); // 👈 garantiert Integer
+			const col = getCol('additionalCourseProgress');
+			if (col.courseId) filter.courseInstanceId = String(col.courseId);
+			break;
+		}
+
+		// ---------------- Exams & Feedback (optional courseInstanceId)
+		case 'exam.completed':
+		case 'exam.graded':
+		case 'feedback.created': {
+			const col = getCol('additionalFeedbackExam');
+			if (col.courseId) filter.courseInstanceId = String(col.courseId);
+			break;
+		}
+
+		// ---------------- Access Request (required in UI)
+		case 'accessRequest.created': {
+			const courseId = getStr('courseId');
+			if (courseId) filter.courseInstanceId = courseId;
+			break;
+		}
+
+		// ---------------- Group Access
+		case 'group.userAccessChanged': {
+			const col = getCol('additionalGroupAccess');
+			const actionType = getStr('actionType');
+			if (actionType) filter.actionType = actionType; // 'added' | 'removed'
+			if (col.groupId) filter.groupId = String(col.groupId);
+			break;
+		}
+
+		// ---------------- Lesson Completed (kaskadiert)
+		case 'lesson.completed': {
+			const col = getCol('additionalLessonCompleted');
+			if (col.courseId) filter.courseInstanceId = String(col.courseId);
+			if (col.moduleId) filter.moduleId = String(col.moduleId);
+			if (col.lessonId) filter.lessonId = String(col.lessonId);
+			break;
+		}
+
+		// ---------------- Submission (optional course)
+		case 'submission.created': {
+			const col = getCol('additionalSubmission');
+			if (col.courseId) filter.courseInstanceId = String(col.courseId);
+			break;
+		}
+		default:
+			// nichts
+			break;
 	}
 
-	// ---------- Community Post Moderated ----------
-	if (event === 'communityPost.moderated') {
-		const areaId = getParamSafe(this, 'additionalCommunityPostModerated.areaId');
-		const forumId = getParamSafe(this, 'additionalCommunityPostModerated.forumId');
-		const approved = getParamSafe(this, 'additionalCommunityPostModerated.approved');
-		const userId = getParamSafe(this, 'additionalCommunityPostModerated.userId');
-		set('areaId', areaId, { includeEmpty: true });
-		set('forumId', forumId, { includeEmpty: true });
-		set('approved', approved, { includeEmpty: true });
-		set('userId', userId, { includeEmpty: true });
-	}
-
-	// ---------- Group User Access Changed ----------
-	if (event === 'group.userAccessChanged') {
-		const groupId = getParamSafe(this, 'additionalGroupAccess.groupId');
-		const actionType = getParamSafe(this, 'actionType');
-		set('groupId', groupId, { includeEmpty: true });
-		set('actionType', actionType);
-	}
-
-	// ---------- Custom Popup Interaction ----------
-	if (event === 'customPopup.interaction') {
-		const popupId = getParamSafe(this, 'additionalPopupInteraction.customPopupId');
-		const interaction = getParamSafe(this, 'additionalPopupInteraction.interactionType');
-		const userIdOptional = getParamSafe(this, 'additionalPopupInteraction.userId');
-		set('popupId', popupId, { includeEmpty: true });
-		set('interactionType', interaction);
-		// nur mitsenden, wenn popupId gesetzt (wie gewünscht)
-		if (popupId) set('userId', userIdOptional);
-	}
-
-	// ---------- Login New ----------
-	if (event === 'login.new') {
-		const lt = getParamSafe(this, 'loginType'); // Einzel-Option, keine Collection
-		const userId = getParamSafe(this, 'additionalLoginNew.userId');
-		set('loginType', lt, { includeEmpty: true });
-		set('userId', userId);
-	}
-
-	// ---------- Course Progress Changed ----------
-	if (event === 'courseProgress.changed') {
-		// API erwartet "above" (integer)
-		const thresholdRaw = this.getNodeParameter('threshold') as number;
-		const above = Math.max(0, Math.floor(Number.isFinite(thresholdRaw) ? thresholdRaw : 0));
-		set('above', above);
-
-		// Optionaler Course-Filter aus Collection
-		const courseId = getParamSafe(this, 'additionalCourseProgress.courseId');
-		set('courseId', courseId);
-	}
-
-	// ---------- Exams ----------
-	if (event === 'exam.completed' || event === 'exam.graded') {
-		const courseId = getParamSafe(this, 'additionalFeedbackExam.courseId');
-		set('courseId', courseId, { includeEmpty: true });
-	}
-	// ---------- Feedback (optional course) ----------
-	if (event === 'feedback.created') {
-		const courseId = getParamSafe(this, 'additionalFeedbackExam.courseId');
-		set('courseId', courseId, { includeEmpty: true });
-	}
-
-	// ---------- New Access Request Course Created ----------
-	if (event === 'accessRequest.created') {
-		const courseId = getParamSafe(this, 'courseId');
-		set('courseId', courseId);
-	}
-
-	// ---------- Lesson Completed (kaskadierend, alle optional) ----------
-	if (event === 'lesson.completed') {
-		const courseId = getParamSafe(this, 'additionalLessonCompleted.courseId');
-		const moduleId = getParamSafe(this, 'additionalLessonCompleted.moduleId');
-		const lessonId = getParamSafe(this, 'additionalLessonCompleted.lessonId');
-		set('courseId', courseId, { includeEmpty: true });
-		set('moduleId', moduleId, { includeEmpty: true });
-		set('lessonId', lessonId, { includeEmpty: true });
-	}
-
-	// ---------- Submission Created (optional course) ----------
-	if (event === 'submission.created') {
-		const courseId = getParamSafe(this, 'additionalSubmission.courseId');
-		set('courseId', courseId, { includeEmpty: true });
-	}
-
-	return { filter, hasFilter };
+	// API erwartet IMMER ein filter-Objekt → auch wenn leer
+	return { filter, hasFilter: true };
 }
 
 export class LearningSuiteTrigger implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'LearningSuite Trigger',
 		name: 'learningSuiteTrigger',
-		icon: 'file:icon.svg',
-		/*icon: 'fa:graduation-cap',*/
+		icon: {
+			light: 'file:icon-light.svg',
+			dark: 'file:icon-dark.svg',
+		},
 		group: ['trigger'],
 		version: 1,
 		// WICHTIG: KEIN polling:true -> sonst zeigt n8n immer das Polling-Panel
@@ -220,8 +220,10 @@ export class LearningSuiteTrigger implements INodeType {
 
 	webhookMethods = {
 		default: {
+			// innerhalb von: webhookMethods = { default: { ... } }
+
 			async checkExists(this: IHookFunctions): Promise<boolean> {
-				const event = this.getNodeParameter('event', 0) as string;
+				const event = this.getNodeParameter('event') as string;
 				if (!INSTANT_EVENTS.has(event)) return true;
 
 				const webhookData = this.getWorkflowStaticData('node');
@@ -229,7 +231,11 @@ export class LearningSuiteTrigger implements INodeType {
 				if (!storedId) return false;
 
 				const desiredHookUrl = this.getNodeWebhookUrl('default') as string;
-				const { filter: desiredFilter, hasFilter } = buildDesiredFilter.call(this, event);
+
+				// baue gewünschten Filter (API-konforme Keys) und sorge für Objekt-Fallback
+				const { filter: desiredFilterRaw } = buildDesiredFilter.call(this, event);
+				const desiredFilter =
+					desiredFilterRaw && typeof desiredFilterRaw === 'object' ? (desiredFilterRaw as IDataObject) : {};
 
 				try {
 					const remote = await apiRequest.call(this, {
@@ -237,25 +243,31 @@ export class LearningSuiteTrigger implements INodeType {
 						path: `/webhooks/subscription/${encodeURIComponent(storedId)}`,
 					});
 
-					const remoteType = (remote as any)?.type;
-					const remoteUrl = (remote as any)?.url;
+					const remoteType = (remote as any)?.type as string | undefined;
+					const remoteUrl = (remote as any)?.url as string | undefined;
 					const remoteFilter = ((remote as any)?.filter ?? {}) as IDataObject;
 
 					const typeDiffers = remoteType !== event;
 					const urlDiffers = remoteUrl !== desiredHookUrl;
 
+					// flaches Filter-Diff (Satz der Keys vereinigen und vergleichen)
 					let filterDiffers = false;
-					const keys = new Set([...Object.keys(remoteFilter || {}), ...Object.keys(desiredFilter || {})]);
+					const keys = new Set<string>([...Object.keys(remoteFilter || {}), ...Object.keys(desiredFilter || {})]);
 					for (const k of keys) {
-						if ((remoteFilter as any)?.[k] !== (desiredFilter as any)?.[k]) {
+						const a = (remoteFilter as any)?.[k];
+						const b = (desiredFilter as any)?.[k];
+						if (a !== b) {
 							filterDiffers = true;
 							break;
 						}
 					}
 
 					if (typeDiffers || urlDiffers || filterDiffers) {
-						const body: IDataObject = { hookUrl: desiredHookUrl, type: event };
-						if (hasFilter) body.filter = desiredFilter;
+						const body: IDataObject = {
+							hookUrl: desiredHookUrl,
+							type: event,
+							filter: desiredFilter, // ✅ immer mitschicken (auch {})
+						};
 
 						await apiRequest.call(this, {
 							method: 'PUT',
@@ -266,10 +278,12 @@ export class LearningSuiteTrigger implements INodeType {
 
 					return true;
 				} catch (error: any) {
+					// Subscription existiert nicht mehr → neu erstellen erlauben
 					if (error?.statusCode === 404 || error?.response?.statusCode === 404) {
 						delete webhookData.subscriptionId;
 						return false;
 					}
+					// andere Fehler hochreichen
 					throw new NodeApiError(this.getNode(), error as JsonObject, {
 						message: 'Failed to verify/update existing webhook subscription',
 					});
@@ -277,14 +291,20 @@ export class LearningSuiteTrigger implements INodeType {
 			},
 
 			async create(this: IHookFunctions): Promise<boolean> {
-				const event = this.getNodeParameter('event', 0) as string;
+				const event = this.getNodeParameter('event') as string;
 				if (!INSTANT_EVENTS.has(event)) return true;
 
 				const webhookUrl = this.getNodeWebhookUrl('default') as string;
-				const body: IDataObject = { hookUrl: webhookUrl, type: event };
 
-				const { filter, hasFilter } = buildDesiredFilter.call(this, event);
-				if (hasFilter) body.filter = filter;
+				// gewünschten Filter bauen und als Objekt sicherstellen
+				const { filter: rawFilter } = buildDesiredFilter.call(this, event);
+				const filter = rawFilter && typeof rawFilter === 'object' ? (rawFilter as IDataObject) : {};
+
+				const body: IDataObject = {
+					hookUrl: webhookUrl,
+					type: event,
+					filter, // ✅ immer mitschicken (auch {})
+				};
 
 				try {
 					const response = await apiRequest.call(this, {
@@ -292,8 +312,10 @@ export class LearningSuiteTrigger implements INodeType {
 						path: '/webhooks/subscription',
 						body,
 					});
+
 					const webhookData = this.getWorkflowStaticData('node');
 					webhookData.subscriptionId = (response as any)?.id;
+
 					return true;
 				} catch (error) {
 					throw new NodeApiError(this.getNode(), error as JsonObject, {
@@ -303,7 +325,7 @@ export class LearningSuiteTrigger implements INodeType {
 			},
 
 			async delete(this: IHookFunctions): Promise<boolean> {
-				const event = this.getNodeParameter('event', 0) as string;
+				const event = this.getNodeParameter('event') as string;
 				if (!INSTANT_EVENTS.has(event)) return true;
 
 				const webhookData = this.getWorkflowStaticData('node');

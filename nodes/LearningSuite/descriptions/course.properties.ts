@@ -115,25 +115,6 @@ export const courseProperties: INodeProperties[] = [
 		default: '',
 		required: true,
 	},
-	/*{
-		displayName: 'Section Name or ID',
-		name: 'sectionId',
-		type: 'options',
-		description:
-			'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
-		typeOptions: {
-			loadOptionsMethod: 'course_getSectionsInCourse',
-			loadOptionsDependsOn: ['courseId'],
-		},
-		displayOptions: {
-			show: {
-				resource: ['course'],
-				operation: ['createUnlockOverride', 'createLesson'],
-			},
-		},
-		default: '',
-		required: true,
-	},*/
 	{
 		displayName: 'Member Name or ID',
 		name: 'memberId',
@@ -184,7 +165,7 @@ export const courseProperties: INodeProperties[] = [
 		default: '',
 		displayOptions: { show: { resource: ['course'], operation: ['createLesson'] } },
 	},
-	
+
 	{
 		displayName: 'Additional Options',
 		name: 'additionalOptions',

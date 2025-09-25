@@ -112,8 +112,10 @@ export class LearningSuitePollingTrigger implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'LearningSuite Polling Trigger',
 		name: 'learningSuitePollingTrigger',
-		icon: 'file:icon.svg',
-		/*icon: 'fa:graduation-cap',*/
+		icon: {
+			light: 'file:../LearningSuite/icon-light.svg',
+			dark: 'file:../LearningSuite/icon-dark.svg',
+		},
 		group: ['trigger', 'schedule'],
 		version: 1,
 		polling: true,

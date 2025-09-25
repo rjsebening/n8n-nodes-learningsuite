@@ -23,6 +23,12 @@ export const properties: INodeProperties[] = [
 			},
 			{ name: 'Group Created', value: 'group.created', description: 'Triggers when a new group has been created' },
 			{
+				name: 'Member Not Logged In for More Than X Days',
+				value: 'member.inactiveForXDays',
+				description:
+					'Triggers when a member has not logged in to the platform for more than the specified amount of days',
+			},
+			{
 				name: 'New Community Area',
 				value: 'community.area.created',
 				description: 'Triggers when a new community area is created',
@@ -41,11 +47,6 @@ export const properties: INodeProperties[] = [
 				name: 'New Member Created',
 				value: 'member.created',
 				description: 'Triggers when a new member has been added to the platform',
-			},
-			{
-				name: 'Member Not Logged In for More Than X Days',
-				value: 'member.inactiveForXDays',
-				description: 'Triggers when a member has not logged in to the platform for more than the specified amount of days',
 			},
 		],
 	},
