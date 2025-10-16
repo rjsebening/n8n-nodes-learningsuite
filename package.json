@@ -1,5 +1,5 @@
 {
-	"name": "@rjsebening/n8n-nodes-learningsuite",
+	"name": "n8n-nodes-learningsuite",
 	"version": "0.1.5",
 	"description": "n8n node for LearningSuite API",
 	"keywords": [
