@@ -1,5 +1,5 @@
 {
-	"name": "n8n-nodes-learningsuite",
+	"name": "@rjsebening/n8n-nodes-learningsuite",
 	"version": "0.1.5",
 	"description": "n8n node for LearningSuite API",
 	"keywords": [
@@ -58,5 +58,8 @@
 	},
 	"peerDependencies": {
 		"n8n-workflow": "*"
+	},
+	"publishConfig": {
+		"access": "public"
 	}
 }
