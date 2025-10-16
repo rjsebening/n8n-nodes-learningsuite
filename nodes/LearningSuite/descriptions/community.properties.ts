@@ -16,6 +16,12 @@ export const communityProperties: INodeProperties[] = [
 				action: 'Assign badges to member',
 			},
 			{
+				name: 'Create Community Post Comment',
+				value: 'commentOnPost',
+				description: 'Comment on a community post or reply to an existing comment',
+				action: 'Add comment to post',
+			},
+			{
 				name: 'Get Community Areas',
 				value: 'getAreas',
 				description: 'List community areas',
@@ -51,28 +57,6 @@ export const communityProperties: INodeProperties[] = [
 		description:
 			'ID of the community area to filter forums. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 	},
-	{
-		displayName: 'Limit',
-		name: 'limit',
-		type: 'number',
-		description: 'Max number of results to return',
-		displayOptions: {
-			show: { resource: ['community', 'popup', 'member'], operation: ['getAreas', 'getForums', 'getAll'] },
-		},
-		typeOptions: { minValue: 1 },
-		default: 50,
-	},
-	{
-		displayName: 'Offset',
-		name: 'offset',
-		type: 'number',
-		displayOptions: {
-			show: { resource: ['community', 'popup', 'member'], operation: ['getAreas', 'getForums', 'getAll'] },
-		},
-		typeOptions: { minValue: 0 },
-		default: 0,
-		description: 'Number of results to skip for pagination',
-	},
 	// Optional filter for badges (for listing + for LoadOptions when assigning/removing)
 	{
 		displayName: 'Badge Group ID',
@@ -87,34 +71,6 @@ export const communityProperties: INodeProperties[] = [
 		default: '',
 		description: 'If set, only badges from this badge group will be used/displayed',
 	},
-
-	// Paging for GET /community/badges (you can extend your existing limit/offset props or add them)
-	{
-		displayName: 'Limit',
-		name: 'limit',
-		type: 'number',
-		displayOptions: {
-			show: {
-				resource: ['community'],
-				operation: ['getBadges'],
-			},
-		},
-		typeOptions: { minValue: 1 },
-		default: 50, // according to the API default
-		description: 'Max number of results to return',
-	},
-	{
-		displayName: 'Offset',
-		name: 'offset',
-		type: 'number',
-		displayOptions: {
-			show: { resource: ['community'], operation: ['getBadges'] },
-		},
-		typeOptions: { minValue: 0 },
-		default: 0, // according to the API default
-		description: 'Number of badges to skip (pagination)',
-	},
-
 	// Member selection for assign/remove
 	{
 		displayName: 'Member Name or ID',
@@ -159,5 +115,98 @@ export const communityProperties: INodeProperties[] = [
 		default: '',
 		description:
 			'You can select multiple badges. The badge selector can optionally be filtered by <b>Badge Group ID</b>.',
+	},
+	{
+		displayName: 'Community Post ID',
+		name: 'postId',
+		type: 'string',
+		displayOptions: { show: { resource: ['community'], operation: ['commentOnPost'] } },
+		default: '',
+		required: true,
+		description: 'The community post to comment on',
+	},
+	{
+		displayName: 'Author (Member) Name or ID',
+		name: 'authorUserId',
+		type: 'options',
+		typeOptions: { loadOptionsMethod: 'member_getMembers' },
+		displayOptions: { show: { resource: ['community'], operation: ['commentOnPost'] } },
+		default: '',
+		required: true,
+		description:
+			'Select the member who writes the comment (author). Choose from the list, or specify an ID using an expression. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+	},
+	{
+		displayName: 'Comment Text',
+		name: 'commentText',
+		type: 'string',
+		typeOptions: { rows: 4 },
+		displayOptions: { show: { resource: ['community'], operation: ['commentOnPost'] } },
+		default: '',
+		required: true,
+		description: 'Text of your comment to be added to the post',
+	},
+	{
+		displayName: 'Answer to Comment ID',
+		name: 'answerToCommentId',
+		type: 'string',
+		displayOptions: { show: { resource: ['community'], operation: ['commentOnPost'] } },
+		default: '',
+		description: 'If set, this comment will be posted as a reply to another comment',
+	},
+	{
+		displayName: 'Enable Webhook Triggering',
+		name: 'enableWebhookTriggering',
+		type: 'boolean',
+		displayOptions: { show: { resource: ['community'], operation: ['commentOnPost'] } },
+		default: false,
+		description: 'Whether to trigger webhooks when posting this comment',
+	},
+	{
+		displayName: 'Limit',
+		name: 'limit',
+		type: 'number',
+		description: 'Max number of results to return',
+		displayOptions: {
+			show: { resource: ['community', 'popup', 'member'], operation: ['getAreas', 'getForums', 'getAll'] },
+		},
+		typeOptions: { minValue: 1 },
+		default: 50,
+	},
+	{
+		displayName: 'Offset',
+		name: 'offset',
+		type: 'number',
+		displayOptions: {
+			show: { resource: ['community', 'popup', 'member'], operation: ['getAreas', 'getForums', 'getAll'] },
+		},
+		typeOptions: { minValue: 0 },
+		default: 0,
+		description: 'Number of results to skip for pagination',
+	},
+	{
+		displayName: 'Limit',
+		name: 'limit',
+		type: 'number',
+		displayOptions: {
+			show: {
+				resource: ['community'],
+				operation: ['getBadges'],
+			},
+		},
+		typeOptions: { minValue: 1 },
+		default: 50,
+		description: 'Max number of results to return',
+	},
+	{
+		displayName: 'Offset',
+		name: 'offset',
+		type: 'number',
+		displayOptions: {
+			show: { resource: ['community'], operation: ['getBadges'] },
+		},
+		typeOptions: { minValue: 0 },
+		default: 0,
+		description: 'Number of badges to skip (pagination)',
 	},
 ];

@@ -14,7 +14,6 @@ import { apiRequest } from './shared/request';
 import { instantProperties as instantProperties } from './descriptions/trigger.instant.properties';
 import { methods as credentialMethods } from './methods/credentialTest';
 
-// LoadOptions gezielt binden
 import * as loMember from './methods/loadOptions/member.loadOptions';
 import * as loCourse from './methods/loadOptions/course.loadOptions';
 import * as loCommunity from './methods/loadOptions/community.loadOptions';
@@ -22,10 +21,10 @@ import * as loGroup from './methods/loadOptions/group.loadOptions';
 import * as loModule from './methods/loadOptions/module.loadOptions';
 import * as loPopup from './methods/loadOptions/popup.loadOptions';
 
-/** Alle Instant-Events (nur Webhooks) */
 const INSTANT_EVENTS = new Set<string>([
 	'accessRequest.created',
 	'communityPost.created',
+	'communityPost.commented',
 	'communityPost.moderated',
 	'courseProgress.changed',
 	'customPopup.interaction',
@@ -38,10 +37,6 @@ const INSTANT_EVENTS = new Set<string>([
 	'submission.created',
 ]);
 
-/**
- * Baut den gewünschten Filter für Webhook-Subscriptions anhand der UI-Parameter.
- * Achtung: liest NUR noch aus den neuen "Additional"-Collections.
- */
 function buildDesiredFilter(this: IHookFunctions, event: string): { filter: IDataObject; hasFilter: boolean } {
 	const filter: IDataObject = {};
 
@@ -79,6 +74,13 @@ function buildDesiredFilter(this: IHookFunctions, event: string): { filter: IDat
 			if (col.areaId) filter.areaId = String(col.areaId);
 			if (col.forumId) filter.forumId = String(col.forumId);
 			if (col.publishStatus && col.publishStatus !== 'both') filter.publishStatus = String(col.publishStatus);
+			if (col.userId) filter.userId = String(col.userId);
+			break;
+		}
+		case 'communityPost.commented': {
+			const col = getCol('additionalCommunityPostCommented');
+			if (col.areaId) filter.areaId = String(col.areaId);
+			if (col.forumId) filter.forumId = String(col.forumId);
 			if (col.userId) filter.userId = String(col.userId);
 			break;
 		}
@@ -163,8 +165,6 @@ function buildDesiredFilter(this: IHookFunctions, event: string): { filter: IDat
 			// nichts
 			break;
 	}
-
-	// API erwartet IMMER ein filter-Objekt → auch wenn leer
 	return { filter, hasFilter: true };
 }
 
@@ -178,7 +178,6 @@ export class LearningSuiteTrigger implements INodeType {
 		},
 		group: ['trigger'],
 		version: 1,
-		// WICHTIG: KEIN polling:true -> sonst zeigt n8n immer das Polling-Panel
 		description: 'Interact with LearningSuite API (powered by agentur-systeme.de)',
 		subtitle: '={{$parameter["event"]}}',
 		defaults: {
@@ -208,20 +207,16 @@ export class LearningSuiteTrigger implements INodeType {
 			community_getAreas: loCommunity.community_getAreas,
 			community_getForums: loCommunity.community_getForums,
 			group_getGroups: loGroup.group_getGroups,
-			course_getModules: loCourse.course_getModules, // <— wichtig
+			course_getModules: loCourse.course_getModules,
 			module_getModules: loModule.module_getModules,
-			module_getLessons: loModule.module_getLessons, // <— wichtig
+			module_getLessons: loModule.module_getLessons,
 			module_getSections: loModule.module_getSections,
-			// @ts-ignore
-			module_getLessons: (loModule as any).module_getLessons,
 			popup_getPopups: loPopup.popup_getPopups,
 		},
 	};
 
 	webhookMethods = {
 		default: {
-			// innerhalb von: webhookMethods = { default: { ... } }
-
 			async checkExists(this: IHookFunctions): Promise<boolean> {
 				const event = this.getNodeParameter('event') as string;
 				if (!INSTANT_EVENTS.has(event)) return true;
@@ -232,7 +227,6 @@ export class LearningSuiteTrigger implements INodeType {
 
 				const desiredHookUrl = this.getNodeWebhookUrl('default') as string;
 
-				// baue gewünschten Filter (API-konforme Keys) und sorge für Objekt-Fallback
 				const { filter: desiredFilterRaw } = buildDesiredFilter.call(this, event);
 				const desiredFilter =
 					desiredFilterRaw && typeof desiredFilterRaw === 'object' ? (desiredFilterRaw as IDataObject) : {};
@@ -250,7 +244,6 @@ export class LearningSuiteTrigger implements INodeType {
 					const typeDiffers = remoteType !== event;
 					const urlDiffers = remoteUrl !== desiredHookUrl;
 
-					// flaches Filter-Diff (Satz der Keys vereinigen und vergleichen)
 					let filterDiffers = false;
 					const keys = new Set<string>([...Object.keys(remoteFilter || {}), ...Object.keys(desiredFilter || {})]);
 					for (const k of keys) {
@@ -266,7 +259,7 @@ export class LearningSuiteTrigger implements INodeType {
 						const body: IDataObject = {
 							hookUrl: desiredHookUrl,
 							type: event,
-							filter: desiredFilter, // ✅ immer mitschicken (auch {})
+							filter: desiredFilter,
 						};
 
 						await apiRequest.call(this, {
@@ -278,12 +271,10 @@ export class LearningSuiteTrigger implements INodeType {
 
 					return true;
 				} catch (error: any) {
-					// Subscription existiert nicht mehr → neu erstellen erlauben
 					if (error?.statusCode === 404 || error?.response?.statusCode === 404) {
 						delete webhookData.subscriptionId;
 						return false;
 					}
-					// andere Fehler hochreichen
 					throw new NodeApiError(this.getNode(), error as JsonObject, {
 						message: 'Failed to verify/update existing webhook subscription',
 					});
@@ -295,15 +286,13 @@ export class LearningSuiteTrigger implements INodeType {
 				if (!INSTANT_EVENTS.has(event)) return true;
 
 				const webhookUrl = this.getNodeWebhookUrl('default') as string;
-
-				// gewünschten Filter bauen und als Objekt sicherstellen
 				const { filter: rawFilter } = buildDesiredFilter.call(this, event);
 				const filter = rawFilter && typeof rawFilter === 'object' ? (rawFilter as IDataObject) : {};
 
 				const body: IDataObject = {
 					hookUrl: webhookUrl,
 					type: event,
-					filter, // ✅ immer mitschicken (auch {})
+					filter,
 				};
 
 				try {

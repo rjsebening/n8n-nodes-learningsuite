@@ -51,10 +51,43 @@ const removeBadgesFromUser: ExecuteHandler = async (ctx, i) => {
 	return await lsRequest.call(ctx, 'DELETE', '/community/badges/user', { body });
 };
 
+const commentOnPost: ExecuteHandler = async (ctx, i) => {
+	const postId = ctx.getNodeParameter('postId', i) as string;
+	const authorUserId = ctx.getNodeParameter('authorUserId', i) as string;
+	const commentText = ctx.getNodeParameter('commentText', i) as string;
+	const answerToCommentId = ctx.getNodeParameter('answerToCommentId', i, '') as string;
+	const enableWebhookTriggering = ctx.getNodeParameter('enableWebhookTriggering', i, false) as boolean;
+
+	// Pflichtfelder prüfen
+	if (!postId) {
+		throw new NodeOperationError(ctx.getNode(), 'Bitte eine Post-ID angeben.');
+	}
+	if (!authorUserId) {
+		throw new NodeOperationError(ctx.getNode(), 'Bitte eine Author-User-ID angeben.');
+	}
+	if (!commentText) {
+		throw new NodeOperationError(ctx.getNode(), 'Kommentartext darf nicht leer sein.');
+	}
+
+	// Request Body
+	const body: IDataObject = {
+		authorUserId,
+		commentText,
+	};
+
+	// optionale Felder nur hinzufügen, wenn gesetzt
+	if (answerToCommentId) body.answerToCommentId = answerToCommentId;
+	if (enableWebhookTriggering) body.enableWebhookTriggering = enableWebhookTriggering;
+
+	// Request ausführen
+	return await lsRequest.call(ctx, 'POST', `/community/posts/${postId}/comments`, { body });
+};
+
 export const communityHandlers = {
 	getAreas,
 	getForums,
 	getBadges,
 	assignBadgesToUser,
 	removeBadgesFromUser,
+	commentOnPost,
 };

@@ -73,31 +73,14 @@ export const moduleProperties: INodeProperties[] = [
 		name: 'newModuleAccess',
 		type: 'options',
 		options: [
+			{ name: 'After Previous', value: 'after_previous' },
+			{ name: 'Hidden', value: 'hidden' },
+			{ name: 'Locked', value: 'locked' },
 			{ name: 'On Demand', value: 'on_demand' },
 			{ name: 'Published', value: 'published' },
-			{ name: 'Hidden', value: 'hidden' },
 		],
 		displayOptions: { show: { resource: ['module'], operation: ['createUnlockOverride'] } },
 		default: 'on_demand',
 		description: 'New access mode for the module (e.g., "on_demand")',
-	},
-	{
-		displayName: 'Additional Options',
-		name: 'additionalOptions',
-		type: 'collection',
-		placeholder: 'Add Option',
-		default: {},
-		displayOptions: { show: { resource: ['module'], operation: ['createUnlockOverride'] } },
-		options: [
-			{
-				displayName: 'Course Instance Name or ID',
-				name: 'courseInstanceId',
-				type: 'options',
-				typeOptions: { loadOptionsMethod: 'course_getCourses' },
-				default: '',
-				description:
-					'Optional: If specified, access applies to the entire course. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
-			},
-		],
 	},
 ];

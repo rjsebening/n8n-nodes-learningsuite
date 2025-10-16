@@ -10,6 +10,11 @@ export const instantProperties: INodeProperties[] = [
 		description: 'Select the LearningSuite instant (webhook) event',
 		options: [
 			{
+				name: 'Community Post Commented',
+				value: 'communityPost.commented',
+				description: 'Triggers when a community post was commented',
+			},
+			{
 				name: 'Community Post Created',
 				value: 'communityPost.created',
 				description: 'Triggers when a new community post is created',
@@ -218,6 +223,49 @@ export const instantProperties: INodeProperties[] = [
 					{ name: 'Waiting for Moderation', value: 'waiting for moderation' },
 				],
 				default: 'both',
+			},
+			{
+				displayName: 'User Name or ID',
+				name: 'userId',
+				type: 'options',
+				typeOptions: { loadOptionsMethod: 'member_getMembers' },
+				default: '',
+				description:
+					'Optional user filter. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+			},
+		],
+	},
+
+	// Community Post Commented
+	{
+		displayName: 'Community Post (Commented) Options',
+		name: 'additionalCommunityPostCommented',
+		type: 'collection',
+		default: {},
+		placeholder: 'Add option',
+		displayOptions: { show: { event: ['communityPost.commented'] } },
+		options: [
+			{
+				displayName: 'Area Name or ID',
+				name: 'areaId',
+				type: 'options',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				typeOptions: { loadOptionsMethod: 'community_getAreas' },
+				default: '',
+				placeholder: 'Add option',
+			},
+			{
+				displayName: 'Forum Name or ID',
+				name: 'forumId',
+				type: 'options',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				typeOptions: {
+					loadOptionsMethod: 'community_getForums',
+					loadOptionsDependsOn: ['additionalCommunityPostCreated.areaId'],
+				},
+				default: '',
 			},
 			{
 				displayName: 'User Name or ID',

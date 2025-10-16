@@ -82,6 +82,7 @@ export const webhookProperties: INodeProperties[] = [
 		displayOptions: { show: { resource: ['webhook'], operation: ['createSubscription', 'updateSubscription'] } },
 		options: [
 			{ name: 'Access Request Created', value: 'accessRequest.created' },
+			{ name: 'Community Post Commented', value: 'communityPost.commented' },
 			{ name: 'Community Post Created', value: 'communityPost.created' },
 			{ name: 'Community Post Moderated', value: 'communityPost.moderated' },
 			{ name: 'Course Progress Changed', value: 'courseProgress.changed' },
@@ -106,6 +107,7 @@ export const webhookProperties: INodeProperties[] = [
 		displayOptions: { show: { resource: ['webhook'], operation: ['getSampleData'] } },
 		options: [
 			{ name: 'Access Request Created Events', value: 'access-request-created-events' },
+			{ name: 'Community Post Commented', value: 'community-post-commented-events' },
 			{ name: 'Community Post Created Events', value: 'community-post-created-events' },
 			{ name: 'Community Post Moderated Events', value: 'community-post-moderated-events' },
 			{ name: 'Course Progress Changed Events', value: 'course-progress-changed-events' },
@@ -121,8 +123,6 @@ export const webhookProperties: INodeProperties[] = [
 		required: true,
 		description: 'Type of sample data to retrieve',
 	},
-
-	// ================== Event-spezifische Optionen (spiegeln Trigger) ==================
 
 	// Login Options
 	{
@@ -305,6 +305,55 @@ export const webhookProperties: INodeProperties[] = [
 					{ name: 'Waiting for Moderation', value: 'waiting for moderation' },
 				],
 				default: 'both',
+			},
+			{
+				displayName: 'User Name or ID',
+				name: 'userId',
+				type: 'options',
+				typeOptions: { loadOptionsMethod: 'member_getMembers' },
+				default: '',
+				description:
+					'Optional user filter. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+			},
+		],
+	},
+
+	// Community Post Commented
+	{
+		displayName: 'Community Post (Commented) Options',
+		name: 'additionalCommunityPostCommented',
+		type: 'collection',
+		default: {},
+		placeholder: 'Add option',
+		displayOptions: {
+			show: {
+				resource: ['webhook'],
+				operation: ['createSubscription', 'updateSubscription'],
+				eventType: ['communityPost.commented'],
+			},
+		},
+		options: [
+			{
+				displayName: 'Area Name or ID',
+				name: 'areaId',
+				type: 'options',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				typeOptions: { loadOptionsMethod: 'community_getAreas' },
+				default: '',
+				placeholder: 'Add option',
+			},
+			{
+				displayName: 'Forum Name or ID',
+				name: 'forumId',
+				type: 'options',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				typeOptions: {
+					loadOptionsMethod: 'community_getForums',
+					loadOptionsDependsOn: ['additionalCommunityPostCreated.areaId'],
+				},
+				default: '',
 			},
 			{
 				displayName: 'User Name or ID',
