@@ -16,6 +16,7 @@ import * as loModule from './methods/loadOptions/module.loadOptions';
 import * as loPopup from './methods/loadOptions/popup.loadOptions';
 import * as loRole from './methods/loadOptions/role.loadOptions';
 import * as loWebhook from './methods/loadOptions/webhook.loadOptions';
+import * as loTeamMember from './methods/loadOptions/teamMember.loadOptions';
 
 // properties
 import { resourceSelector } from './descriptions/resource.selector';
@@ -29,6 +30,7 @@ import { memberProperties } from './descriptions/member.properties';
 import { moduleProperties } from './descriptions/module.properties';
 import { popupProperties } from './descriptions/popup.properties';
 import { roleProperties } from './descriptions/role.properties';
+import { teamMemberProperties } from './descriptions/teamMember.properties';
 import { webhookProperties } from './descriptions/webhook.properties';
 
 // handlers
@@ -42,6 +44,7 @@ import { memberHandlers } from './execute/member.handlers';
 import { moduleHandlers } from './execute/module.handlers';
 import { popupHandlers } from './execute/popup.handlers';
 import { roleHandlers } from './execute/role.handlers';
+import { teamMemberHandlers } from './execute/teamMember.handlers';
 import { webhookHandlers } from './execute/webhook.handlers';
 
 const registry: HandlersRegistry = {
@@ -55,6 +58,7 @@ const registry: HandlersRegistry = {
 	module: { ...moduleHandlers },
 	popup: { ...popupHandlers },
 	role: { ...roleHandlers },
+	teamMember: { ...teamMemberHandlers },
 	webhook: { ...webhookHandlers },
 };
 
@@ -63,8 +67,8 @@ export class LearningSuite implements INodeType {
 		displayName: 'LearningSuite',
 		name: 'learningSuite',
 		icon: {
-			light: 'file:icon-light.svg',
-			dark: 'file:icon-dark.svg',
+			light: 'file:./icons/icon-light.svg',
+			dark: 'file:./icons/icon-dark.svg',
 		},
 		group: ['transform'],
 		version: 1,
@@ -102,6 +106,7 @@ export class LearningSuite implements INodeType {
 			...moduleProperties,
 			...popupProperties,
 			...roleProperties,
+			...teamMemberProperties,
 			...webhookProperties,
 		],
 	};
@@ -109,7 +114,6 @@ export class LearningSuite implements INodeType {
 	methods = {
 		...credentialMethods,
 		loadOptions: {
-			// Helpers optional exponieren (müssen nicht)
 			...loBundle,
 			...loCommunity,
 			...loCourse,
@@ -119,6 +123,7 @@ export class LearningSuite implements INodeType {
 			...loModule,
 			...loPopup,
 			...loRole,
+			...loTeamMember,
 			...loWebhook,
 		},
 	};
@@ -149,7 +154,6 @@ export class LearningSuite implements INodeType {
 					returnData.push({ error: (error as Error).message, input: items[i].json as IDataObject });
 					continue;
 				}
-				// Wenn es kein n8n-Error ist, in NodeOperationError hüllen:
 				if (!(error instanceof Error) || !('name' in error) || String((error as any).name).indexOf('Node') !== 0) {
 					throw new NodeOperationError(this.getNode(), (error as Error).message || 'Unknown error');
 				}

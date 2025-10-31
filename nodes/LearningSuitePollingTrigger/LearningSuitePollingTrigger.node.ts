@@ -21,6 +21,8 @@ const POLLING_EVENTS = new Set<string>([
 	'community.forum.created',
 	'member.created',
 	'member.inactiveForXDays',
+	'teamMember.created',
+	'teamMember.updated',
 ]);
 
 async function fetchInactiveMembers(
@@ -76,11 +78,14 @@ async function pollFetchCreatedSince(
 		createdKey = 'createdAt',
 		updatedKey = 'updatedAt',
 		extract = (r: any) => (Array.isArray(r) ? r : Array.isArray(r?.items) ? r.items : r),
+
+		compareOn = 'createdAt', // 'createdAt' | 'updatedAt'
 	}: {
 		limit?: number;
 		createdKey?: string;
 		updatedKey?: string;
 		extract?: (r: any) => any[];
+		compareOn?: 'createdAt' | 'updatedAt';
 	} = {},
 ): Promise<IDataObject[]> {
 	let offset = 0;
@@ -94,7 +99,9 @@ async function pollFetchCreatedSince(
 		if (!rows?.length) break;
 
 		for (const row of rows) {
-			const ts = row?.[createdKey] ?? row?.[updatedKey];
+			const ts =
+				compareOn === 'createdAt' ? (row?.[createdKey] ?? row?.[updatedKey]) : (row?.[updatedKey] ?? row?.[createdKey]);
+
 			if (!ts) {
 				out.push(row as IDataObject);
 				continue;
@@ -113,8 +120,8 @@ export class LearningSuitePollingTrigger implements INodeType {
 		displayName: 'LearningSuite Polling Trigger',
 		name: 'learningSuitePollingTrigger',
 		icon: {
-			light: 'file:../LearningSuite/icon-light.svg',
-			dark: 'file:../LearningSuite/icon-dark.svg',
+			light: 'file:../LearningSuite/icons/icon-light.svg',
+			dark: 'file:../LearningSuite/icons/icon-dark.svg',
 		},
 		group: ['trigger', 'schedule'],
 		version: 1,
@@ -167,7 +174,6 @@ export class LearningSuitePollingTrigger implements INodeType {
 				break;
 			case 'community.forum.created': {
 				const areaId = (this.getNodeParameter('additionalOptionsForum.areaId', '') as string).trim();
-				// Optionaler Filter clientseitig – falls API keinen QS-Filter hat
 				const all = await pollFetchCreatedSince(this, '/community/forums', lastIso);
 				items = areaId ? (all as any[]).filter((f) => String(f?.areaId ?? '') === areaId) : all;
 				break;
@@ -205,6 +211,22 @@ export class LearningSuitePollingTrigger implements INodeType {
 				items = fresh;
 				break;
 			}
+
+			case 'teamMember.created':
+				items = await pollFetchCreatedSince(this, '/team-members', lastIso, {
+					createdKey: 'createdAt',
+					updatedKey: 'updatedAt',
+					compareOn: 'createdAt',
+				});
+				break;
+
+			case 'teamMember.updated':
+				items = await pollFetchCreatedSince(this, '/team-members', lastIso, {
+					createdKey: 'createdAt',
+					updatedKey: 'updatedAt',
+					compareOn: 'updatedAt',
+				});
+				break;
 
 			default:
 				items = [];

@@ -13,6 +13,7 @@ import {
 import { apiRequest } from './shared/request';
 import { instantProperties as instantProperties } from './descriptions/trigger.instant.properties';
 import { methods as credentialMethods } from './methods/credentialTest';
+import { toIdArray } from './shared/parsing';
 
 import * as loMember from './methods/loadOptions/member.loadOptions';
 import * as loCourse from './methods/loadOptions/course.loadOptions';
@@ -20,6 +21,7 @@ import * as loCommunity from './methods/loadOptions/community.loadOptions';
 import * as loGroup from './methods/loadOptions/group.loadOptions';
 import * as loModule from './methods/loadOptions/module.loadOptions';
 import * as loPopup from './methods/loadOptions/popup.loadOptions';
+import * as loRole from './methods/loadOptions/role.loadOptions';
 
 const INSTANT_EVENTS = new Set<string>([
 	'accessRequest.created',
@@ -69,45 +71,64 @@ function buildDesiredFilter(this: IHookFunctions, event: string): { filter: IDat
 
 	switch (event) {
 		// ---------------- Community
-		case 'communityPost.created': {
-			const col = getCol('additionalCommunityPostCreated');
-			if (col.areaId) filter.areaId = String(col.areaId);
-			if (col.forumId) filter.forumId = String(col.forumId);
-			if (col.publishStatus && col.publishStatus !== 'both') filter.publishStatus = String(col.publishStatus);
-			if (col.userId) filter.userId = String(col.userId);
-			break;
-		}
 		case 'communityPost.commented': {
 			const col = getCol('additionalCommunityPostCommented');
-			if (col.areaId) filter.areaId = String(col.areaId);
-			if (col.forumId) filter.forumId = String(col.forumId);
-			if (col.userId) filter.userId = String(col.userId);
+
+			if (col?.areaId) filter.areaId = String(col.areaId);
+			if (col?.forumId) filter.forumId = String(col.forumId);
+
+			const ids = toIdArray(col?.mentionedUserIds ?? []);
+			if (ids.length) filter.mentionedUserIds = ids;
+
 			break;
 		}
+
+		case 'communityPost.created': {
+			const col = getCol('additionalCommunityPostCreated');
+			if (col?.areaId) filter.areaId = String(col.areaId);
+			if (col?.forumId) filter.forumId = String(col.forumId);
+			if (col?.publishStatus && col.publishStatus !== 'both') {
+				filter.published = col.publishStatus === 'published'; // boolean
+			}
+			break;
+		}
+
 		case 'communityPost.moderated': {
 			const col = getCol('additionalCommunityPostModerated');
-			if (col.areaId) filter.areaId = String(col.areaId);
-			if (col.forumId) filter.forumId = String(col.forumId);
-			if (col.approved && col.approved !== 'both') filter.approved = col.approved === 'approved'; // boolean
-			if (col.userId) filter.userId = String(col.userId);
+			if (col?.areaId) filter.areaId = String(col.areaId);
+			if (col?.forumId) filter.forumId = String(col.forumId);
+			if (col?.approved && col.approved !== 'both') {
+				filter.approved = col.approved === 'approved'; // boolean
+			}
 			break;
 		}
 
 		// ---------------- Login
 		case 'login.new': {
-			const col = getCol('additionalLoginNew');
-			if (col.loginType) filter.loginType = String(col.loginType);
-			if (col.userId) filter.userId = String(col.userId);
+			const col = getCol('additionalLoginNew') as { loginType?: string; userRoleId?: string };
+			if (col?.loginType) {
+				filter.loginType = String(col.loginType);
+			}
+			if (col?.userRoleId) {
+				filter.userRoleId = String(col.userRoleId);
+			}
 			break;
 		}
 
 		// ---------------- Custom Popup
 		case 'customPopup.interaction': {
-			const col = getCol('additionalPopupInteraction');
-			if (col.customPopupId) filter.customPopupId = String(col.customPopupId); // Key an API angepasst
-			if (col.interactionType) filter.interactionType = String(col.interactionType);
-			// userId nur mitgeben, wenn popup gewählt (wie in Action)
-			if (col.customPopupId && col.userId) filter.userId = String(col.userId);
+			const col = getCol('additionalPopupInteraction') as {
+				customPopupId?: string;
+				interactionType?: string;
+			};
+
+			if (col?.customPopupId) {
+				filter.customPopupId = String(col.customPopupId);
+			}
+			if (col?.interactionType) {
+				filter.interactionType = String(col.interactionType);
+			}
+
 			break;
 		}
 
@@ -115,18 +136,38 @@ function buildDesiredFilter(this: IHookFunctions, event: string): { filter: IDat
 		case 'courseProgress.changed': {
 			// API: threshold + optional courseInstanceId
 			const aboveRaw = getNum('threshold', 0);
-			filter.above = Math.max(0, Math.floor(aboveRaw)); // 👈 garantiert Integer
+			filter.above = Math.max(0, Math.floor(aboveRaw));
 			const col = getCol('additionalCourseProgress');
 			if (col.courseId) filter.courseInstanceId = String(col.courseId);
 			break;
 		}
 
-		// ---------------- Exams & Feedback (optional courseInstanceId)
+		// ---------------- Exams
 		case 'exam.completed':
-		case 'exam.graded':
+		case 'exam.graded': {
+			const col = getCol('additionalExamOptions') as {
+				courseId?: string;
+				examModuleId?: string;
+			};
+
+			if (col?.courseId) {
+				filter.courseInstanceId = String(col.courseId);
+			}
+			if (col?.examModuleId) {
+				filter.examModuleId = String(col.examModuleId);
+			}
+			break;
+		}
+
+		// feedback.created
 		case 'feedback.created': {
-			const col = getCol('additionalFeedbackExam');
-			if (col.courseId) filter.courseInstanceId = String(col.courseId);
+			const col = getCol('additionalFeedbackOptions') as {
+				courseId?: string;
+			};
+
+			if (col?.courseId) {
+				filter.courseInstanceId = String(col.courseId);
+			}
 			break;
 		}
 
@@ -162,7 +203,6 @@ function buildDesiredFilter(this: IHookFunctions, event: string): { filter: IDat
 			break;
 		}
 		default:
-			// nichts
 			break;
 	}
 	return { filter, hasFilter: true };
@@ -173,8 +213,8 @@ export class LearningSuiteTrigger implements INodeType {
 		displayName: 'LearningSuite Trigger',
 		name: 'learningSuiteTrigger',
 		icon: {
-			light: 'file:icon-light.svg',
-			dark: 'file:icon-dark.svg',
+			light: 'file:./icons/icon-light.svg',
+			dark: 'file:./icons/icon-dark.svg',
 		},
 		group: ['trigger'],
 		version: 1,
@@ -212,6 +252,7 @@ export class LearningSuiteTrigger implements INodeType {
 			module_getLessons: loModule.module_getLessons,
 			module_getSections: loModule.module_getSections,
 			popup_getPopups: loPopup.popup_getPopups,
+			role_getRoles: loRole.role_getRoles,
 		},
 	};
 

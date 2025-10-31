@@ -48,6 +48,16 @@ export const properties: INodeProperties[] = [
 				value: 'member.created',
 				description: 'Triggers when a new member has been added to the platform',
 			},
+			{
+				name: 'Team Member Created',
+				value: 'teamMember.created',
+				description: 'Triggers when a new team member has been added to the platform',
+			},
+			{
+				name: 'Team Member Updated',
+				value: 'teamMember.updated',
+				description: 'Triggers when a team member has been updated',
+			},
 		],
 	},
 	{
