@@ -27,7 +27,6 @@ const createUnlockOverride: ExecuteHandler = async (ctx, i) => {
 		...additionalOptions,
 	};
 
-	// Leere Felder entfernen
 	Object.keys(body).forEach((k) => {
 		if (body[k] === '' || body[k] === undefined || body[k] === null) delete body[k];
 	});

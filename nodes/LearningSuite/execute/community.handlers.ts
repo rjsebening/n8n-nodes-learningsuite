@@ -32,7 +32,7 @@ const assignBadgesToUser: ExecuteHandler = async (ctx, i) => {
 	const badgeIds = toIdArray(ctx.getNodeParameter('badgeIds', i));
 
 	if (!badgeIds.length) {
-		throw new NodeOperationError(ctx.getNode(), 'Bitte mindestens ein Badge auswählen.');
+		throw new NodeOperationError(ctx.getNode(), 'Please select at least one badge.');
 	}
 
 	const body: IDataObject = { userId: memberId, badgeIds };
@@ -44,7 +44,7 @@ const removeBadgesFromUser: ExecuteHandler = async (ctx, i) => {
 	const badgeIds = toIdArray(ctx.getNodeParameter('badgeIds', i));
 
 	if (!badgeIds.length) {
-		throw new NodeOperationError(ctx.getNode(), 'Bitte mindestens ein Badge auswählen.');
+		throw new NodeOperationError(ctx.getNode(), 'Please select at least one badge.');
 	}
 
 	const body: IDataObject = { userId: memberId, badgeIds };
@@ -53,33 +53,33 @@ const removeBadgesFromUser: ExecuteHandler = async (ctx, i) => {
 
 const commentOnPost: ExecuteHandler = async (ctx, i) => {
 	const postId = ctx.getNodeParameter('postId', i) as string;
-	const authorUserId = ctx.getNodeParameter('authorUserId', i) as string;
+	const authorType = ctx.getNodeParameter('authorType', i) as 'member' | 'team';
+	const authorMemberId = ctx.getNodeParameter('authorMemberId', i, '') as string;
+	const authorTeamMemberId = ctx.getNodeParameter('authorTeamMemberId', i, '') as string;
 	const commentText = ctx.getNodeParameter('commentText', i) as string;
 	const answerToCommentId = ctx.getNodeParameter('answerToCommentId', i, '') as string;
 	const enableWebhookTriggering = ctx.getNodeParameter('enableWebhookTriggering', i, false) as boolean;
 
-	// Pflichtfelder prüfen
 	if (!postId) {
-		throw new NodeOperationError(ctx.getNode(), 'Bitte eine Post-ID angeben.');
-	}
-	if (!authorUserId) {
-		throw new NodeOperationError(ctx.getNode(), 'Bitte eine Author-User-ID angeben.');
+		throw new NodeOperationError(ctx.getNode(), 'Please provide a post ID.');
 	}
 	if (!commentText) {
-		throw new NodeOperationError(ctx.getNode(), 'Kommentartext darf nicht leer sein.');
+		throw new NodeOperationError(ctx.getNode(), 'The comment text cannot be empty.');
 	}
 
-	// Request Body
-	const body: IDataObject = {
-		authorUserId,
-		commentText,
-	};
+	const authorUserId = authorType === 'member' ? authorMemberId : authorType === 'team' ? authorTeamMemberId : '';
 
-	// optionale Felder nur hinzufügen, wenn gesetzt
+	if (!authorUserId) {
+		throw new NodeOperationError(
+			ctx.getNode(),
+			authorType === 'member' ? 'Please select an author (member).' : 'Please select an author (team member).',
+		);
+	}
+
+	const body: IDataObject = { authorUserId, commentText };
 	if (answerToCommentId) body.answerToCommentId = answerToCommentId;
-	if (enableWebhookTriggering) body.enableWebhookTriggering = enableWebhookTriggering;
+	if (enableWebhookTriggering) body.enableWebhookTriggering = true;
 
-	// Request ausführen
 	return await lsRequest.call(ctx, 'POST', `/community/posts/${postId}/comments`, { body });
 };
 

@@ -1,14 +1,12 @@
 import type { IDataObject } from 'n8n-workflow';
 import { lsRequest } from '../shared';
 import type { ExecuteHandler } from '../exec.types';
+import { toIdArray } from '../shared/parsing';
 
-// ---------------------------------------------------------
-// Pro-Event Filter-Builder (gleiche Logik wie in Trigger-Node)
-// === helpers (oben in der Datei platzieren) ===
-const isEmpty = (obj: IDataObject | undefined | null) =>
-	!obj || (Object.keys(obj).length === 0 && obj.constructor === Object);
-
-const getCollection = (ctx: any, i: number, name: string): IDataObject => {
+/**
+ * Helpers
+ */
+const getCol = (ctx: any, i: number, name: string): IDataObject => {
 	try {
 		const v = ctx.getNodeParameter(name, i, {}) as IDataObject | undefined;
 		return v && typeof v === 'object' ? v : {};
@@ -17,123 +15,157 @@ const getCollection = (ctx: any, i: number, name: string): IDataObject => {
 	}
 };
 
-const getString = (ctx: any, i: number, name: string, def = ''): string => {
+const getStr = (ctx: any, i: number, name: string, def = ''): string => {
 	try {
 		const v = ctx.getNodeParameter(name, i, def) as string | undefined;
-		return (v ?? def) as string;
+		return (v ?? def).toString().trim();
 	} catch {
 		return def;
 	}
 };
 
-// === PATCH: buildFilterFromActionParams ===
-function buildFilterFromActionParams(ctx: any, i: number, eventType: string): IDataObject | undefined {
+const getNum = (ctx: any, i: number, name: string, fallback = 0): number => {
+	try {
+		const v = ctx.getNodeParameter(name, i, fallback) as number | undefined;
+		return Number.isFinite(v as number) ? (v as number) : fallback;
+	} catch {
+		return fallback;
+	}
+};
+
+function buildDesiredFilter(ctx: any, i: number, eventType: string): IDataObject {
+	const filter: IDataObject = {};
+
 	switch (eventType) {
-		case 'login.new': {
-			// 1) Versuche Collection (falls du meine erweiterte UI-Version nutzt)
-			const col = getCollection(ctx, i, 'additionalLoginNew');
-			let loginType = (col.loginType as string) || '';
-			let userId = (col.userId as string) || '';
+		// ---------------- Community
+		case 'communityPost.commented': {
+			const col = getCol(ctx, i, 'additionalCommunityPostCommented');
+			if (col?.areaId) filter.areaId = String(col.areaId);
+			if (col?.forumId) filter.forumId = String(col.forumId);
 
-			// 2) Fallback auf TOP-LEVEL Felder (so wie es bei dir jetzt ist)
-			if (!loginType) loginType = getString(ctx, i, 'loginType', '');
-			if (!userId) userId = getString(ctx, i, 'userId', '');
-
-			const f: IDataObject = {};
-			if (loginType) f.loginType = loginType;
-			if (userId) f.userId = userId;
-
-			// Die API will IMMER ein filter-Objekt → leeres {} ist ok
-			return f;
-		}
-
-		case 'customPopup.interaction': {
-			const col = getCollection(ctx, i, 'additionalPopupInteraction');
-			const f: IDataObject = {};
-			if (col.customPopupId) f.customPopupId = String(col.customPopupId);
-			if (col.interactionType) f.interactionType = String(col.interactionType);
-			if (col.customPopupId && col.userId) f.userId = String(col.userId);
-			return isEmpty(f) ? {} : f; // immer Objekt senden
-		}
-
-		case 'courseProgress.changed': {
-			const threshold = ctx.getNodeParameter('threshold', i) as number;
-			const col = getCollection(ctx, i, 'additionalCourseProgress');
-
-			const f: IDataObject = {};
-
-			// Prozent (UI) -> Integer (API). 0–100 clamp + floor.
-			const pct = Number.isFinite(threshold) ? Math.floor(threshold) : 0;
-			f.above = Math.min(100, Math.max(0, pct));
-
-			// Optionaler Kursfilter: API erwartet courseInstanceId
-			if (col.courseId) {
-				f.courseInstanceId = String(col.courseId);
-			}
-
-			return isEmpty(f) ? {} : f;
+			const ids = toIdArray(col?.mentionedUserIds ?? []);
+			if (ids.length) filter.mentionedUserIds = ids;
+			break;
 		}
 
 		case 'communityPost.created': {
-			const col = getCollection(ctx, i, 'additionalCommunityPostCreated');
-			const f: IDataObject = {};
-			if (col.areaId) f.areaId = String(col.areaId);
-			if (col.forumId) f.forumId = String(col.forumId);
-			if (col.publishStatus && col.publishStatus !== 'both') f.publishStatus = String(col.publishStatus);
-			if (col.userId) f.userId = String(col.userId);
-			return isEmpty(f) ? {} : f;
+			const col = getCol(ctx, i, 'additionalCommunityPostCreated');
+			if (col?.areaId) filter.areaId = String(col.areaId);
+			if (col?.forumId) filter.forumId = String(col.forumId);
+			if (col?.publishStatus && col.publishStatus !== 'both') {
+				filter.published = col.publishStatus === 'published'; // boolean
+			}
+			break;
 		}
 
 		case 'communityPost.moderated': {
-			const col = getCollection(ctx, i, 'additionalCommunityPostModerated');
-			const f: IDataObject = {};
-			if (col.areaId) f.areaId = String(col.areaId);
-			if (col.forumId) f.forumId = String(col.forumId);
-			if (col.approved && col.approved !== 'both') f.approved = col.approved === 'approved';
-			if (col.userId) f.userId = String(col.userId);
-			return isEmpty(f) ? {} : f;
+			const col = getCol(ctx, i, 'additionalCommunityPostModerated');
+			if (col?.areaId) filter.areaId = String(col.areaId);
+			if (col?.forumId) filter.forumId = String(col.forumId);
+			if (col?.approved && col.approved !== 'both') {
+				filter.approved = col.approved === 'approved'; // boolean
+			}
+			break;
 		}
 
-		case 'feedback.created':
+		// ---------------- Login
+		case 'login.new': {
+			const col = getCol(ctx, i, 'additionalLoginNew') as { loginType?: string; userRoleId?: string };
+			if (col?.loginType) {
+				filter.loginType = String(col.loginType);
+			}
+			if (col?.userRoleId) {
+				filter.userRoleId = String(col.userRoleId);
+			}
+			break;
+		}
+
+		// ---------------- Custom Popup
+		case 'customPopup.interaction': {
+			const col = getCol(ctx, i, 'additionalPopupInteraction') as {
+				customPopupId?: string;
+				interactionType?: string;
+			};
+			if (col?.customPopupId) {
+				filter.customPopupId = String(col.customPopupId);
+			}
+			if (col?.interactionType) {
+				filter.interactionType = String(col.interactionType);
+			}
+			break;
+		}
+
+		// ---------------- Progress
+		case 'courseProgress.changed': {
+			const aboveRaw = getNum(ctx, i, 'threshold', 0);
+			filter.above = Math.max(0, Math.floor(aboveRaw));
+			const col = getCol(ctx, i, 'additionalCourseProgress');
+			if (col.courseId) filter.courseInstanceId = String(col.courseId);
+			break;
+		}
+
+		// ---------------- Exams
 		case 'exam.completed':
 		case 'exam.graded': {
-			const col = getCollection(ctx, i, 'additionalFeedbackExam');
-			// API will courseInstanceId
-			return col.courseId ? { courseInstanceId: String(col.courseId) } : {};
+			const exam = getCol(ctx, i, 'additionalExamOptions') as {
+				courseId?: string;
+				examModuleId?: string;
+			};
+			// Backcompat: ältere Flows hatten 'additionalFeedbackExam' nur mit courseId
+			const legacy = Object.keys(exam).length ? undefined : (getCol(ctx, i, 'additionalFeedbackExam') as any);
+			const c = (Object.keys(exam).length ? exam : legacy) || {};
+			if (c?.courseId) filter.courseInstanceId = String(c.courseId);
+			if (c?.examModuleId) filter.examModuleId = String(c.examModuleId);
+			break;
 		}
 
+		// ---------------- Feedback
+		case 'feedback.created': {
+			const fb = getCol(ctx, i, 'additionalFeedbackOptions') as { courseId?: string };
+			// Backcompat zu 'additionalFeedbackExam'
+			const legacy = Object.keys(fb).length ? undefined : (getCol(ctx, i, 'additionalFeedbackExam') as any);
+			const c = (Object.keys(fb).length ? fb : legacy) || {};
+			if (c?.courseId) filter.courseInstanceId = String(c.courseId);
+			break;
+		}
+
+		// ---------------- Access Request (required in UI)
 		case 'accessRequest.created': {
-			// UI-Feld ist top-level
-			const courseId = getString(ctx, i, 'courseId', '');
-			return courseId ? { courseInstanceId: courseId } : {};
+			const courseId = getStr(ctx, i, 'courseId');
+			if (courseId) filter.courseInstanceId = courseId;
+			break;
 		}
 
+		// ---------------- Group Access
 		case 'group.userAccessChanged': {
-			const actionType = getString(ctx, i, 'actionType', '');
-			const col = getCollection(ctx, i, 'additionalGroupAccess');
-			const f: IDataObject = {};
-			if (actionType) f.actionType = actionType; // 'added' | 'removed'
-			if (col.groupId) f.groupId = String(col.groupId);
-			return isEmpty(f) ? {} : f;
+			const col = getCol(ctx, i, 'additionalGroupAccess');
+			const actionType = getStr(ctx, i, 'actionType');
+			if (actionType) filter.actionType = actionType; // 'added' | 'removed'
+			if (col.groupId) filter.groupId = String(col.groupId);
+			break;
 		}
 
+		// ---------------- Lesson Completed (kaskadiert)
 		case 'lesson.completed': {
-			const col = getCollection(ctx, i, 'additionalLessonCompleted');
-			const f: IDataObject = {};
-			if (col.courseId) f.courseInstanceId = String(col.courseId); // Mapping!
-			if (col.moduleId) f.moduleId = String(col.moduleId);
-			if (col.lessonId) f.lessonId = String(col.lessonId);
-			return isEmpty(f) ? {} : f;
+			const col = getCol(ctx, i, 'additionalLessonCompleted');
+			if (col.courseId) filter.courseInstanceId = String(col.courseId);
+			if (col.moduleId) filter.moduleId = String(col.moduleId);
+			if (col.lessonId) filter.lessonId = String(col.lessonId);
+			break;
 		}
 
+		// ---------------- Submission (optional course)
 		case 'submission.created': {
-			const col = getCollection(ctx, i, 'additionalSubmission');
-			// API will courseInstanceId
-			return col.courseId ? { courseInstanceId: String(col.courseId) } : {};
+			const col = getCol(ctx, i, 'additionalSubmission');
+			if (col.courseId) filter.courseInstanceId = String(col.courseId);
+			break;
 		}
+
+		default:
+			break;
 	}
 
-	return {}; // Default: immer Objekt
+	return filter;
 }
 
 // ---------------------------------------------------------
@@ -149,7 +181,7 @@ const createSubscription: ExecuteHandler = async (ctx, i) => {
 	const hookUrl = ctx.getNodeParameter('hookUrl', i) as string;
 	const eventType = ctx.getNodeParameter('eventType', i) as string;
 
-	const filter = buildFilterFromActionParams(ctx, i, eventType) || {};
+	const filter = buildDesiredFilter(ctx, i, eventType) || {};
 
 	const body: IDataObject = { hookUrl, type: eventType, filter };
 	return await lsRequest.call(ctx, 'POST', '/webhooks/subscription', { body });
@@ -160,7 +192,7 @@ const updateSubscription: ExecuteHandler = async (ctx, i) => {
 	const hookUrl = ctx.getNodeParameter('hookUrl', i) as string;
 	const eventType = ctx.getNodeParameter('eventType', i) as string;
 
-	const filter = buildFilterFromActionParams(ctx, i, eventType) || {};
+	const filter = buildDesiredFilter(ctx, i, eventType) || {};
 
 	const body: IDataObject = { hookUrl, type: eventType, filter };
 	return await lsRequest.call(ctx, 'PUT', `/webhooks/subscription/${encodeURIComponent(subscriptionId)}`, { body });

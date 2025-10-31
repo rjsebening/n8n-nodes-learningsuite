@@ -45,8 +45,6 @@ const getTemplateVariables: ExecuteHandler = async (ctx, i) => {
 	const templateId = ctx.getNodeParameter('templateId', i) as string;
 
 	const raw = await lsRequest.call(ctx, 'GET', `/hub-template/${templateId}/variables`);
-
-	// API liefert ein string[] – wir mappen auf Objekte, damit n8n sauberes JSON-Array erzeugt
 	const arr = Array.isArray(raw) ? raw : [raw];
 	return arr.map((v) => ({ variable: String(v) })) as IDataObject[];
 };
