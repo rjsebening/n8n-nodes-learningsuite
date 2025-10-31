@@ -12,38 +12,38 @@ export const webhookProperties: INodeProperties[] = [
 			{
 				name: 'Create Webhook Subscription',
 				value: 'createSubscription',
-				description: 'Create a webhook subscription to receive events',
 				action: 'Create webhook subscription',
+				description: 'Create a webhook subscription to receive events',
 			},
 			{
 				name: 'Delete Webhook Subscription',
 				value: 'deleteSubscription',
-				description: 'Delete a webhook subscription by ID',
 				action: 'Delete webhook subscription',
+				description: 'Delete a webhook subscription by ID',
 			},
 			{
 				name: 'Get Webhook Sample Data',
 				value: 'getSampleData',
-				description: 'Retrieve sample payloads for supported webhook events',
 				action: 'Get webhook sample data',
+				description: 'Retrieve sample payloads for supported webhook events',
 			},
 			{
 				name: 'Get Webhook Subscription',
 				value: 'getSubscription',
-				description: 'Get a webhook subscription by ID',
 				action: 'Get webhook subscription',
+				description: 'Get a webhook subscription by ID',
 			},
 			{
 				name: 'Get Webhook Subscriptions',
 				value: 'getSubscriptions',
-				description: 'List webhook subscriptions',
 				action: 'Get webhook subscriptions',
+				description: 'List webhook subscriptions',
 			},
 			{
 				name: 'Update Webhook Subscription',
 				value: 'updateSubscription',
-				description: 'Update a webhook subscription',
 				action: 'Update webhook subscription',
+				description: 'Update a webhook subscription',
 			},
 		],
 	},
@@ -63,7 +63,7 @@ export const webhookProperties: INodeProperties[] = [
 	},
 
 	{
-		displayName: 'Hook URL',
+		displayName: 'Webhook URL',
 		name: 'hookUrl',
 		type: 'string',
 		displayOptions: { show: { resource: ['webhook'], operation: ['createSubscription', 'updateSubscription'] } },
@@ -78,10 +78,10 @@ export const webhookProperties: INodeProperties[] = [
 		name: 'eventType',
 		type: 'options',
 		required: true,
-		default: 'login.new',
+		default: 'communityPost.created',
 		displayOptions: { show: { resource: ['webhook'], operation: ['createSubscription', 'updateSubscription'] } },
+		description: 'Type of event to subscribe to',
 		options: [
-			{ name: 'Access Request Created', value: 'accessRequest.created' },
 			{ name: 'Community Post Commented', value: 'communityPost.commented' },
 			{ name: 'Community Post Created', value: 'communityPost.created' },
 			{ name: 'Community Post Moderated', value: 'communityPost.moderated' },
@@ -89,13 +89,13 @@ export const webhookProperties: INodeProperties[] = [
 			{ name: 'Custom Popup Interaction', value: 'customPopup.interaction' },
 			{ name: 'Exam Completed', value: 'exam.completed' },
 			{ name: 'Exam Graded', value: 'exam.graded' },
-			{ name: 'Feedback Created', value: 'feedback.created' },
 			{ name: 'Group User Access Changed', value: 'group.userAccessChanged' },
 			{ name: 'Lesson Completed', value: 'lesson.completed' },
+			{ name: 'New Access Request', value: 'accessRequest.created' },
+			{ name: 'New Feedback Created', value: 'feedback.created' },
 			{ name: 'New Login', value: 'login.new' },
 			{ name: 'Submission Created', value: 'submission.created' },
 		],
-		description: 'Type of event to subscribe to',
 	},
 
 	// --------- Sample Data ---------
@@ -105,8 +105,9 @@ export const webhookProperties: INodeProperties[] = [
 		type: 'options',
 		default: 'feedback-events',
 		displayOptions: { show: { resource: ['webhook'], operation: ['getSampleData'] } },
+		required: true,
+		description: 'Type of sample data to retrieve',
 		options: [
-			{ name: 'Access Request Created Events', value: 'access-request-created-events' },
 			{ name: 'Community Post Commented', value: 'community-post-commented-events' },
 			{ name: 'Community Post Created Events', value: 'community-post-created-events' },
 			{ name: 'Community Post Moderated Events', value: 'community-post-moderated-events' },
@@ -118,11 +119,10 @@ export const webhookProperties: INodeProperties[] = [
 			{ name: 'Group User Access Changed Events', value: 'group-user-access-changed-events' },
 			{ name: 'Lesson Completed Events', value: 'lesson-completed-events' },
 			{ name: 'New Login Events', value: 'new-login-events' },
-			{ name: 'Submission Created Events', value: 'submission-created-events' },
 		],
-		required: true,
-		description: 'Type of sample data to retrieve',
 	},
+
+	// ====== Optionen pro Event (identisch zu instantProperties) ======
 
 	// Login Options
 	{
@@ -144,25 +144,30 @@ export const webhookProperties: INodeProperties[] = [
 				name: 'loginType',
 				type: 'options',
 				default: '',
-				description: 'Filter by login type',
+				description:
+					'Filter by login type. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 				options: [
 					{ name: 'All', value: '' },
 					{ name: 'App Email Code', value: 'app-email-code' },
+					{ name: 'Auto Login', value: 'auto-login' },
 					{ name: 'Email & Password', value: 'email-password' },
 					{ name: 'Google', value: 'google' },
+					{ name: 'Impersonated by Admin', value: 'impersonated-by-admin' },
+					{ name: 'Impersonation (as Member)', value: 'impersonation' },
 					{ name: 'Magic Link', value: 'magic-link' },
 					{ name: 'OIDC', value: 'oidc' },
 					{ name: 'Password Reset', value: 'password-reset' },
+					{ name: 'Refresh', value: 'refresh' },
 				],
 			},
 			{
-				displayName: 'User Name or ID',
-				name: 'userId',
+				displayName: 'User Role Name or ID',
+				name: 'userRoleId',
 				type: 'options',
-				typeOptions: { loadOptionsMethod: 'member_getMembers' },
+				typeOptions: { loadOptionsMethod: 'role_getRoles' },
 				default: '',
 				description:
-					'Optional user filter. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+					'Optional role filter. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 		],
 	},
@@ -190,7 +195,6 @@ export const webhookProperties: INodeProperties[] = [
 				default: '',
 				description:
 					'Optional popup filter. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
-				placeholder: 'Add option',
 			},
 			{
 				displayName: 'Interaction Type',
@@ -203,15 +207,6 @@ export const webhookProperties: INodeProperties[] = [
 					{ name: 'Actioned', value: 'actioned' },
 					{ name: 'Dismissed', value: 'dismissed' },
 				],
-			},
-			{
-				displayName: 'User Name or ID',
-				name: 'userId',
-				type: 'options',
-				typeOptions: { loadOptionsMethod: 'member_getMembers' },
-				default: '',
-				description:
-					'Optional user filter (only applied if a popup is selected). Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 		],
 	},
@@ -277,23 +272,20 @@ export const webhookProperties: INodeProperties[] = [
 				displayName: 'Area Name or ID',
 				name: 'areaId',
 				type: 'options',
-				description:
-					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'community_getAreas' },
 				default: '',
-				placeholder: 'Add option',
+				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 			},
 			{
 				displayName: 'Forum Name or ID',
 				name: 'forumId',
 				type: 'options',
-				description:
-					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: {
 					loadOptionsMethod: 'community_getForums',
 					loadOptionsDependsOn: ['additionalCommunityPostCreated.areaId'],
 				},
 				default: '',
+				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 			},
 			{
 				displayName: 'Publish Status',
@@ -305,15 +297,6 @@ export const webhookProperties: INodeProperties[] = [
 					{ name: 'Waiting for Moderation', value: 'waiting for moderation' },
 				],
 				default: 'both',
-			},
-			{
-				displayName: 'User Name or ID',
-				name: 'userId',
-				type: 'options',
-				typeOptions: { loadOptionsMethod: 'member_getMembers' },
-				default: '',
-				description:
-					'Optional user filter. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 		],
 	},
@@ -337,32 +320,29 @@ export const webhookProperties: INodeProperties[] = [
 				displayName: 'Area Name or ID',
 				name: 'areaId',
 				type: 'options',
-				description:
-					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'community_getAreas' },
 				default: '',
-				placeholder: 'Add option',
+				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 			},
 			{
 				displayName: 'Forum Name or ID',
 				name: 'forumId',
 				type: 'options',
-				description:
-					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: {
 					loadOptionsMethod: 'community_getForums',
-					loadOptionsDependsOn: ['additionalCommunityPostCreated.areaId'],
+					loadOptionsDependsOn: ['additionalCommunityPostCommented.areaId'],
 				},
 				default: '',
+				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 			},
 			{
-				displayName: 'User Name or ID',
-				name: 'userId',
-				type: 'options',
+				displayName: 'Mentioned User Names or IDs',
+				name: 'mentionedUserIds',
+				type: 'multiOptions',
 				typeOptions: { loadOptionsMethod: 'member_getMembers' },
-				default: '',
+				default: [],
 				description:
-					'Optional user filter. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+					'Only deliver comments that mention at least one of these users. Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 		],
 	},
@@ -386,23 +366,20 @@ export const webhookProperties: INodeProperties[] = [
 				displayName: 'Area Name or ID',
 				name: 'areaId',
 				type: 'options',
-				description:
-					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'community_getAreas' },
 				default: '',
-				placeholder: 'Add option',
+				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 			},
 			{
 				displayName: 'Forum Name or ID',
 				name: 'forumId',
 				type: 'options',
-				description:
-					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: {
 					loadOptionsMethod: 'community_getForums',
 					loadOptionsDependsOn: ['additionalCommunityPostModerated.areaId'],
 				},
 				default: '',
+				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 			},
 			{
 				displayName: 'Approved Status',
@@ -415,22 +392,13 @@ export const webhookProperties: INodeProperties[] = [
 				],
 				default: 'both',
 			},
-			{
-				displayName: 'User Name or ID',
-				name: 'userId',
-				type: 'options',
-				typeOptions: { loadOptionsMethod: 'member_getMembers' },
-				default: '',
-				description:
-					'Optional user filter. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
-			},
 		],
 	},
 
-	// Feedback / Exam (optional course)
+	// Feedback (nur courseInstanceId)
 	{
-		displayName: 'Feedback/Exam Options',
-		name: 'additionalFeedbackExam',
+		displayName: 'Feedback Options',
+		name: 'additionalFeedbackOptions',
 		type: 'collection',
 		default: {},
 		placeholder: 'Add option',
@@ -438,7 +406,7 @@ export const webhookProperties: INodeProperties[] = [
 			show: {
 				resource: ['webhook'],
 				operation: ['createSubscription', 'updateSubscription'],
-				eventType: ['feedback.created', 'exam.completed', 'exam.graded'],
+				eventType: ['feedback.created'],
 			},
 		},
 		options: [
@@ -454,16 +422,55 @@ export const webhookProperties: INodeProperties[] = [
 		],
 	},
 
+	// Exam (courseInstanceId + examModuleId)
+	{
+		displayName: 'Exam Options',
+		name: 'additionalExamOptions',
+		type: 'collection',
+		default: {},
+		placeholder: 'Add option',
+		displayOptions: {
+			show: {
+				resource: ['webhook'],
+				operation: ['createSubscription', 'updateSubscription'],
+				eventType: ['exam.completed', 'exam.graded'],
+			},
+		},
+		options: [
+			{
+				displayName: 'Course Name or ID',
+				name: 'courseId',
+				type: 'options',
+				typeOptions: { loadOptionsMethod: 'course_getCourses' },
+				default: '',
+				description:
+					'Optional course filter. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+			},
+			{
+				displayName: 'Exam Module Name or ID',
+				name: 'examModuleId',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'module_getModules',
+					loadOptionsDependsOn: ['additionalExamOptions.courseId'],
+				},
+				default: '',
+				description:
+					'Optional module filter. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+			},
+		],
+	},
+
 	// Access Request Course (required)
 	{
 		displayName: 'Course Name or ID',
 		name: 'courseId',
 		type: 'options',
 		required: true,
-		description:
-			'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 		typeOptions: { loadOptionsMethod: 'course_getCourses' },
 		default: '',
+		description:
+			'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 		displayOptions: {
 			show: {
 				resource: ['webhook'],
@@ -509,15 +516,15 @@ export const webhookProperties: INodeProperties[] = [
 				displayName: 'Group Name or ID',
 				name: 'groupId',
 				type: 'options',
-				description:
-					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'group_getGroups' },
 				default: '',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 			},
 		],
 	},
 
-	// Lesson Completed
+	// Lesson Completed (kaskadiert)
 	{
 		displayName: 'Lesson Completed Options',
 		name: 'additionalLessonCompleted',
@@ -536,39 +543,39 @@ export const webhookProperties: INodeProperties[] = [
 				displayName: 'Course Name or ID',
 				name: 'courseId',
 				type: 'options',
-				description:
-					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'course_getCourses' },
 				default: '',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 			},
 			{
 				displayName: 'Module Name or ID',
 				name: 'moduleId',
 				type: 'options',
-				description:
-					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: {
 					loadOptionsMethod: 'course_getModules',
 					loadOptionsDependsOn: ['additionalLessonCompleted.courseId'],
 				},
 				default: '',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 			},
 			{
 				displayName: 'Lesson Name or ID',
 				name: 'lessonId',
 				type: 'options',
-				description:
-					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: {
 					loadOptionsMethod: 'module_getLessons',
 					loadOptionsDependsOn: ['additionalLessonCompleted.moduleId'],
 				},
 				default: '',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 			},
 		],
 	},
 
-	// Submission Created
+	// Submission Created (optional course)
 	{
 		displayName: 'Submission Options',
 		name: 'additionalSubmission',
@@ -587,10 +594,10 @@ export const webhookProperties: INodeProperties[] = [
 				displayName: 'Course Name or ID',
 				name: 'courseId',
 				type: 'options',
-				description:
-					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'course_getCourses' },
 				default: '',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 			},
 		],
 	},

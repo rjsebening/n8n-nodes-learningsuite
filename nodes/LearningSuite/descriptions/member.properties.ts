@@ -114,10 +114,22 @@ export const memberProperties: INodeProperties[] = [
 		name: 'email',
 		type: 'string',
 		placeholder: 'user@example.com',
-		displayOptions: { show: { resource: ['member'], operation: ['getByEmail', 'findOrCreate'] } },
+		displayOptions: { show: { resource: ['member'], operation: ['findOrCreate'] } },
 		default: '',
 		required: true,
 		description: 'Email address of the member to retrieve',
+	},
+	{
+		displayName: 'Email Name or ID',
+		name: 'email',
+		type: 'options',
+		typeOptions: { loadOptionsMethod: 'member_getMembersByEmail' },
+		placeholder: 'user@example.com',
+		displayOptions: { show: { resource: ['member'], operation: ['getByEmail'] } },
+		default: '',
+		required: true,
+		description:
+			'Email address of the member to retrieve. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 	},
 	{
 		displayName: 'Email',

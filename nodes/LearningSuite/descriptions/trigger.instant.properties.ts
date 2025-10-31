@@ -68,10 +68,7 @@ export const instantProperties: INodeProperties[] = [
 			},
 		],
 	},
-
-	// --------- Per-Event Options (eindeutige Collections) ----------
-
-	// Login (optional filter)
+	// New Login
 	{
 		displayName: 'Login Options',
 		name: 'additionalLoginNew',
@@ -85,25 +82,32 @@ export const instantProperties: INodeProperties[] = [
 				name: 'loginType',
 				type: 'options',
 				default: '',
-				description: 'Filter by login type',
+				description:
+					'Filter by login type. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 				options: [
 					{ name: 'All', value: '' },
 					{ name: 'App Email Code', value: 'app-email-code' },
+					{ name: 'Auto Login', value: 'auto-login' },
 					{ name: 'Email & Password', value: 'email-password' },
 					{ name: 'Google', value: 'google' },
+					{ name: 'Impersonated by Admin', value: 'impersonated-by-admin' },
+					{ name: 'Impersonation (as Member)', value: 'impersonation' },
 					{ name: 'Magic Link', value: 'magic-link' },
 					{ name: 'OIDC', value: 'oidc' },
 					{ name: 'Password Reset', value: 'password-reset' },
+					{ name: 'Refresh', value: 'refresh' },
 				],
 			},
 			{
-				displayName: 'User Name or ID',
-				name: 'userId',
+				displayName: 'User Role Name or ID',
+				name: 'userRoleId',
 				type: 'options',
-				typeOptions: { loadOptionsMethod: 'member_getMembers' },
+				typeOptions: {
+					loadOptionsMethod: 'role_getRoles',
+				},
 				default: '',
 				description:
-					'Optional user filter. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+					'Optional role filter. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 		],
 	},
@@ -139,15 +143,6 @@ export const instantProperties: INodeProperties[] = [
 					{ name: 'Dismissed', value: 'dismissed' },
 				],
 			},
-			{
-				displayName: 'User Name or ID',
-				name: 'userId',
-				type: 'options',
-				typeOptions: { loadOptionsMethod: 'member_getMembers' },
-				default: '',
-				description:
-					'Optional user filter (only applied if a popup is selected). Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
-			},
 		],
 	},
 
@@ -182,7 +177,6 @@ export const instantProperties: INodeProperties[] = [
 	},
 
 	// Community Post Created
-
 	{
 		displayName: 'Community Post (Created) Options',
 		name: 'additionalCommunityPostCreated',
@@ -224,15 +218,6 @@ export const instantProperties: INodeProperties[] = [
 				],
 				default: 'both',
 			},
-			{
-				displayName: 'User Name or ID',
-				name: 'userId',
-				type: 'options',
-				typeOptions: { loadOptionsMethod: 'member_getMembers' },
-				default: '',
-				description:
-					'Optional user filter. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
-			},
 		],
 	},
 
@@ -249,32 +234,31 @@ export const instantProperties: INodeProperties[] = [
 				displayName: 'Area Name or ID',
 				name: 'areaId',
 				type: 'options',
-				description:
-					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'community_getAreas' },
 				default: '',
-				placeholder: 'Add option',
+				description:
+					'Choose from the list, or specify an ID using an expression. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			{
 				displayName: 'Forum Name or ID',
 				name: 'forumId',
 				type: 'options',
-				description:
-					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: {
 					loadOptionsMethod: 'community_getForums',
-					loadOptionsDependsOn: ['additionalCommunityPostCreated.areaId'],
+					loadOptionsDependsOn: ['additionalCommunityPostCommented.areaId'],
 				},
 				default: '',
+				description:
+					'Choose from the list, or specify an ID using an expression. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			{
-				displayName: 'User Name or ID',
-				name: 'userId',
-				type: 'options',
+				displayName: 'Mentioned User Names or IDs',
+				name: 'mentionedUserIds',
+				type: 'multiOptions',
 				typeOptions: { loadOptionsMethod: 'member_getMembers' },
-				default: '',
+				default: [],
 				description:
-					'Optional user filter. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+					'Only deliver comments that mention at least one of these users. Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 		],
 	},
@@ -322,27 +306,17 @@ export const instantProperties: INodeProperties[] = [
 				],
 				default: 'both',
 			},
-			{
-				displayName: 'User Name or ID',
-				name: 'userId',
-				type: 'options',
-				typeOptions: { loadOptionsMethod: 'member_getMembers' },
-				default: '',
-				description:
-					'Optional user filter. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
-			},
 		],
 	},
 
-	// Feedback / Exam (optional course)
-
+	// Feedback (nur courseInstanceId)
 	{
-		displayName: 'Feedback/Exam Options',
-		name: 'additionalFeedbackExam',
+		displayName: 'Feedback Options',
+		name: 'additionalFeedbackOptions',
 		type: 'collection',
 		default: {},
 		placeholder: 'Add option',
-		displayOptions: { show: { event: ['feedback.created', 'exam.completed', 'exam.graded'] } },
+		displayOptions: { show: { event: ['feedback.created'] } },
 		options: [
 			{
 				displayName: 'Course Name or ID',
@@ -352,6 +326,39 @@ export const instantProperties: INodeProperties[] = [
 				default: '',
 				description:
 					'Optional course filter. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+			},
+		],
+	},
+
+	// Exam (courseInstanceId + examModuleId)
+	{
+		displayName: 'Exam Options',
+		name: 'additionalExamOptions',
+		type: 'collection',
+		default: {},
+		placeholder: 'Add option',
+		displayOptions: { show: { event: ['exam.completed', 'exam.graded'] } },
+		options: [
+			{
+				displayName: 'Course Name or ID',
+				name: 'courseId',
+				type: 'options',
+				typeOptions: { loadOptionsMethod: 'course_getCourses' },
+				default: '',
+				description:
+					'Optional course filter. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+			},
+			{
+				displayName: 'Exam Module Name or ID',
+				name: 'examModuleId',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'module_getModules',
+					loadOptionsDependsOn: ['additionalExamOptions.courseId'],
+				},
+				default: '',
+				description:
+					'Optional module filter. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 		],
 	},

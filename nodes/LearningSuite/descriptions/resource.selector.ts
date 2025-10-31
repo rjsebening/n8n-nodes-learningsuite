@@ -57,6 +57,11 @@ export const resourceSelector: INodeProperties = {
 			description: 'Retrieve available user roles',
 		},
 		{
+			name: 'Team Member',
+			value: 'teamMember',
+			description: 'Retrieve available team members',
+		},
+		{
 			name: 'Webhook',
 			value: 'webhook',
 			description: 'Manage webhook subscriptions (create/read/update/delete) and load sample data',
