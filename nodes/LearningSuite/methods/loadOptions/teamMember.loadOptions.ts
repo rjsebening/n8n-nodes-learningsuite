@@ -11,7 +11,7 @@ function buildLabel(m: any): string {
 }
 
 export async function teamMember_getTeamMembersById(this: ILoadOptionsFunctions) {
-	const res = await lsRequest.call(this, 'GET', '/team-members');
+	const res = await lsRequest.call(this, 'GET', '/team-members?limit=100');
 	const rows = ensureArray(res);
 	return rows.map((m: any) => ({
 		name: buildLabel(m),
@@ -20,7 +20,7 @@ export async function teamMember_getTeamMembersById(this: ILoadOptionsFunctions)
 }
 
 export async function teamMember_getTeamMembersByEmail(this: ILoadOptionsFunctions) {
-	const res = await lsRequest.call(this, 'GET', '/team-members');
+	const res = await lsRequest.call(this, 'GET', '/team-members?limit=100');
 	const rows = ensureArray(res);
 	return rows.map((m: any) => ({
 		name: buildLabel(m),

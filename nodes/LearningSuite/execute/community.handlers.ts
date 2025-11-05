@@ -18,6 +18,20 @@ const getForums: ExecuteHandler = async (ctx, i) => {
 	return await lsRequest.call(ctx, 'GET', '/community/forums', { qs });
 };
 
+const getCommunityPosts: ExecuteHandler = async (ctx, i) => {
+	const limit = ctx.getNodeParameter('limit', i, 15) as number;
+	const offset = ctx.getNodeParameter('offset', i, 0) as number;
+	const areaId = ctx.getNodeParameter('areaId', i, '') as string;
+	const forumId = ctx.getNodeParameter('forumId', i, '') as string;
+	const order = ctx.getNodeParameter('order', i, 'latest') as string;
+
+	const qs: IDataObject = { limit, offset, order };
+	if (areaId) qs.areaId = areaId;
+	if (forumId) qs.forumId = forumId;
+
+	return await lsRequest.call(ctx, 'GET', '/community/posts', { qs });
+};
+
 const getBadges: ExecuteHandler = async (ctx, i) => {
 	const limit = ctx.getNodeParameter('limit', i, 15) as number;
 	const offset = ctx.getNodeParameter('offset', i, 0) as number;
@@ -90,4 +104,5 @@ export const communityHandlers = {
 	assignBadgesToUser,
 	removeBadgesFromUser,
 	commentOnPost,
+	getCommunityPosts,
 };

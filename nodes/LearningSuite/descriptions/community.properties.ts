@@ -40,6 +40,12 @@ export const communityProperties: INodeProperties[] = [
 				action: 'Get community forums',
 			},
 			{
+				name: 'Get Community Posts',
+				value: 'getCommunityPosts',
+				description: 'List all published community posts (optionally filtered by area or forum)',
+				action: 'Get community posts',
+			},
+			{
 				name: 'Remove Community Badges From Member',
 				value: 'removeBadgesFromUser',
 				description: 'Remove one or more badges from a member',
@@ -117,13 +123,16 @@ export const communityProperties: INodeProperties[] = [
 			'You can select multiple badges. The badge selector can optionally be filtered by <b>Badge Group ID</b>.',
 	},
 	{
-		displayName: 'Community Post ID',
+		displayName: 'Community Post Name or ID',
 		name: 'postId',
-		type: 'string',
+		type: 'options',
+		typeOptions: {
+			loadOptionsMethod: 'community_getLatestPosts',
+		},
 		displayOptions: { show: { resource: ['community'], operation: ['commentOnPost'] } },
 		default: '',
 		required: true,
-		description: 'The community post to comment on',
+		description: 'The community post to comment on. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 	},
 	{
 		displayName: 'Author Type',
@@ -230,4 +239,73 @@ export const communityProperties: INodeProperties[] = [
 		default: 0,
 		description: 'Number of badges to skip (pagination)',
 	},
+	// === Get Community Posts ===
+	{
+		displayName: 'Area Name or ID',
+		name: 'areaId',
+		type: 'options',
+		typeOptions: { loadOptionsMethod: 'community_getAreas' },
+		displayOptions: {
+			show: { resource: ['community'], operation: ['getCommunityPosts'] },
+		},
+		default: '',
+		placeholder: 'Select Area (optional)',
+		description:
+			'Filter posts by community area. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+	},
+	{
+		displayName: 'Forum Name or ID',
+		name: 'forumId',
+		type: 'options',
+		typeOptions: { loadOptionsMethod: 'community_getForums' },
+		displayOptions: {
+			show: { resource: ['community'], operation: ['getCommunityPosts'] },
+		},
+		default: '',
+		placeholder: 'Select Forum (optional)',
+		description:
+			'Filter posts by community forum. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+	},
+	{
+		displayName: 'Order',
+		name: 'order',
+		type: 'options',
+		displayOptions: {
+			show: { resource: ['community'], operation: ['getCommunityPosts'] },
+		},
+		options: [
+			{ name: 'Latest', value: 'latest' },
+			{ name: 'Latest Content', value: 'latestContent' },
+			{ name: 'Top', value: 'top' },
+			{ name: 'Relevance', value: 'relevance' },
+		],
+		default: 'latest',
+		description: 'Order of posts to return',
+	},
+	{
+		displayName: 'Limit',
+		name: 'limit',
+		type: 'number',
+		displayOptions: {
+			show: {
+				resource: ['community'],
+				operation: ['getCommunityPosts'],
+			},
+		},
+		typeOptions: { minValue: 1 },
+		default: 50,
+		description: 'Max number of results to return',
+	},
+	{
+		displayName: 'Offset',
+		name: 'offset',
+		type: 'number',
+		displayOptions: {
+			show: { resource: ['community'], operation: ['getCommunityPosts'] },
+		},
+		typeOptions: { minValue: 0 },
+		default: 0,
+		description: 'Number of posts to skip (useful for pagination)',
+	},
+	// === END getPosts ===
 ];

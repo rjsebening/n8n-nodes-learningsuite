@@ -274,7 +274,8 @@ export const webhookProperties: INodeProperties[] = [
 				type: 'options',
 				typeOptions: { loadOptionsMethod: 'community_getAreas' },
 				default: '',
-				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 			},
 			{
 				displayName: 'Forum Name or ID',
@@ -285,7 +286,8 @@ export const webhookProperties: INodeProperties[] = [
 					loadOptionsDependsOn: ['additionalCommunityPostCreated.areaId'],
 				},
 				default: '',
-				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 			},
 			{
 				displayName: 'Publish Status',
@@ -322,7 +324,8 @@ export const webhookProperties: INodeProperties[] = [
 				type: 'options',
 				typeOptions: { loadOptionsMethod: 'community_getAreas' },
 				default: '',
-				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 			},
 			{
 				displayName: 'Forum Name or ID',
@@ -333,7 +336,8 @@ export const webhookProperties: INodeProperties[] = [
 					loadOptionsDependsOn: ['additionalCommunityPostCommented.areaId'],
 				},
 				default: '',
-				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 			},
 			{
 				displayName: 'Mentioned User Names or IDs',
@@ -368,7 +372,8 @@ export const webhookProperties: INodeProperties[] = [
 				type: 'options',
 				typeOptions: { loadOptionsMethod: 'community_getAreas' },
 				default: '',
-				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 			},
 			{
 				displayName: 'Forum Name or ID',
@@ -379,7 +384,8 @@ export const webhookProperties: INodeProperties[] = [
 					loadOptionsDependsOn: ['additionalCommunityPostModerated.areaId'],
 				},
 				default: '',
-				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 			},
 			{
 				displayName: 'Approved Status',
