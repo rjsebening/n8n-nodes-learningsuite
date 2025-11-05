@@ -65,36 +65,32 @@ const removeBadgesFromUser: ExecuteHandler = async (ctx, i) => {
 	return await lsRequest.call(ctx, 'DELETE', '/community/badges/user', { body });
 };
 
-const commentOnPost: ExecuteHandler = async (ctx, i) => {
-	const postId = ctx.getNodeParameter('postId', i) as string;
-	const authorType = ctx.getNodeParameter('authorType', i) as 'member' | 'team';
-	const authorMemberId = ctx.getNodeParameter('authorMemberId', i, '') as string;
-	const authorTeamMemberId = ctx.getNodeParameter('authorTeamMemberId', i, '') as string;
-	const commentText = ctx.getNodeParameter('commentText', i) as string;
-	const answerToCommentId = ctx.getNodeParameter('answerToCommentId', i, '') as string;
+export const commentOnPost: ExecuteHandler = async (ctx, i) => {
+	const postId = String(ctx.getNodeParameter('postId', i, '') || '').trim();
+	const authorUserId = String(ctx.getNodeParameter('authorUserId', i, '') || '').trim();
+	const commentText = String(ctx.getNodeParameter('commentText', i, '') || '').trim();
+	const answerToCommentId = String(ctx.getNodeParameter('answerToCommentId', i, '') || '').trim();
 	const enableWebhookTriggering = ctx.getNodeParameter('enableWebhookTriggering', i, false) as boolean;
-
 	if (!postId) {
 		throw new NodeOperationError(ctx.getNode(), 'Please provide a post ID.');
 	}
-	if (!commentText) {
-		throw new NodeOperationError(ctx.getNode(), 'The comment text cannot be empty.');
-	}
-
-	const authorUserId = authorType === 'member' ? authorMemberId : authorType === 'team' ? authorTeamMemberId : '';
-
 	if (!authorUserId) {
-		throw new NodeOperationError(
-			ctx.getNode(),
-			authorType === 'member' ? 'Please select an author (member).' : 'Please select an author (team member).',
-		);
+		throw new NodeOperationError(ctx.getNode(), 'Please provide authorUserId (must be an admin user).');
+	}
+	if (!commentText) {
+		throw new NodeOperationError(ctx.getNode(), 'The comment text cannot be empty (plain text only).');
+	}
+	const body: IDataObject = {
+		authorUserId,
+		commentText,
+		enableWebhookTriggering,
+	};
+
+	if (answerToCommentId) {
+		body.answerToCommentId = answerToCommentId;
 	}
 
-	const body: IDataObject = { authorUserId, commentText };
-	if (answerToCommentId) body.answerToCommentId = answerToCommentId;
-	if (enableWebhookTriggering) body.enableWebhookTriggering = true;
-
-	return await lsRequest.call(ctx, 'POST', `/community/posts/${postId}/comments`, { body });
+	return lsRequest.call(ctx, 'POST', `/community/posts/${postId}/comments`, { body });
 };
 
 export const communityHandlers = {

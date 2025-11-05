@@ -132,36 +132,15 @@ export const communityProperties: INodeProperties[] = [
 		displayOptions: { show: { resource: ['community'], operation: ['commentOnPost'] } },
 		default: '',
 		required: true,
-		description: 'The community post to comment on. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
-	},
-	{
-		displayName: 'Author Type',
-		name: 'authorType',
-		type: 'options',
-		options: [
-			/*{ name: 'Member', value: 'member' },*/
-			{ name: 'Team Member', value: 'team' },
-		],
-		default: 'team',
-		displayOptions: { show: { resource: ['community'], operation: ['commentOnPost'] } },
-		description: 'Choose whether the author is a member or a team member',
-	},
-	{
-		displayName: 'Author (Member) Name or ID',
-		name: 'authorMemberId',
-		type: 'options',
-		typeOptions: { loadOptionsMethod: 'member_getMembers' },
-		displayOptions: { show: { resource: ['community'], operation: ['commentOnPost'], authorType: ['member'] } },
-		default: '',
 		description:
-			'Select a member as author who writes the comment. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+			'The community post to comment on. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 	},
 	{
-		displayName: 'Author (Team Member) Name or ID',
-		name: 'authorTeamId',
+		displayName: 'Author Name or ID',
+		name: 'authorUserId',
 		type: 'options',
 		typeOptions: { loadOptionsMethod: 'teamMember_getTeamMembersById' },
-		displayOptions: { show: { resource: ['community'], operation: ['commentOnPost'], authorType: ['team'] } },
+		displayOptions: { show: { resource: ['community'], operation: ['commentOnPost'] } },
 		default: '',
 		description:
 			'Select a team member as author who writes the comment. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
