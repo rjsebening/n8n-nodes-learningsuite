@@ -343,10 +343,10 @@ export const webhookProperties: INodeProperties[] = [
 				displayName: 'Mentioned User Names or IDs',
 				name: 'mentionedUserIds',
 				type: 'multiOptions',
-				typeOptions: { loadOptionsMethod: 'member_getMembers' },
+				typeOptions: { loadOptionsMethod: 'teamMember_getTeamMembersById' },
 				default: [],
 				description:
-					'Only deliver comments that mention at least one of these users. Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+					'If set, only comments that tag at least one of the given team-member IDs are returned. NOTE: only available for users with admin-zone access, not for members. Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 		],
 	},

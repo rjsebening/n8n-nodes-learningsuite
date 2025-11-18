@@ -217,6 +217,8 @@ export const instantProperties: INodeProperties[] = [
 					{ name: 'Waiting for Moderation', value: 'waiting for moderation' },
 				],
 				default: 'both',
+				description:
+					'If true, only posts that are published are returned. If false, only posts that are not published are returned (e.g. posts in moderated forums which are not handled yet.). If not set, both published and unpublished posts are returned. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 		],
 	},
@@ -237,7 +239,7 @@ export const instantProperties: INodeProperties[] = [
 				typeOptions: { loadOptionsMethod: 'community_getAreas' },
 				default: '',
 				description:
-					'Choose from the list, or specify an ID using an expression. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+					'The ID of the area to filter for. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			{
 				displayName: 'Forum Name or ID',
@@ -249,16 +251,16 @@ export const instantProperties: INodeProperties[] = [
 				},
 				default: '',
 				description:
-					'Choose from the list, or specify an ID using an expression. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+					'The ID of the forum to filter for. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			{
 				displayName: 'Mentioned User Names or IDs',
 				name: 'mentionedUserIds',
 				type: 'multiOptions',
-				typeOptions: { loadOptionsMethod: 'member_getMembers' },
+				typeOptions: { loadOptionsMethod: 'teamMember_getTeamMembersById' },
 				default: [],
 				description:
-					'Only deliver comments that mention at least one of these users. Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+					'If set, only comments that tag at least one of the given team-member IDs are returned. NOTE: only available for users with admin-zone access, not for members. Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 		],
 	},
@@ -278,7 +280,7 @@ export const instantProperties: INodeProperties[] = [
 				name: 'areaId',
 				type: 'options',
 				description:
-					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+					'The ID of the area to filter for. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 				typeOptions: { loadOptionsMethod: 'community_getAreas' },
 				default: '',
 				placeholder: 'Add option',
@@ -288,7 +290,7 @@ export const instantProperties: INodeProperties[] = [
 				name: 'forumId',
 				type: 'options',
 				description:
-					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+					'The ID of the forum to filter for. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 				typeOptions: {
 					loadOptionsMethod: 'community_getForums',
 					loadOptionsDependsOn: ['additionalCommunityPostModerated.areaId'],
@@ -305,6 +307,8 @@ export const instantProperties: INodeProperties[] = [
 					{ name: 'Rejected (No)', value: 'rejected' },
 				],
 				default: 'both',
+				description:
+					'If true, only posts that are approved are returned. If false, only posts that are rejected are returned. If not set, both approved and rejected posts are returned. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 		],
 	},

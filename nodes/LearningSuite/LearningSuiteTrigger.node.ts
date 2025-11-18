@@ -15,13 +15,18 @@ import { instantProperties as instantProperties } from './descriptions/trigger.i
 import { methods as credentialMethods } from './methods/credentialTest';
 import { toIdArray } from './shared/parsing';
 
-import * as loMember from './methods/loadOptions/member.loadOptions';
-import * as loCourse from './methods/loadOptions/course.loadOptions';
+// methods - loadOptions
+import * as loBundle from './methods/loadOptions/bundle.loadOptions';
 import * as loCommunity from './methods/loadOptions/community.loadOptions';
+import * as loCourse from './methods/loadOptions/course.loadOptions';
 import * as loGroup from './methods/loadOptions/group.loadOptions';
+import * as loHub from './methods/loadOptions/hub.loadOptions';
+import * as loMember from './methods/loadOptions/member.loadOptions';
 import * as loModule from './methods/loadOptions/module.loadOptions';
 import * as loPopup from './methods/loadOptions/popup.loadOptions';
 import * as loRole from './methods/loadOptions/role.loadOptions';
+import * as loWebhook from './methods/loadOptions/webhook.loadOptions';
+import * as loTeamMember from './methods/loadOptions/teamMember.loadOptions';
 
 const INSTANT_EVENTS = new Set<string>([
 	'accessRequest.created',
@@ -242,17 +247,17 @@ export class LearningSuiteTrigger implements INodeType {
 	methods = {
 		...credentialMethods,
 		loadOptions: {
-			member_getMembers: loMember.member_getMembers,
-			course_getCourses: loCourse.course_getCourses,
-			community_getAreas: loCommunity.community_getAreas,
-			community_getForums: loCommunity.community_getForums,
-			group_getGroups: loGroup.group_getGroups,
-			course_getModules: loCourse.course_getModules,
-			module_getModules: loModule.module_getModules,
-			module_getLessons: loModule.module_getLessons,
-			module_getSections: loModule.module_getSections,
-			popup_getPopups: loPopup.popup_getPopups,
-			role_getRoles: loRole.role_getRoles,
+			...loBundle,
+			...loCommunity,
+			...loCourse,
+			...loGroup,
+			...loHub,
+			...loMember,
+			...loModule,
+			...loPopup,
+			...loRole,
+			...loTeamMember,
+			...loWebhook,
 		},
 	};
 
