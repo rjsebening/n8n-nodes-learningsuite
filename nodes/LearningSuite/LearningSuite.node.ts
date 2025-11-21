@@ -18,6 +18,8 @@ import * as loRole from './methods/loadOptions/role.loadOptions';
 import * as loWebhook from './methods/loadOptions/webhook.loadOptions';
 import * as loTeamMember from './methods/loadOptions/teamMember.loadOptions';
 
+import { getTemplateVariablesResourceMapperFields } from './methods/resourceMappers/hub.resourceMapper';
+
 // properties
 import { resourceSelector } from './descriptions/resource.selector';
 import { apiCallProperties } from './descriptions/apiCall.properties';
@@ -125,6 +127,9 @@ export class LearningSuite implements INodeType {
 			...loRole,
 			...loTeamMember,
 			...loWebhook,
+		},
+		resourceMapping: {
+			getTemplateVariablesResourceMapperFields,
 		},
 	};
 
