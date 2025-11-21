@@ -67,54 +67,81 @@ export const hubProperties: INodeProperties[] = [
 		description: 'Name of the hub',
 	},
 	{
+		displayName: 'Hub Description',
+		name: 'description',
+		type: 'string',
+		default: '',
+		description: 'Description of the hub',
+		displayOptions: { show: { resource: ['hub'], operation: ['create'] } },
+	},
+	{
 		displayName: 'Template Name or ID',
 		name: 'templateId',
 		type: 'options',
-		typeOptions: { loadOptionsMethod: 'hub_getTemplates' },
-		displayOptions: { show: { resource: ['hub'], operation: ['create', 'getTemplateVariables'] } },
+		noDataExpression: true,
+		typeOptions: {
+			loadOptionsMethod: 'hub_getTemplates',
+		},
+		displayOptions: {
+			show: {
+				resource: ['hub'],
+				operation: ['create', 'getTemplateVariables'],
+			},
+		},
 		default: '',
 		required: true,
 		description:
 			'ID of the hub template. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 	},
 	{
-		displayName: 'Additional Options',
-		name: 'additionalOptions',
-		type: 'collection',
-		placeholder: 'Add Option',
-		default: {},
-		displayOptions: { show: { resource: ['hub'], operation: ['create'] } },
-		options: [
-			{
-				displayName: 'Hub Description',
-				name: 'description',
-				type: 'string',
-				default: '',
-				description: 'Description of the hub',
+		displayName: 'Template Variables',
+		name: 'templateVariables',
+		type: 'resourceMapper',
+		noDataExpression: true,
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['hub'],
+				operation: ['create'],
 			},
-			{
-				displayName: 'Publish Hub',
-				name: 'publish',
-				type: 'boolean',
-				default: true,
-				description: 'Whether to publish the hub immediately',
+		},
+		default: {
+			mappingMode: 'defineBelow',
+			value: null,
+		},
+		typeOptions: {
+			loadOptionsDependsOn: ['templateId'],
+			resourceMapper: {
+				resourceMapperMethod: 'getTemplateVariablesResourceMapperFields',
+				mode: 'add',
+				fieldWords: {
+					singular: 'variable',
+					plural: 'variables',
+				},
+				addAllFields: true,
+				multiKeyMatch: false,
+				supportAutoMap: false,
 			},
-			{
-				displayName: 'Sort Index',
-				name: 'sortIndex',
-				type: 'number',
-				default: 0,
-				description: 'Sort index of the hub',
-			},
-			{
-				displayName: 'Template Variables',
-				name: 'templateVariables',
-				type: 'json',
-				default: {},
-				description: 'Optional template variables as JSON',
-			},
-		],
+		},
 	},
+
+	{
+		displayName: 'Publish Hub',
+		name: 'publish',
+		type: 'boolean',
+		default: true,
+		description: 'Whether to publish the hub immediately',
+		displayOptions: { show: { resource: ['hub'], operation: ['create'] } },
+	},
+	{
+		displayName: 'Sort Index',
+		name: 'sortIndex',
+		type: 'number',
+		default: 50,
+		description: 'Sort index of the hub',
+		displayOptions: { show: { resource: ['hub'], operation: ['create'] } },
+	},
+
 	{
 		displayName: 'Group Names or IDs',
 		name: 'groupIds',
