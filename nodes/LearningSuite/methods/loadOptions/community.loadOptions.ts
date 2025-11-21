@@ -16,12 +16,36 @@ export async function community_getForums(this: ILoadOptionsFunctions) {
 }
 
 export async function community_getBadges(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
-	const qs: IDataObject = { limit: 200, offset: 0 };
+	const qs: IDataObject = {
+		limit: 100,
+		offset: 0,
+	};
+
 	try {
 		const badgeGroupId = this.getNodeParameter('badgeGroupId', 0) as string;
-		if (badgeGroupId) qs.badgeGroupId = badgeGroupId;
+		if (badgeGroupId) {
+			qs.badgeGroupId = badgeGroupId;
+		}
 	} catch {}
-	return fetchOptions.call(this, '/community/badges', qs, ['name', 'title'], ['id', 'sid']);
+
+	const res = await lsRequest.call(this, 'GET', '/community/badges', { qs });
+	const rows = Array.isArray(res) ? res : (res?.items ?? res ?? []);
+	const options: INodePropertyOptions[] = [];
+
+	for (const r of rows as IDataObject[]) {
+		if (!r) continue;
+		const id = (r.id ?? r.sid) as string | undefined;
+		if (!id) continue;
+		const label = (r.name ?? r.title ?? '').toString().trim();
+		if (!label) continue;
+
+		options.push({
+			name: label,
+			value: id,
+		});
+	}
+
+	return options;
 }
 
 export async function community_getLatestPosts(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
