@@ -8,12 +8,20 @@ const getTemplates: ExecuteHandler = async (ctx) => lsRequest.call(ctx, 'GET', '
 const create: ExecuteHandler = async (ctx, i) => {
 	const templateId = ctx.getNodeParameter('templateId', i) as string;
 	const name = ctx.getNodeParameter('name', i) as string;
-	const add = ctx.getNodeParameter('additionalOptions', i, {}) as IDataObject;
-	const body: IDataObject = { templateId, name, ...add };
-	if (body.sortIndex !== undefined) body.sortIndex = Number(body.sortIndex);
-	if (typeof body.templateVariables === 'string') {
-		body.templateVariables = JSON.parse(body.templateVariables as string);
-	}
+	const description = ctx.getNodeParameter('description', i, '') as string;
+	const publish = ctx.getNodeParameter('publish', i, true) as boolean;
+	const sortIndex = Number(ctx.getNodeParameter('sortIndex', i, 50));
+	const templateVariables = ctx.getNodeParameter('templateVariables.value', i, {}) as IDataObject;
+
+	const body: IDataObject = {
+		name,
+		publish,
+		sortIndex,
+		templateId,
+		description,
+		templateVariables,
+	};
+
 	return lsRequest.call(ctx, 'POST', '/hub', { body });
 };
 
