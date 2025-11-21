@@ -91,8 +91,6 @@ export const communityProperties: INodeProperties[] = [
 		description:
 			'Member to whom badges are assigned or revoked. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 	},
-
-	// Badges (multi-select) – depends on optional badgeGroupId filter
 	{
 		displayName: 'Badge Names or IDs',
 		name: 'badgeIds',
