@@ -215,4 +215,46 @@ export const courseProperties: INodeProperties[] = [
 			},
 		],
 	},
+	{
+		displayName: 'Limit',
+		name: 'limit',
+		type: 'number',
+		typeOptions: {
+			minValue: 1,
+		},
+		default: 50,
+		description: 'Max number of results to return',
+		displayOptions: {
+			show: {
+				resource: ['course'],
+				operation: ['getMembers', 'getAccessRequests', 'getSubmissions'],
+			},
+		},
+	},
+	{
+		displayName: 'Offset',
+		name: 'offset',
+		type: 'number',
+		default: 0,
+		description: 'Number of records to skip',
+		displayOptions: {
+			show: {
+				resource: ['course'],
+				operation: ['getMembers', 'getAccessRequests', 'getSubmissions'],
+			},
+		},
+	},
+	{
+		displayName: 'Include Progress',
+		name: 'includeProgress',
+		type: 'boolean',
+		default: false,
+		description: 'Whether to include member progress in the response',
+		displayOptions: {
+			show: {
+				resource: ['course'],
+				operation: ['getMembers'],
+			},
+		},
+	},
 ];
