@@ -17,17 +17,43 @@ const getModulesForMember: ExecuteHandler = async (ctx, i) => {
 
 const getMembers: ExecuteHandler = async (ctx, i) => {
 	const courseId = ctx.getNodeParameter('courseId', i) as string;
-	return await lsRequest.call(ctx, 'GET', `/courses/${courseId}/members`);
+	const limit = ctx.getNodeParameter('limit', i, 100) as number;
+	const offset = ctx.getNodeParameter('offset', i, 0) as number;
+	const includeProgress = ctx.getNodeParameter('includeProgress', i, false) as boolean;
+
+	const qs: IDataObject = {
+		limit,
+		offset,
+		includeProgress,
+	};
+
+	return await lsRequest.call(ctx, 'GET', `/courses/${courseId}/members`, { qs });
 };
 
 const getAccessRequests: ExecuteHandler = async (ctx, i) => {
 	const courseId = ctx.getNodeParameter('courseId', i) as string;
-	return await lsRequest.call(ctx, 'GET', `/courses/${courseId}/access-requests`);
+	const limit = ctx.getNodeParameter('limit', i, 15) as number;
+	const offset = ctx.getNodeParameter('offset', i, 0) as number;
+
+	const qs: IDataObject = {
+		limit,
+		offset,
+	};
+
+	return await lsRequest.call(ctx, 'GET', `/courses/${courseId}/access-requests`, { qs });
 };
 
 const getSubmissions: ExecuteHandler = async (ctx, i) => {
 	const courseId = ctx.getNodeParameter('courseId', i) as string;
-	return await lsRequest.call(ctx, 'GET', `/courses/${courseId}/submissions`);
+	const limit = ctx.getNodeParameter('limit', i, 15) as number;
+	const offset = ctx.getNodeParameter('offset', i, 0) as number;
+
+	const qs: IDataObject = {
+		limit,
+		offset,
+	};
+
+	return await lsRequest.call(ctx, 'GET', `/courses/${courseId}/submissions`, { qs });
 };
 
 const createLesson: ExecuteHandler = async (ctx, i) => {
