@@ -189,7 +189,8 @@ export const memberProperties: INodeProperties[] = [
 				name: 'ignoreIfAlreadyExists',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to avoid an error when creating an existing member',
+				description:
+					'Whether an existing member should be returned instead of throwing an error if the member already exists',
 			},
 
 			{
