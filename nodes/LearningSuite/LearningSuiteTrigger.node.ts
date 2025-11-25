@@ -42,6 +42,7 @@ const INSTANT_EVENTS = new Set<string>([
 	'lesson.completed',
 	'login.new',
 	'submission.created',
+	'course.updated',
 ]);
 
 function buildDesiredFilter(this: IHookFunctions, event: string): { filter: IDataObject; hasFilter: boolean } {
@@ -160,6 +161,18 @@ function buildDesiredFilter(this: IHookFunctions, event: string): { filter: IDat
 			}
 			if (col?.examModuleId) {
 				filter.examModuleId = String(col.examModuleId);
+			}
+			break;
+		}
+
+		// course.updated
+		case 'course.updated': {
+			const col = getCol('additionalCourseOptions') as {
+				courseId?: string;
+			};
+
+			if (col?.courseId) {
+				filter.courseInstanceId = String(col.courseId);
 			}
 			break;
 		}
