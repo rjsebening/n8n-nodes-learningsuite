@@ -119,6 +119,15 @@ function buildDesiredFilter(ctx: any, i: number, eventType: string): IDataObject
 			break;
 		}
 
+		// ---------------- Course
+		case 'course.updated': {
+			const fb = getCol(ctx, i, 'additionalCourseOptions') as { courseId?: string };
+			const legacy = Object.keys(fb).length ? undefined : (getCol(ctx, i, 'additionalCourseOptions') as any);
+			const c = (Object.keys(fb).length ? fb : legacy) || {};
+			if (c?.courseId) filter.courseInstanceId = String(c.courseId);
+			break;
+		}
+
 		// ---------------- Feedback
 		case 'feedback.created': {
 			const fb = getCol(ctx, i, 'additionalFeedbackOptions') as { courseId?: string };
