@@ -86,6 +86,7 @@ export const webhookProperties: INodeProperties[] = [
 			{ name: 'Community Post Created', value: 'communityPost.created' },
 			{ name: 'Community Post Moderated', value: 'communityPost.moderated' },
 			{ name: 'Course Progress Changed', value: 'courseProgress.changed' },
+			{ name: 'Course Updated Events', value: 'course.updated' },
 			{ name: 'Custom Popup Interaction', value: 'customPopup.interaction' },
 			{ name: 'Exam Completed', value: 'exam.completed' },
 			{ name: 'Exam Graded', value: 'exam.graded' },
@@ -112,6 +113,7 @@ export const webhookProperties: INodeProperties[] = [
 			{ name: 'Community Post Created Events', value: 'community-post-created-events' },
 			{ name: 'Community Post Moderated Events', value: 'community-post-moderated-events' },
 			{ name: 'Course Progress Changed Events', value: 'course-progress-changed-events' },
+			{ name: 'Course Updated Events', value: 'course-updated-events' },
 			{ name: 'Custom Popup Interaction Events', value: 'custom-popup-interaction-events' },
 			{ name: 'Exam Completed Events', value: 'exam-completed-events' },
 			{ name: 'Exam Graded Events', value: 'exam-graded-events' },
@@ -400,8 +402,33 @@ export const webhookProperties: INodeProperties[] = [
 			},
 		],
 	},
-
-	// Feedback (nur courseInstanceId)
+	// Course Events (courseInstanceId)
+	{
+		displayName: 'Course Options',
+		name: 'additionalCourseOptions',
+		type: 'collection',
+		default: {},
+		placeholder: 'Add option',
+		displayOptions: {
+			show: {
+				resource: ['webhook'],
+				operation: ['createSubscription', 'updateSubscription'],
+				eventType: ['course.updated'],
+			},
+		},
+		options: [
+			{
+				displayName: 'Course Name or ID',
+				name: 'courseId',
+				type: 'options',
+				typeOptions: { loadOptionsMethod: 'course_getCourses' },
+				default: '',
+				description:
+					'Optional course filter. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+			},
+		],
+	},
+	// Feedback (courseInstanceId)
 	{
 		displayName: 'Feedback Options',
 		name: 'additionalFeedbackOptions',
