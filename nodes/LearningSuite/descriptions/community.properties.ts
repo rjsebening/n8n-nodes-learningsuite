@@ -167,7 +167,8 @@ export const communityProperties: INodeProperties[] = [
 		type: 'boolean',
 		displayOptions: { show: { resource: ['community'], operation: ['commentOnPost'] } },
 		default: false,
-		description: 'Whether to trigger webhooks when posting this comment',
+		description:
+			'Whether commenting via API should trigger webhooks. By default, API comments do NOT trigger webhooks. Enabling this can fire events like community.post.commented. WARNING: This may cause infinite loops if the webhook triggers the same API again',
 	},
 	{
 		displayName: 'Limit',
