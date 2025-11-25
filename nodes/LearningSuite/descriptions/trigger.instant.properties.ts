@@ -30,6 +30,11 @@ export const instantProperties: INodeProperties[] = [
 				description: 'Triggers when the course progress of a member crosses a given threshold',
 			},
 			{
+				name: 'Course Updated',
+				value: 'course.updated',
+				description: 'Triggers when a course has been updated',
+			},
+			{
 				name: 'Custom Popup Interaction',
 				value: 'customPopup.interaction',
 				description: 'Triggers when a member interacts with a custom popup',
@@ -309,6 +314,27 @@ export const instantProperties: INodeProperties[] = [
 				default: 'both',
 				description:
 					'If true, only posts that are approved are returned. If false, only posts that are rejected are returned. If not set, both approved and rejected posts are returned. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+			},
+		],
+	},
+
+	// Course Events (courseInstanceId)
+	{
+		displayName: 'Course Options',
+		name: 'additionalCourseOptions',
+		type: 'collection',
+		default: {},
+		placeholder: 'Add option',
+		displayOptions: { show: { event: ['course.updated'] } },
+		options: [
+			{
+				displayName: 'Course Name or ID',
+				name: 'courseId',
+				type: 'options',
+				typeOptions: { loadOptionsMethod: 'course_getCourses' },
+				default: '',
+				description:
+					'Optional course filter. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 		],
 	},
