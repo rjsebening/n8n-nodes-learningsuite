@@ -12,6 +12,7 @@ import { popupHandlers } from './popup.handlers';
 import { roleHandlers } from './role.handlers';
 import { webhookHandlers } from './webhook.handlers';
 import { teamMemberHandlers } from './teamMember.handlers';
+import { userHandlers } from './user.handlers';
 
 export const registry: HandlersRegistry = {
 	apiCall: apiCallHandlers,
@@ -24,6 +25,7 @@ export const registry: HandlersRegistry = {
 	module: moduleHandlers,
 	popup: popupHandlers,
 	teamMember: teamMemberHandlers,
+	user: userHandlers,
 	role: roleHandlers,
 	webhook: webhookHandlers,
 };

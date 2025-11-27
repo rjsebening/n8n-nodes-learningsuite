@@ -33,6 +33,7 @@ import { moduleProperties } from './descriptions/module.properties';
 import { popupProperties } from './descriptions/popup.properties';
 import { roleProperties } from './descriptions/role.properties';
 import { teamMemberProperties } from './descriptions/teamMember.properties';
+import { userProperties } from './descriptions/user.properties';
 import { webhookProperties } from './descriptions/webhook.properties';
 
 // handlers
@@ -47,6 +48,7 @@ import { moduleHandlers } from './execute/module.handlers';
 import { popupHandlers } from './execute/popup.handlers';
 import { roleHandlers } from './execute/role.handlers';
 import { teamMemberHandlers } from './execute/teamMember.handlers';
+import { userHandlers } from './execute/user.handlers';
 import { webhookHandlers } from './execute/webhook.handlers';
 
 const registry: HandlersRegistry = {
@@ -61,6 +63,7 @@ const registry: HandlersRegistry = {
 	popup: { ...popupHandlers },
 	role: { ...roleHandlers },
 	teamMember: { ...teamMemberHandlers },
+	user: { ...userHandlers },
 	webhook: { ...webhookHandlers },
 };
 
@@ -109,6 +112,7 @@ export class LearningSuite implements INodeType {
 			...popupProperties,
 			...roleProperties,
 			...teamMemberProperties,
+			...userProperties,
 			...webhookProperties,
 		],
 	};
