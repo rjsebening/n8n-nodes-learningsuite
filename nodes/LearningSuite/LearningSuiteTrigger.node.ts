@@ -12,7 +12,6 @@ import {
 
 import { apiRequest } from './shared/request';
 import { instantProperties as instantProperties } from './descriptions/trigger.instant.properties';
-import { methods as credentialMethods } from './methods/credentialTest';
 import { toIdArray } from './shared/parsing';
 
 // methods - loadOptions
@@ -258,7 +257,6 @@ export class LearningSuiteTrigger implements INodeType {
 	};
 
 	methods = {
-		...credentialMethods,
 		loadOptions: {
 			...loBundle,
 			...loCommunity,
