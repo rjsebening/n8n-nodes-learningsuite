@@ -112,7 +112,7 @@ export const webhookProperties: INodeProperties[] = [
 			{ name: 'Community Post Commented', value: 'community-post-commented-events' },
 			{ name: 'Community Post Created Events', value: 'community-post-created-events' },
 			{ name: 'Community Post Moderated Events', value: 'community-post-moderated-events' },
-			{ name: 'Course Progress Changed Events', value: 'course-progress-changed-events' },
+			{ name: 'Course Progress Changed Events', value: 'progress-changed-events' },
 			{ name: 'Course Updated Events', value: 'course-updated-events' },
 			{ name: 'Custom Popup Interaction Events', value: 'custom-popup-interaction-events' },
 			{ name: 'Exam Completed Events', value: 'exam-completed-events' },

@@ -4,7 +4,12 @@ import type { ExecuteHandler } from '../exec.types';
 
 const getByEmail: ExecuteHandler = async (ctx, i) => {
 	const email = ctx.getNodeParameter('email', i) as string;
-	return await lsRequest.call(ctx, 'GET', '/members/by-email', { qs: { email } });
+	const includeGroups = ctx.getNodeParameter('includeGroups', i) as boolean;
+
+	const qs: IDataObject = { email };
+	if (includeGroups) qs.includeGroups = includeGroups;
+
+	return await lsRequest.call(ctx, 'GET', '/members/by-email', { qs });
 };
 
 const getById: ExecuteHandler = async (ctx, i) => {
@@ -17,11 +22,23 @@ const getById: ExecuteHandler = async (ctx, i) => {
 
 const getAll: ExecuteHandler = async (ctx, i) => {
 	const additionalOptions = ctx.getNodeParameter('additionalOptions', i, {}) as IDataObject;
+
+	const includeGroups = ctx.getNodeParameter('includeGroups', i) as boolean;
+	const limit = ctx.getNodeParameter('limit', i) as number;
+	const offset = ctx.getNodeParameter('offset', i) as number;
+
 	const qs: IDataObject = {};
+
+	if (includeGroups !== undefined) qs.includeGroups = includeGroups;
+	if (limit !== undefined) qs.limit = limit;
+	if (offset !== undefined) qs.offset = offset;
+
 	const days = additionalOptions.daysNotLoggedInGte as number;
 	const includeNever = additionalOptions.includeNeverLoggedIn as boolean;
+
 	if (days !== undefined) qs.days_not_logged_in_gte = days;
 	if (includeNever !== undefined) qs.include_never_logged_in = includeNever;
+
 	return await lsRequest.call(ctx, 'GET', '/members', { qs });
 };
 
