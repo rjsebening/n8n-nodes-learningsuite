@@ -66,9 +66,16 @@ const createLesson: ExecuteHandler = async (ctx, i) => {
 	const sortPosRaw = add.lessonSortPosition as string | undefined;
 	const sortPos: LessonSortPosition = sortPosRaw === 'first' || sortPosRaw === 'last' ? sortPosRaw : 'last';
 
+	if (add.lessonDescription) {
+		ctx.logger.warn(
+			'[LearningSuite] Deprecated field "lessonDescription" was provided but is no longer sent to the API.',
+		);
+
+		ctx.sendMessageToUI?.('The field "Lesson Description" is deprecated and will be ignored.');
+	}
+
 	const body: IDataObject = {
 		name: lessonName,
-		lessonDescription: add.lessonDescription,
 		htmlContent: add.htmlContent,
 		videoUrl: add.videoUrl,
 		thumbnailUrl: add.thumbnailUrl,
@@ -78,11 +85,14 @@ const createLesson: ExecuteHandler = async (ctx, i) => {
 
 	if (add.timestampInSecondsToGenerateThumbnail !== undefined && add.videoUrl) {
 		const ts = Number(add.timestampInSecondsToGenerateThumbnail);
-		if (!Number.isNaN(ts)) body.timestampInSecondsToGenerateThumbnail = ts;
+		if (!Number.isNaN(ts)) {
+			body.timestampInSecondsToGenerateThumbnail = ts;
+		}
 	}
-	for (const k of Object.keys(body)) {
+
+	Object.keys(body).forEach((k) => {
 		if (body[k] === '' || body[k] == null) delete body[k];
-	}
+	});
 
 	return lsRequest.call(ctx, 'POST', `/courses/${courseId}/create-lesson/${sectionId}`, { body });
 };
