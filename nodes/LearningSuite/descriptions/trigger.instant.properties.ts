@@ -25,6 +25,11 @@ export const instantProperties: INodeProperties[] = [
 				description: 'Triggers when a community post was moderated (accepted or rejected)',
 			},
 			{
+				name: 'Course Member Added',
+				value: 'course.memberAdded',
+				description: 'Triggers when a member has been added to a course',
+			},
+			{
 				name: 'Course Progress Changed',
 				value: 'courseProgress.changed',
 				description: 'Triggers when the course progress of a member crosses a given threshold',
@@ -325,7 +330,7 @@ export const instantProperties: INodeProperties[] = [
 		type: 'collection',
 		default: {},
 		placeholder: 'Add option',
-		displayOptions: { show: { event: ['course.updated'] } },
+		displayOptions: { show: { event: ['course.updated', 'course.memberAdded'] } },
 		options: [
 			{
 				displayName: 'Course Name or ID',
