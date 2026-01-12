@@ -85,6 +85,7 @@ export const webhookProperties: INodeProperties[] = [
 			{ name: 'Community Post Commented', value: 'communityPost.commented' },
 			{ name: 'Community Post Created', value: 'communityPost.created' },
 			{ name: 'Community Post Moderated', value: 'communityPost.moderated' },
+			{ name: 'Course Member Added', value: 'course.memberAdded' },
 			{ name: 'Course Progress Changed', value: 'courseProgress.changed' },
 			{ name: 'Course Updated Events', value: 'course.updated' },
 			{ name: 'Custom Popup Interaction', value: 'customPopup.interaction' },
@@ -112,6 +113,7 @@ export const webhookProperties: INodeProperties[] = [
 			{ name: 'Community Post Commented', value: 'community-post-commented-events' },
 			{ name: 'Community Post Created Events', value: 'community-post-created-events' },
 			{ name: 'Community Post Moderated Events', value: 'community-post-moderated-events' },
+			{ name: 'Course Member Added', value: 'course-member-added-events' },
 			{ name: 'Course Progress Changed Events', value: 'progress-changed-events' },
 			{ name: 'Course Updated Events', value: 'course-updated-events' },
 			{ name: 'Custom Popup Interaction Events', value: 'custom-popup-interaction-events' },
@@ -413,7 +415,7 @@ export const webhookProperties: INodeProperties[] = [
 			show: {
 				resource: ['webhook'],
 				operation: ['createSubscription', 'updateSubscription'],
-				eventType: ['course.updated'],
+				eventType: ['course.updated', 'course.memberAdded'],
 			},
 		},
 		options: [
