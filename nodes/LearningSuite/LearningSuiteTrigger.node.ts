@@ -42,6 +42,7 @@ const INSTANT_EVENTS = new Set<string>([
 	'login.new',
 	'submission.created',
 	'course.updated',
+	'course.memberAdded',
 ]);
 
 function buildDesiredFilter(this: IHookFunctions, event: string): { filter: IDataObject; hasFilter: boolean } {
@@ -165,6 +166,7 @@ function buildDesiredFilter(this: IHookFunctions, event: string): { filter: IDat
 		}
 
 		// course.updated
+		case 'course.memberAdded':
 		case 'course.updated': {
 			const col = getCol('additionalCourseOptions') as {
 				courseId?: string;
