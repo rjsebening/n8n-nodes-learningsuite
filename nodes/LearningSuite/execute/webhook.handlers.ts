@@ -120,6 +120,7 @@ function buildDesiredFilter(ctx: any, i: number, eventType: string): IDataObject
 		}
 
 		// ---------------- Course
+		case 'course.memberAdded':
 		case 'course.updated': {
 			const fb = getCol(ctx, i, 'additionalCourseOptions') as { courseId?: string };
 			const legacy = Object.keys(fb).length ? undefined : (getCol(ctx, i, 'additionalCourseOptions') as any);
