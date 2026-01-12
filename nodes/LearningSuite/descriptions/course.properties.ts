@@ -183,11 +183,11 @@ export const courseProperties: INodeProperties[] = [
 					'HTML content will be parsed to LearningSuite content and inserted into the Page of the created Lesson. The content will be inserted after the video if a video URL is provided. Only formatted text and images can be inserted.',
 			},
 			{
-				displayName: 'Lesson Description',
+				displayName: 'Lesson Description (Deprecated)',
 				name: 'lessonDescription',
 				type: 'string',
 				default: '',
-				description: 'Description of the lesson',
+				description: 'Deprecated. This field is no longer processed by the API and will be ignored.',
 			},
 			{
 				displayName: 'Thumbnail Timestamp (Sec)',
