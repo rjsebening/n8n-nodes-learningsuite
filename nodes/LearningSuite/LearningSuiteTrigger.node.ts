@@ -26,6 +26,7 @@ import * as loPopup from './methods/loadOptions/popup.loadOptions';
 import * as loRole from './methods/loadOptions/role.loadOptions';
 import * as loWebhook from './methods/loadOptions/webhook.loadOptions';
 import * as loTeamMember from './methods/loadOptions/teamMember.loadOptions';
+import * as loCustomFields from './methods/loadOptions/customFields.loadOptions';
 
 const INSTANT_EVENTS = new Set<string>([
 	'accessRequest.created',
@@ -43,6 +44,7 @@ const INSTANT_EVENTS = new Set<string>([
 	'submission.created',
 	'course.updated',
 	'course.memberAdded',
+	'customField.valueChanged',
 ]);
 
 function buildDesiredFilter(this: IHookFunctions, event: string): { filter: IDataObject; hasFilter: boolean } {
@@ -105,6 +107,18 @@ function buildDesiredFilter(this: IHookFunctions, event: string): { filter: IDat
 			if (col?.forumId) filter.forumId = String(col.forumId);
 			if (col?.approved && col.approved !== 'both') {
 				filter.approved = col.approved === 'approved'; // boolean
+			}
+			break;
+		}
+
+		// ---------------- Custom Field
+		case 'customField.valueChanged': {
+			const col = getCol('additionalCustomFieldValueChanged') as {
+				customFieldCardId?: string;
+			};
+
+			if (col?.customFieldCardId) {
+				filter.customFieldCardId = String(col.customFieldCardId);
 			}
 			break;
 		}
@@ -232,8 +246,8 @@ export class LearningSuiteTrigger implements INodeType {
 		displayName: 'LearningSuite Trigger',
 		name: 'learningSuiteTrigger',
 		icon: {
-			light: 'file:./icons/icon-light.svg',
-			dark: 'file:./icons/icon-dark.svg',
+			light: 'file:./icons/learningsuite-icon-light.svg',
+			dark: 'file:./icons/learningsuite-icon-dark.svg',
 		},
 		group: ['trigger'],
 		version: 1,
@@ -271,6 +285,7 @@ export class LearningSuiteTrigger implements INodeType {
 			...loRole,
 			...loTeamMember,
 			...loWebhook,
+			...loCustomFields,
 		},
 	};
 

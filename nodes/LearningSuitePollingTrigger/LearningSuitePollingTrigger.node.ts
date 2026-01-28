@@ -120,8 +120,8 @@ export class LearningSuitePollingTrigger implements INodeType {
 		displayName: 'LearningSuite Polling Trigger',
 		name: 'learningSuitePollingTrigger',
 		icon: {
-			light: 'file:../LearningSuite/icons/icon-light.svg',
-			dark: 'file:../LearningSuite/icons/icon-dark.svg',
+			light: 'file:../LearningSuite/icons/learningsuite-icon-light.svg',
+			dark: 'file:../LearningSuite/icons/learningsuite-icon-dark.svg',
 		},
 		group: ['trigger', 'schedule'],
 		version: 1,

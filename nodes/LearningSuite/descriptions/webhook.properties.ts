@@ -1,4 +1,5 @@
 import type { INodeProperties } from 'n8n-workflow';
+import { webhookSampleDataProperties } from './webhook.sampleData.properties';
 
 export const webhookProperties: INodeProperties[] = [
 	{
@@ -88,6 +89,7 @@ export const webhookProperties: INodeProperties[] = [
 			{ name: 'Course Member Added', value: 'course.memberAdded' },
 			{ name: 'Course Progress Changed', value: 'courseProgress.changed' },
 			{ name: 'Course Updated Events', value: 'course.updated' },
+			{ name: 'Custom Field Value Changed Events', value: 'customField.valueChanged' },
 			{ name: 'Custom Popup Interaction', value: 'customPopup.interaction' },
 			{ name: 'Exam Completed', value: 'exam.completed' },
 			{ name: 'Exam Graded', value: 'exam.graded' },
@@ -116,6 +118,7 @@ export const webhookProperties: INodeProperties[] = [
 			{ name: 'Course Member Added', value: 'course-member-added-events' },
 			{ name: 'Course Progress Changed Events', value: 'progress-changed-events' },
 			{ name: 'Course Updated Events', value: 'course-updated-events' },
+			{ name: 'Custom Field Value Changed Events', value: 'custom-field-value-changed' },
 			{ name: 'Custom Popup Interaction Events', value: 'custom-popup-interaction-events' },
 			{ name: 'Exam Completed Events', value: 'exam-completed-events' },
 			{ name: 'Exam Graded Events', value: 'exam-graded-events' },
@@ -636,4 +639,34 @@ export const webhookProperties: INodeProperties[] = [
 			},
 		],
 	},
+
+	// Custom Field Value
+	{
+		displayName: 'Custom Field Options',
+		name: 'additionalCustomFieldValueChanged',
+		type: 'collection',
+		default: {},
+		placeholder: 'Add option',
+		displayOptions: {
+			show: {
+				resource: ['webhook'],
+				operation: ['createSubscription', 'updateSubscription'],
+				eventType: ['customField.valueChanged'],
+			},
+		},
+		options: [
+			{
+				displayName: 'Custom Field Card Name or ID',
+				name: 'customFieldCardId',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'customFields_getCards',
+				},
+				default: '',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+			},
+		],
+	},
+	...webhookSampleDataProperties,
 ];

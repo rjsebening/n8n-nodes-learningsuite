@@ -7,6 +7,11 @@ export const resourceSelector: INodeProperties = {
 	noDataExpression: true,
 	options: [
 		{
+			name: 'AI',
+			value: 'ai',
+			description: 'Ask questions using AI with optional conversation context, tone, and formatting',
+		},
+		{
 			name: 'API Call',
 			value: 'apiCall',
 			description: 'Execute any HTTP request to the LearningSuite API (relative endpoint, e.g., "/members")',
@@ -25,6 +30,11 @@ export const resourceSelector: INodeProperties = {
 			name: 'Course',
 			value: 'course',
 			description: 'Manage courses and their modules/sections/lessons, members, access requests, and submissions',
+		},
+		{
+			name: 'Custom Field',
+			value: 'customFields',
+			description: 'Access and manage custom field cards, definitions, categories, values, and profiles',
 		},
 		{
 			name: 'Group',

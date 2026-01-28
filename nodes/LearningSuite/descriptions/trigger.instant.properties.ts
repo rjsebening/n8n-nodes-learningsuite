@@ -40,6 +40,11 @@ export const instantProperties: INodeProperties[] = [
 				description: 'Triggers when a course has been updated',
 			},
 			{
+				name: 'Custom Field Value Changed Events',
+				value: 'customField.valueChanged',
+				description: 'Triggers when a custom field value has been changed',
+			},
+			{
 				name: 'Custom Popup Interaction',
 				value: 'customPopup.interaction',
 				description: 'Triggers when a member interacts with a custom popup',
@@ -506,6 +511,32 @@ export const instantProperties: INodeProperties[] = [
 					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'course_getCourses' },
 				default: '',
+			},
+		],
+	},
+	// Custom Field Value
+	{
+		displayName: 'Custom Field Options',
+		name: 'additionalCustomFieldValueChanged',
+		type: 'collection',
+		default: {},
+		placeholder: 'Add option',
+		displayOptions: {
+			show: {
+				event: ['customField.valueChanged'],
+			},
+		},
+		options: [
+			{
+				displayName: 'Custom Field Card Name or ID',
+				name: 'customFieldCardId',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'customFields_getCards',
+				},
+				default: '',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 			},
 		],
 	},

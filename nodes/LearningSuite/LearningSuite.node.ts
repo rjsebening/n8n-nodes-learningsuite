@@ -16,6 +16,7 @@ import * as loPopup from './methods/loadOptions/popup.loadOptions';
 import * as loRole from './methods/loadOptions/role.loadOptions';
 import * as loWebhook from './methods/loadOptions/webhook.loadOptions';
 import * as loTeamMember from './methods/loadOptions/teamMember.loadOptions';
+import * as loCustomFields from './methods/loadOptions/customFields.loadOptions';
 
 import { getTemplateVariablesResourceMapperFields } from './methods/resourceMappers/hub.resourceMapper';
 
@@ -34,6 +35,8 @@ import { roleProperties } from './descriptions/role.properties';
 import { teamMemberProperties } from './descriptions/teamMember.properties';
 import { userProperties } from './descriptions/user.properties';
 import { webhookProperties } from './descriptions/webhook.properties';
+import { customFieldsProperties } from './descriptions/customFields.properties';
+import { aiProperties } from './descriptions/ai.properties';
 
 // handlers
 import { apiCallHandlers } from './execute/apiCall.handlers';
@@ -49,12 +52,16 @@ import { roleHandlers } from './execute/role.handlers';
 import { teamMemberHandlers } from './execute/teamMember.handlers';
 import { userHandlers } from './execute/user.handlers';
 import { webhookHandlers } from './execute/webhook.handlers';
+import { customFieldsHandlers } from './execute/customFields.handlers';
+import { aiHandlers } from './execute/ai.handlers';
 
 const registry: HandlersRegistry = {
+	ai: { ...aiHandlers },
 	apiCall: { ...apiCallHandlers },
 	bundle: { ...bundleHandlers },
 	community: { ...communityHandlers },
 	course: { ...courseHandlers },
+	customFields: { ...customFieldsHandlers },
 	group: { ...groupHandlers },
 	hub: { ...hubHandlers },
 	member: { ...memberHandlers },
@@ -71,8 +78,8 @@ export class LearningSuite implements INodeType {
 		displayName: 'LearningSuite',
 		name: 'learningSuite',
 		icon: {
-			light: 'file:./icons/icon-light.svg',
-			dark: 'file:./icons/icon-dark.svg',
+			light: 'file:./icons/learningsuite-icon-light.svg',
+			dark: 'file:./icons/learningsuite-icon-dark.svg',
 		},
 		group: ['transform'],
 		version: 1,
@@ -85,6 +92,7 @@ export class LearningSuite implements INodeType {
 		},
 		inputs: [NodeConnectionType.Main],
 		outputs: [NodeConnectionType.Main],
+		usableAsTool: true,
 		credentials: [
 			{
 				name: 'learningSuiteApi',
@@ -99,10 +107,12 @@ export class LearningSuite implements INodeType {
 		},
 		properties: [
 			resourceSelector,
+			...aiProperties,
 			...apiCallProperties,
 			...bundleProperties,
 			...communityProperties,
 			...courseProperties,
+			...customFieldsProperties,
 			...groupProperties,
 			...hubProperties,
 			...memberProperties,
@@ -120,6 +130,7 @@ export class LearningSuite implements INodeType {
 			...loBundle,
 			...loCommunity,
 			...loCourse,
+			...loCustomFields,
 			...loGroup,
 			...loHub,
 			...loMember,

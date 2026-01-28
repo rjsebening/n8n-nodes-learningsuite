@@ -13,12 +13,16 @@ import { roleHandlers } from './role.handlers';
 import { webhookHandlers } from './webhook.handlers';
 import { teamMemberHandlers } from './teamMember.handlers';
 import { userHandlers } from './user.handlers';
+import { customFieldsHandlers } from './customFields.handlers';
+import { aiHandlers } from './ai.handlers';
 
 export const registry: HandlersRegistry = {
+	ai: aiHandlers,
 	apiCall: apiCallHandlers,
 	bundle: bundleHandlers,
 	community: communityHandlers,
 	course: courseHandlers,
+	customFields: customFieldsHandlers,
 	group: groupHandlers,
 	hub: hubHandlers,
 	member: memberHandlers,

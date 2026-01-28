@@ -94,7 +94,17 @@ function buildDesiredFilter(ctx: any, i: number, eventType: string): IDataObject
 			}
 			break;
 		}
+		// ---------------- Custom Field Value Changed
+		case 'customField.valueChanged': {
+			const col = getCol(ctx, i, 'additionalCustomFieldValueChanged') as {
+				customFieldCardId?: string;
+			};
 
+			if (col?.customFieldCardId) {
+				filter.customFieldCardId = String(col.customFieldCardId);
+			}
+			break;
+		}
 		// ---------------- Progress
 		case 'courseProgress.changed': {
 			const aboveRaw = getNum(ctx, i, 'threshold', 0);
@@ -215,7 +225,90 @@ const deleteSubscription: ExecuteHandler = async (ctx, i) => {
 
 const getSampleData: ExecuteHandler = async (ctx, i) => {
 	const sampleDataType = ctx.getNodeParameter('sampleDataType', i) as string;
-	return await lsRequest.call(ctx, 'GET', `/webhooks/sample-data/${encodeURIComponent(sampleDataType)}`);
+
+	let qs: IDataObject = {};
+
+	switch (sampleDataType) {
+		case 'progress-changed-events': {
+			const col = ctx.getNodeParameter('additionalProgressChangedSample', i, {}) as IDataObject;
+			qs = col;
+			break;
+		}
+
+		case 'lesson-completed-events': {
+			const col = ctx.getNodeParameter('additionalLessonCompletedSample', i, {}) as IDataObject;
+			qs = col;
+			break;
+		}
+
+		case 'new-login-events': {
+			const col = ctx.getNodeParameter('additionalNewLoginSample', i, {}) as IDataObject;
+			qs = col;
+			break;
+		}
+
+		case 'exam-completed-events': {
+			const col = ctx.getNodeParameter('additionalExamCompletedSample', i, {}) as IDataObject;
+			qs = col;
+			break;
+		}
+
+		case 'exam-graded-events': {
+			const col = ctx.getNodeParameter('additionalExamGradedSample', i, {}) as IDataObject;
+			qs = col;
+			break;
+		}
+
+		case 'custom-popup-interaction-events': {
+			const col = ctx.getNodeParameter('additionalCustomPopupInteractionSample', i, {}) as IDataObject;
+			qs = col;
+			break;
+		}
+
+		case 'community-post-created-events': {
+			const col = ctx.getNodeParameter('additionalCommunityPostCreatedSample', i, {}) as IDataObject;
+			qs = col;
+			break;
+		}
+
+		case 'community-post-moderated-events': {
+			const col = ctx.getNodeParameter('additionalCommunityPostModeratedSample', i, {}) as IDataObject;
+			qs = col;
+			break;
+		}
+
+		case 'community-post-commented-events': {
+			const col = ctx.getNodeParameter('additionalCommunityPostCommentedSample', i, {}) as IDataObject;
+			qs = col;
+			break;
+		}
+
+		case 'group-user-access-changed-events': {
+			const col = ctx.getNodeParameter('additionalGroupUserAccessChangedSample', i, {}) as IDataObject;
+			qs = col;
+			break;
+		}
+
+		case 'course-updated-events': {
+			const col = ctx.getNodeParameter('additionalCourseUpdatedSample', i, {}) as IDataObject;
+			qs = col;
+			break;
+		}
+
+		case 'course-member-added-events': {
+			const col = ctx.getNodeParameter('additionalCourseMemberAddedSample', i, {}) as IDataObject;
+			qs = col;
+			break;
+		}
+
+		case 'custom-field-value-changed': {
+			const col = ctx.getNodeParameter('additionalCustomFieldValueChangedSample', i, {}) as IDataObject;
+			qs = col;
+			break;
+		}
+	}
+
+	return await lsRequest.call(ctx, 'GET', `/webhooks/sample-data/${encodeURIComponent(sampleDataType)}`, { qs });
 };
 
 export const webhookHandlers = {
