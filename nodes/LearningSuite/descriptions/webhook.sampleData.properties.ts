@@ -15,7 +15,8 @@ export const webhookSampleDataProperties: INodeProperties[] = [
 				displayName: 'User Name or ID',
 				name: 'userId',
 				type: 'options',
-				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'member_getMembers' },
 				default: '',
 			},
@@ -23,7 +24,8 @@ export const webhookSampleDataProperties: INodeProperties[] = [
 				displayName: 'Course Name or ID',
 				name: 'courseId',
 				type: 'options',
-				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'course_getCourses' },
 				default: '',
 			},
@@ -42,7 +44,8 @@ export const webhookSampleDataProperties: INodeProperties[] = [
 				displayName: 'User Name or ID',
 				name: 'userId',
 				type: 'options',
-				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'member_getMembers' },
 				default: '',
 			},
@@ -50,7 +53,8 @@ export const webhookSampleDataProperties: INodeProperties[] = [
 				displayName: 'Course Name or ID',
 				name: 'courseId',
 				type: 'options',
-				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'course_getCourses' },
 				default: '',
 			},
@@ -58,7 +62,8 @@ export const webhookSampleDataProperties: INodeProperties[] = [
 				displayName: 'Module Name or ID',
 				name: 'moduleId',
 				type: 'options',
-				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: {
 					loadOptionsMethod: 'course_getModules',
 					loadOptionsDependsOn: ['additionalLessonCompletedSample.courseId'],
@@ -69,7 +74,8 @@ export const webhookSampleDataProperties: INodeProperties[] = [
 				displayName: 'Lesson Name or ID',
 				name: 'lessonId',
 				type: 'options',
-				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: {
 					loadOptionsMethod: 'module_getLessons',
 					loadOptionsDependsOn: ['additionalLessonCompletedSample.moduleId'],
@@ -91,7 +97,8 @@ export const webhookSampleDataProperties: INodeProperties[] = [
 				displayName: 'User Name or ID',
 				name: 'userId',
 				type: 'options',
-				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'member_getMembers' },
 				default: '',
 			},
@@ -99,7 +106,7 @@ export const webhookSampleDataProperties: INodeProperties[] = [
 				displayName: 'Login Type',
 				name: 'loginType',
 				type: 'options',
-				default: 'app-email-code',
+				default: 'email-password',
 				options: [
 					{ name: 'Auto Login', value: 'auto-login' },
 					{ name: 'Email & Password', value: 'email-password' },
@@ -126,7 +133,8 @@ export const webhookSampleDataProperties: INodeProperties[] = [
 				displayName: 'User Name or ID',
 				name: 'userId',
 				type: 'options',
-				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'member_getMembers' },
 				default: '',
 			},
@@ -145,7 +153,8 @@ export const webhookSampleDataProperties: INodeProperties[] = [
 				displayName: 'User Name or ID',
 				name: 'userId',
 				type: 'options',
-				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'member_getMembers' },
 				default: '',
 			},
@@ -164,7 +173,8 @@ export const webhookSampleDataProperties: INodeProperties[] = [
 				displayName: 'Popup Name or ID',
 				name: 'customPopupId',
 				type: 'options',
-				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'popup_getPopups' },
 				default: '',
 			},
@@ -172,7 +182,8 @@ export const webhookSampleDataProperties: INodeProperties[] = [
 				displayName: 'User Name or ID',
 				name: 'userId',
 				type: 'options',
-				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'member_getMembers' },
 				default: '',
 			},
@@ -201,7 +212,8 @@ export const webhookSampleDataProperties: INodeProperties[] = [
 				displayName: 'User Name or ID',
 				name: 'userId',
 				type: 'options',
-				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'member_getMembers' },
 				default: '',
 			},
@@ -209,7 +221,8 @@ export const webhookSampleDataProperties: INodeProperties[] = [
 				displayName: 'Area Name or ID',
 				name: 'areaId',
 				type: 'options',
-				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'community_getAreas' },
 				default: '',
 			},
@@ -217,7 +230,8 @@ export const webhookSampleDataProperties: INodeProperties[] = [
 				displayName: 'Forum Name or ID',
 				name: 'forumId',
 				type: 'options',
-				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: {
 					loadOptionsMethod: 'community_getForums',
 					loadOptionsDependsOn: ['additionalCommunityPostCreatedSample.areaId'],
@@ -239,7 +253,8 @@ export const webhookSampleDataProperties: INodeProperties[] = [
 				displayName: 'User Name or ID',
 				name: 'userId',
 				type: 'options',
-				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'member_getMembers' },
 				default: '',
 			},
@@ -247,7 +262,8 @@ export const webhookSampleDataProperties: INodeProperties[] = [
 				displayName: 'Area Name or ID',
 				name: 'areaId',
 				type: 'options',
-				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'community_getAreas' },
 				default: '',
 			},
@@ -255,7 +271,8 @@ export const webhookSampleDataProperties: INodeProperties[] = [
 				displayName: 'Forum Name or ID',
 				name: 'forumId',
 				type: 'options',
-				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: {
 					loadOptionsMethod: 'community_getForums',
 					loadOptionsDependsOn: ['additionalCommunityPostModeratedSample.areaId'],
@@ -277,7 +294,8 @@ export const webhookSampleDataProperties: INodeProperties[] = [
 				displayName: 'User Name or ID',
 				name: 'userId',
 				type: 'options',
-				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'member_getMembers' },
 				default: '',
 			},
@@ -302,7 +320,8 @@ export const webhookSampleDataProperties: INodeProperties[] = [
 				displayName: 'Group Name or ID',
 				name: 'groupId',
 				type: 'options',
-				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'group_getGroups' },
 				default: '',
 			},
@@ -310,7 +329,8 @@ export const webhookSampleDataProperties: INodeProperties[] = [
 				displayName: 'User Name or ID',
 				name: 'userId',
 				type: 'options',
-				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'member_getMembers' },
 				default: '',
 			},
@@ -329,7 +349,8 @@ export const webhookSampleDataProperties: INodeProperties[] = [
 				displayName: 'Course Name or ID',
 				name: 'courseInstanceId',
 				type: 'options',
-				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'course_getCourses' },
 				default: '',
 			},
@@ -348,7 +369,8 @@ export const webhookSampleDataProperties: INodeProperties[] = [
 				displayName: 'Course Name or ID',
 				name: 'courseInstanceId',
 				type: 'options',
-				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'course_getCourses' },
 				default: '',
 			},
@@ -367,7 +389,8 @@ export const webhookSampleDataProperties: INodeProperties[] = [
 				displayName: 'Custom Field Card Name or ID',
 				name: 'customFieldCardId',
 				type: 'options',
-				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'customFields_getCards' },
 				default: '',
 			},
@@ -375,7 +398,8 @@ export const webhookSampleDataProperties: INodeProperties[] = [
 				displayName: 'User Name or ID',
 				name: 'userId',
 				type: 'options',
-				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'member_getMembers' },
 				default: '',
 			},
