@@ -21,19 +21,12 @@ export type ApiThis =
 	| ITriggerFunctions
 	| IPollFunctions;
 
-export function joinUrl(baseUrl: string, path: string): string {
-	const base = baseUrl.replace(/\/+$/, '');
-	const p = path.startsWith('/') ? path : `/${path}`;
-	return `${base}${p}`;
-}
-
 export function normalizeEndpoint(endpoint: string): string {
 	if (!endpoint) throw new ApplicationError('Missing endpoint');
-	const e = endpoint.trim();
-	if (/^https?:\/\//i.test(e)) {
-		throw new ApplicationError('Endpoint must be a relative path (e.g. "/members"). Do not include the base URL.');
+	if (/^https?:\/\//i.test(endpoint)) {
+		throw new ApplicationError('Endpoint must be a relative path (e.g. "/members").');
 	}
-	return e.startsWith('/') ? e : `/${e}`;
+	return endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
 }
 
 async function requestCore(
@@ -52,10 +45,10 @@ async function requestCore(
 ): Promise<any> {
 	const url = normalizeEndpoint(endpoint);
 
-	const creds = (await this.getCredentials('learningSuiteApi')) as IDataObject | null;
-	const baseURL = String(creds?.baseUrl || '').trim();
+	const creds = (await this.getCredentials('learningSuiteApi')) as IDataObject;
+	const baseURL = String(creds.baseUrl || '').trim();
 	if (!/^https?:\/\//i.test(baseURL)) {
-		throw new NodeOperationError(this.getNode(), `Invalid Base URL in credentials: "${baseURL || '(empty)'}"`);
+		throw new NodeOperationError(this.getNode(), 'Invalid Base URL in credentials');
 	}
 
 	const options: IDataObject = {
@@ -64,49 +57,20 @@ async function requestCore(
 		url,
 		json: true,
 	};
+
 	if (qs && Object.keys(qs).length) options.qs = qs as JsonObject;
-	if (body && Object.keys(body).length) {
-		if (['POST', 'PUT', 'PATCH'].includes(String(method).toUpperCase())) {
-			options.body = body as JsonObject;
-		}
+	if (body && Object.keys(body).length && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(String(method).toUpperCase())) {
+		options.body = body as JsonObject;
 	}
 
 	try {
-		const rwAuth = (this as any)?.helpers?.requestWithAuthentication;
-		if (typeof rwAuth === 'function') {
-			return await rwAuth.call(this, 'learningSuiteApi', options);
-		}
+		const rwAuth = (this as any).helpers?.requestWithAuthentication;
+		if (!rwAuth) throw new ApplicationError('No HTTP helper available');
 
-		const req = (this as any)?.helpers?.request;
-		if (typeof req === 'function') {
-			const httpOptions: IHttpRequestOptions = {
-				method,
-				url: baseURL.replace(/\/+$/, '') + url,
-				headers: {
-					accept: 'application/json',
-					'Content-Type': 'application/json',
-				},
-				qs: options.qs as IHttpRequestOptions['qs'],
-				json: true,
-			};
-			if (options.body) httpOptions.body = options.body as IHttpRequestOptions['body'];
-
-			const apiKey = String(creds?.apiKey || '').trim();
-			if (apiKey) {
-				httpOptions.headers = {
-					...httpOptions.headers,
-					'X-API-KEY': apiKey,
-				};
-			}
-
-			return await req(httpOptions);
-		}
-
-		throw new ApplicationError('No HTTP helper available on this context.');
+		return await rwAuth.call(this, 'learningSuiteApi', options);
 	} catch (error) {
-		throw new NodeApiError(this.getNode(), error as JsonObject, {
-			message: 'LearningSuite API request failed',
-		});
+		if (error instanceof NodeApiError) throw error;
+		throw new NodeApiError(this.getNode(), error as JsonObject);
 	}
 }
 
