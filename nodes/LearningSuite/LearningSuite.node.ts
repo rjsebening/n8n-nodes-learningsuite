@@ -1,5 +1,5 @@
 import type { IDataObject, IExecuteFunctions, INodeExecutionData, INodeType, INodeTypeDescription } from 'n8n-workflow';
-import { NodeConnectionType } from 'n8n-workflow';
+import { NodeConnectionType, NodeApiError } from 'n8n-workflow';
 import { NodeOperationError } from 'n8n-workflow';
 
 import type { HandlersRegistry } from './exec.types';
@@ -19,6 +19,7 @@ import * as loTeamMember from './methods/loadOptions/teamMember.loadOptions';
 import * as loCustomFields from './methods/loadOptions/customFields.loadOptions';
 
 import { getTemplateVariablesResourceMapperFields } from './methods/resourceMappers/hub.resourceMapper';
+import { getMultipleCustomFieldValueResourceMapperFields } from './methods/resourceMappers/customFields.resourceMapper';
 
 // properties
 import { resourceSelector } from './descriptions/resource.selector';
@@ -142,42 +143,59 @@ export class LearningSuite implements INodeType {
 		},
 		resourceMapping: {
 			getTemplateVariablesResourceMapperFields,
+			getMultipleCustomFieldValueResourceMapperFields,
 		},
 	};
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
-		const returnData: IDataObject[] = [];
+		const returnData: INodeExecutionData[] = [];
 
 		for (let i = 0; i < items.length; i++) {
-			const resource = this.getNodeParameter('resource', i) as string;
-			const operation = this.getNodeParameter('operation', i) as string;
-
 			try {
+				const resource = this.getNodeParameter('resource', i) as string;
+				const operation = this.getNodeParameter('operation', i) as string;
+
 				const handler = registry[resource]?.[operation];
 				if (!handler) {
 					throw new NodeOperationError(
 						this.getNode(),
 						`No handler for resource "${resource}" and operation "${operation}"`,
+						{ itemIndex: i },
 					);
 				}
 
 				const response = await handler(this, i);
 
-				if (Array.isArray(response)) returnData.push(...response);
-				else if (response && typeof response === 'object') returnData.push(response as IDataObject);
+				if (Array.isArray(response)) {
+					for (const item of response) {
+						returnData.push({
+							json: item as IDataObject,
+							pairedItem: { item: i },
+						});
+					}
+				} else if (response && typeof response === 'object') {
+					returnData.push({
+						json: response as IDataObject,
+						pairedItem: { item: i },
+					});
+				}
 			} catch (error) {
 				if (this.continueOnFail()) {
-					returnData.push({ error: (error as Error).message, input: items[i].json as IDataObject });
+					returnData.push({
+						json: items[i].json,
+						error:
+							error instanceof NodeApiError || error instanceof NodeOperationError
+								? error
+								: new NodeOperationError(this.getNode(), error as Error, { itemIndex: i }),
+						pairedItem: { item: i },
+					});
 					continue;
-				}
-				if (!(error instanceof Error) || !('name' in error) || String((error as any).name).indexOf('Node') !== 0) {
-					throw new NodeOperationError(this.getNode(), (error as Error).message || 'Unknown error');
 				}
 				throw error;
 			}
 		}
 
-		return [this.helpers.returnJsonArray(returnData)];
+		return [returnData];
 	}
 }
