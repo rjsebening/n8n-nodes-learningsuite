@@ -1,9 +1,7 @@
+//n8n-nodes-learningsuite/nodes/LearningSuite/descriptions/customFields.properties.ts
 import type { INodeProperties } from 'n8n-workflow';
 
 export const customFieldsProperties: INodeProperties[] = [
-	/* -------------------------------------------------------------------------- */
-	/*                                 OPERATION                                  */
-	/* -------------------------------------------------------------------------- */
 	{
 		displayName: 'Operation',
 		name: 'operation',
@@ -86,10 +84,347 @@ export const customFieldsProperties: INodeProperties[] = [
 			},
 		],
 	},
+	{
+		displayName: 'User Name or ID',
+		name: 'userId',
+		type: 'options',
+		typeOptions: {
+			loadOptionsMethod: 'member_getMembers',
+		},
+		required: true,
+		default: '',
+		description:
+			'The ID of the user whose custom field data should be accessed. Choose from the list, or specify an ID using an expression. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+		displayOptions: {
+			show: {
+				resource: ['customFields'],
+				operation: [
+					'getFieldValues',
+					'getProfileByCard',
+					'getProfiles',
+					'getProfilesExpanded',
+					'getStore',
+					'setFieldValue',
+					'setMultipleFieldValues',
+					'updateProfileField',
+				],
+			},
+		},
+	},
+	{
+		displayName: 'Card Name or ID',
+		name: 'customFieldCardId',
+		type: 'options',
+		default: '',
+		description:
+			'Filter results by a specific custom field card. Choose from the list or specify an ID using an expression. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+		typeOptions: {
+			loadOptionsMethod: 'customFields_getCards',
+		},
+		displayOptions: {
+			show: {
+				resource: ['customFields'],
+				operation: [
+					'getCategories',
+					'getDefinitions',
+					'getProfiles',
+					'getProfilesExpanded',
+					'getProfileByCard',
+					'updateProfileField',
+				],
+			},
+		},
+	},
+	{
+		displayName: 'Profile Index',
+		name: 'profileIndex',
+		type: 'number',
+		default: null,
+		description: 'If specified, the profile with this ID is used. Takes precedence over Profile Name.',
+		displayOptions: {
+			show: {
+				resource: ['customFields'],
+				operation: ['setFieldValue', 'updateProfileField', 'setMultipleFieldValues', 'getProfileByCard'],
+			},
+		},
+	},
+	{
+		displayName: 'Profile Name',
+		name: 'profileName',
+		type: 'string',
+		default: '',
+		description: 'If specified, the first profile with this name is used. Ignored if Profile Index is set.',
+		displayOptions: {
+			show: {
+				resource: ['customFields'],
+				operation: ['updateProfileField', 'getProfileByCard'],
+			},
+		},
+	},
+	{
+		displayName: 'Field Key Name or ID',
+		name: 'fieldKey',
+		type: 'options',
+		description:
+			'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+		required: true,
+		typeOptions: {
+			loadOptionsMethod: 'customFields_getDefinitions',
+			loadOptionsDependsOn: ['customFieldCardId'],
+		},
+		displayOptions: {
+			show: {
+				resource: ['customFields'],
+				operation: ['setFieldValue', 'getFieldValues', 'updateProfileField'],
+			},
+		},
+		default: '',
+	},
+	{
+		displayName: 'Field Type Name or ID',
+		name: 'fieldType',
+		type: 'options',
+		default: '',
+		description:
+			'Automatically detected from the selected field. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+		typeOptions: {
+			loadOptionsMethod: 'customFields_getFieldType',
+			loadOptionsDependsOn: ['fieldKey'],
+		},
+		displayOptions: {
+			show: {
+				resource: ['customFields'],
+				operation: ['setFieldValue', 'updateProfileField'],
+			},
+		},
+		options: [],
+	},
+	{
+		displayName: 'Field Value',
+		name: 'fieldValueString',
+		type: 'string',
+		default: '',
+		required: true,
+		placeholder: 'Enter text value',
+		description: 'The string value to set for this custom field',
+		displayOptions: {
+			show: {
+				resource: ['customFields'],
+				operation: ['setFieldValue', 'updateProfileField'],
+				fieldType: ['string'],
+			},
+		},
+	},
+	{
+		displayName: 'Field Value',
+		name: 'fieldValueNumber',
+		type: 'number',
+		default: 0,
+		required: true,
+		placeholder: 'Enter numeric value',
+		description: 'The numeric value to set for this custom field',
+		displayOptions: {
+			show: {
+				resource: ['customFields'],
+				operation: ['setFieldValue', 'updateProfileField'],
+				fieldType: ['number'],
+			},
+		},
+	},
+	{
+		displayName: 'Field Value',
+		name: 'fieldValueBoolean',
+		type: 'boolean',
+		default: false,
+		required: true,
+		description: 'Whether to set a boolean value for this user-defined field',
+		displayOptions: {
+			show: {
+				resource: ['customFields'],
+				operation: ['setFieldValue', 'updateProfileField'],
+				fieldType: ['boolean'],
+			},
+		},
+	},
+	{
+		displayName: 'Field Value',
+		name: 'fieldValueDateTime',
+		type: 'dateTime',
+		default: '',
+		required: true,
+		placeholder: 'Select date/time',
+		description: 'The date/time value to set for this custom field',
+		displayOptions: {
+			show: {
+				resource: ['customFields'],
+				operation: ['setFieldValue', 'updateProfileField'],
+				fieldType: ['dateTime'],
+			},
+		},
+	},
+	{
+		displayName: 'Field Value Name or ID',
+		name: 'fieldValueOption',
+		type: 'options',
+		default: '',
+		required: true,
+		typeOptions: {
+			loadOptionsMethod: 'customFields_getFieldOptions',
+			loadOptionsDependsOn: ['fieldKey'],
+		},
+		description:
+			'Select a value from the available options. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+		displayOptions: {
+			show: {
+				resource: ['customFields'],
+				operation: ['setFieldValue', 'updateProfileField'],
+				fieldType: ['option'],
+			},
+		},
+	},
+	{
+		displayName: 'Field Value Names or IDs',
+		name: 'fieldValueMultiOptions',
+		type: 'multiOptions',
+		default: [],
+		required: true,
+		typeOptions: {
+			loadOptionsMethod: 'customFields_getFieldOptions',
+			loadOptionsDependsOn: ['fieldKey'],
+		},
+		description:
+			'Select one or more values from the available options. Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+		displayOptions: {
+			show: {
+				resource: ['customFields'],
+				operation: ['setFieldValue', 'updateProfileField'],
+				fieldType: ['multiOptions'],
+			},
+		},
+	},
+	{
+		displayName: 'Field Value (Files)',
+		name: 'fieldValueFiles',
+		type: 'json',
+		default: `[
+			{
+			// Note: type 'files' is not supported yet
+			"fileId": "file_abc123",
+			"name": "vertrag_2026.pdf",
+			"mimeType": "application/pdf",
+			"fileSize": 234567
+			}
+		 ]`,
+		description: 'JSON array of file objects',
+		displayOptions: {
+			show: {
+				resource: ['customFields'],
+				operation: ['setFieldValue', 'updateProfileField'],
+				fieldType: ['files'],
+			},
+		},
+	},
+	{
+		displayName: 'Field Value (Images)',
+		name: 'fieldValueImages',
+		type: 'json',
+		default: `[
+			{
+			// Note: type 'images' is not supported yet
+			"fileId": "file_img_001",
+			"previewThumb": "https://cdn.example.com/thumbs/file_img_001.jpg",
+			"mimeType": "image/jpeg",
+			"dimensions": {
+				"width": 1200,
+				"height": 800
+			},
+			"meanColor": "#a1b2c3",
+			"dominantColor": "#8899aa",
+			"fileSize": 345678
+			}
+		 ]`,
+		description: 'JSON array of image objects',
+		displayOptions: {
+			show: {
+				resource: ['customFields'],
+				operation: ['setFieldValue', 'updateProfileField'],
+				fieldType: ['images'],
+			},
+		},
+	},
+	{
+		displayName: 'Field Value (Videos)',
+		name: 'fieldValueVideos',
+		type: 'json',
+		default: `[
+			{
+		    // Note: type 'videos' is not supported yet
+			"fileId": "file_vid_001",
+			"thumbnailFileId": "file_thumb_001",
+			"aspectRatio": 1.7777778,
+			"mimeType": "video/mp4",
+			"fileSize": 58234567
+			}
+		 ]`,
+		required: true,
+		description: 'JSON array of video objects',
+		displayOptions: {
+			show: {
+				resource: ['customFields'],
+				operation: ['setFieldValue', 'updateProfileField'],
+				fieldType: ['videos'],
+			},
+		},
+	},
+	{
+		displayName: 'Field Value',
+		name: 'fieldValueFallback',
+		type: 'string',
+		default: '',
+		required: true,
+		placeholder: 'Enter value',
+		description: 'The value to set for this custom field',
+		displayOptions: {
+			show: {
+				resource: ['customFields'],
+				operation: ['setFieldValue', 'updateProfileField'],
+			},
+			hide: {
+				fieldType: ['string', 'number', 'boolean', 'dateTime', 'option', 'multiOptions', 'files', 'images', 'videos'],
+			},
+		},
+	},
+	{
+		displayName: 'Field Values',
+		name: 'fieldValues',
+		type: 'resourceMapper',
+		noDataExpression: true,
+		required: true,
+		default: {
+			mappingMode: 'defineBelow',
+			value: null,
+		},
+		typeOptions: {
+			resourceMapper: {
+				resourceMapperMethod: 'getMultipleCustomFieldValueResourceMapperFields',
+				mode: 'add',
+				fieldWords: {
+					singular: 'field',
+					plural: 'fields',
+				},
+				addAllFields: true,
+				multiKeyMatch: false,
+				supportAutoMap: false,
+			},
+		},
+		displayOptions: {
+			show: {
+				resource: ['customFields'],
+				operation: ['setMultipleFieldValues'],
+			},
+		},
+	},
 
-	/* -------------------------------------------------------------------------- */
-	/*                               PAGINATION                                   */
-	/* -------------------------------------------------------------------------- */
 	{
 		displayName: 'Limit',
 		name: 'limit',
@@ -114,169 +449,6 @@ export const customFieldsProperties: INodeProperties[] = [
 			show: {
 				resource: ['customFields'],
 				operation: ['getCards', 'getCardsExpanded', 'getCategories', 'getDefinitions'],
-			},
-		},
-	},
-
-	/* -------------------------------------------------------------------------- */
-	/*                                 COMMON                                     */
-	/* -------------------------------------------------------------------------- */
-	{
-		displayName: 'User Name or ID',
-		name: 'userId',
-		type: 'options',
-		typeOptions: { loadOptionsMethod: 'member_getMembers' },
-		default: '',
-		required: true,
-		description:
-			'The ID of the user whose custom field data should be accessed. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
-		displayOptions: {
-			show: {
-				resource: ['customFields'],
-				operation: [
-					'getFieldValues',
-					'getProfileByCard',
-					'getProfiles',
-					'getProfilesExpanded',
-					'getStore',
-					'setFieldValue',
-					'setMultipleFieldValues',
-					'updateProfileField',
-				],
-			},
-		},
-	},
-
-	/* -------------------------------------------------------------------------- */
-	/*                              META FILTERS                                  */
-	/* -------------------------------------------------------------------------- */
-	{
-		displayName: 'Custom Field Card Name or ID',
-		name: 'customFieldCardId',
-		type: 'options',
-		default: '',
-		description:
-			'Filter results by a specific custom field card. Choose from the list or specify an ID using an expression. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
-		typeOptions: {
-			loadOptionsMethod: 'customFields_getCards',
-		},
-		displayOptions: {
-			show: {
-				resource: ['customFields'],
-				operation: ['getCategories', 'getDefinitions', 'getProfiles', 'getProfilesExpanded'],
-			},
-		},
-	},
-
-	/* -------------------------------------------------------------------------- */
-	/*                               FIELD VALUES                                 */
-	/* -------------------------------------------------------------------------- */
-	{
-		displayName: 'Field Key Name or ID',
-		name: 'fieldKey',
-		type: 'options',
-		required: true,
-		default: '',
-		typeOptions: { loadOptionsMethod: 'customFields_getDefinitions' },
-		description:
-			'Custom field key ("Property ID" in the UI). Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
-		displayOptions: {
-			show: {
-				resource: ['customFields'],
-				operation: ['setFieldValue', 'getFieldValues'],
-			},
-		},
-	},
-	{
-		displayName: 'Profile Index',
-		name: 'setField_profileIndex',
-		type: 'number',
-		default: null,
-		description: 'Profile index to update. Defaults to the first profile.',
-		displayOptions: {
-			show: {
-				resource: ['customFields'],
-				operation: ['setFieldValue'],
-			},
-		},
-	},
-	{
-		displayName: 'Field Value',
-		name: 'setField_fieldValue',
-		type: 'json',
-		default: `{
-  "fieldValue": "string, number, boolean, array or object depending on the field definition."
-}`,
-		description: 'Value to set. Can be string, number, boolean, array or object depending on the field definition.',
-		displayOptions: {
-			show: {
-				resource: ['customFields'],
-				operation: ['setFieldValue'],
-			},
-		},
-	},
-	{
-		displayName: 'Fields',
-		name: 'fields',
-		type: 'json',
-		default: `[
-  {
-    "fieldKey": "",
-    "profileIndex": null,
-    "fieldValue": "string, number, boolean, array or object depending on the field definition."
-  },
-  {
-    "fieldKey": "",
-    "profileIndex": null,
-    "fieldValue": "string, number, boolean, array or object depending on the field definition."
-  }
-]`,
-		description: 'Array of field updates. Each item must contain fieldKey and fieldValue. profileIndex is optional.',
-		displayOptions: {
-			show: {
-				resource: ['customFields'],
-				operation: ['setMultipleFieldValues'],
-			},
-		},
-	},
-
-	/* -------------------------------------------------------------------------- */
-	/*                                  PROFILES                                  */
-	/* -------------------------------------------------------------------------- */
-	{
-		displayName: 'Card Name or ID',
-		name: 'cardId',
-		type: 'options',
-		default: '',
-		required: true,
-		description:
-			'The custom field card whose profile values should be retrieved or updated. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
-		typeOptions: {
-			loadOptionsMethod: 'customFields_getCards',
-		},
-		displayOptions: {
-			show: {
-				resource: ['customFields'],
-				operation: ['getProfileByCard', 'updateProfileField'],
-			},
-		},
-	},
-	{
-		displayName: 'Profile Field Update',
-		name: 'profileFieldPayload',
-		type: 'json',
-		default: `{
-  "profileIndex": null,
-  "profileName": null,
-  "fieldKey": "",
-  "fieldValue": "string, number, boolean, array or object depending on the field definition."
-}`,
-		description:
-			'Payload to update a custom field value within a profile. Either profileIndex or profileName can be set.',
-		displayOptions: {
-			show: {
-				resource: ['customFields'],
-				operation: ['updateProfileField'],
 			},
 		},
 	},
