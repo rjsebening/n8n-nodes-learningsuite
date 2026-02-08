@@ -1,5 +1,5 @@
 import type { IDataObject } from 'n8n-workflow';
-import { lsRequest, toIdArray } from '../shared';
+import { lsRequest, toIdArray, getHttpCode } from '../shared';
 import type { ExecuteHandler } from '../exec.types';
 
 const getByEmail: ExecuteHandler = async (ctx, i) => {
@@ -153,19 +153,30 @@ const findOrCreate: ExecuteHandler = async (ctx, i) => {
 	try {
 		return await lsRequest.call(ctx, 'GET', '/members/by-email', { qs: { email } });
 	} catch (error: any) {
-		if (error?.httpCode === 404 || error?.statusCode === 404) {
-			const firstName = ctx.getNodeParameter('firstName', i, '') as string;
-			const lastName = ctx.getNodeParameter('lastName', i, '') as string;
-			const additionalOptions = ctx.getNodeParameter('additionalOptions', i, {}) as IDataObject;
+		const is404 = getHttpCode(error) === 404;
 
-			const body: IDataObject = { email, firstName, lastName, ...additionalOptions };
-			for (const k of Object.keys(body)) {
-				if (body[k] === '' || body[k] == null) delete body[k];
-			}
-
-			return await lsRequest.call(ctx, 'POST', '/members', { body });
+		if (!is404) {
+			throw error;
 		}
-		throw error;
+
+		const firstName = ctx.getNodeParameter('firstName', i, '') as string;
+		const lastName = ctx.getNodeParameter('lastName', i, '') as string;
+		const additionalOptions = ctx.getNodeParameter('additionalOptions', i, {}) as IDataObject;
+
+		const body: IDataObject = {
+			email,
+			firstName,
+			lastName,
+			...additionalOptions,
+		};
+
+		for (const k of Object.keys(body)) {
+			if (body[k] === '' || body[k] == null) {
+				delete body[k];
+			}
+		}
+
+		return await lsRequest.call(ctx, 'POST', '/members', { body });
 	}
 };
 
