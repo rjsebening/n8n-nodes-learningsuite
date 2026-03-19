@@ -65,6 +65,12 @@ export const customFieldsProperties: INodeProperties[] = [
 				action: 'Retrieve the complete custom field store of a user',
 			},
 			{
+				name: 'Get Store Values',
+				value: 'getStoreValues',
+				description: 'Get all custom field values of a user for a given profile',
+				action: 'Get all custom field values of a user for a given profile',
+			},
+			{
 				name: 'Set Field Value',
 				value: 'setFieldValue',
 				description: 'Set the value of a single custom field for a user',
@@ -104,6 +110,7 @@ export const customFieldsProperties: INodeProperties[] = [
 					'getProfiles',
 					'getProfilesExpanded',
 					'getStore',
+					'getStoreValues',
 					'setFieldValue',
 					'setMultipleFieldValues',
 					'updateProfileField',
@@ -140,11 +147,18 @@ export const customFieldsProperties: INodeProperties[] = [
 		name: 'profileIndex',
 		type: 'number',
 		default: null,
-		description: 'If specified, the profile with this ID is used. Takes precedence over Profile Name.',
+		description:
+			'If specified, the profile with this ID is used. Takes precedence over Profile Name. If not specified or if the index does not exist for a given field key, the value in the default/first profile is returned.',
 		displayOptions: {
 			show: {
 				resource: ['customFields'],
-				operation: ['setFieldValue', 'updateProfileField', 'setMultipleFieldValues', 'getProfileByCard'],
+				operation: [
+					'setFieldValue',
+					'updateProfileField',
+					'setMultipleFieldValues',
+					'getProfileByCard',
+					'getStoreValues',
+				],
 			},
 		},
 	},
