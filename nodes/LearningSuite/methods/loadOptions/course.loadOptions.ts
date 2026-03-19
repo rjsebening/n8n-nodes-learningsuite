@@ -36,3 +36,26 @@ export async function course_getSectionsInCourse(this: ILoadOptionsFunctions): P
 
 	return allSections;
 }
+
+export async function course_getLessonsInCourse(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+	const courseId = getScopedParam.call(this, 'courseId');
+	if (!courseId) return [];
+
+	const modules = ensureArray(await lsRequest.call(this, 'GET', `/courses/${courseId}/modules`));
+	const allLessons: INodePropertyOptions[] = [];
+
+	for (const m of modules) {
+		if (!m?.id) continue;
+
+		const lessons = ensureArray(await lsRequest.call(this, 'GET', `/modules/${m.id}/lessons`));
+
+		for (const l of lessons) {
+			allLessons.push({
+				name: `${l.title ?? l.name ?? l.id}`,
+				value: String(l.id ?? l.sid ?? l.slug ?? l.title),
+			});
+		}
+	}
+
+	return allLessons;
+}
