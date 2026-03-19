@@ -42,6 +42,18 @@ export const memberProperties: INodeProperties[] = [
 				action: 'Get member course info',
 			},
 			{
+				name: 'Get Course Progress',
+				value: 'getCourseProgress',
+				description: "Get a member's course progress in percent",
+				action: 'Get course progress',
+			},
+			{
+				name: 'Get Lesson Progress',
+				value: 'getLessonProgress',
+				description: "Get a member's lesson progress in percent",
+				action: 'Get lesson progress',
+			},
+			{
 				name: 'Get Many',
 				value: 'getAll',
 				description: 'List members with optional filters',
@@ -67,6 +79,12 @@ export const memberProperties: INodeProperties[] = [
 				action: 'Get member courses',
 			},
 			{
+				name: 'Get Module Progress',
+				value: 'getModuleProgress',
+				description: "Get a member's module progress in percent",
+				action: 'Get module progress',
+			},
+			{
 				name: 'Remove Bundles From Member',
 				value: 'removeFromBundles',
 				description: 'Revoke one or more bundles from a member',
@@ -77,6 +95,18 @@ export const memberProperties: INodeProperties[] = [
 				value: 'removeFromCourses',
 				description: 'Remove one or more courses from a member',
 				action: 'Remove member from courses',
+			},
+			{
+				name: 'Reset Course Progress',
+				value: 'resetCourseProgress',
+				description: "Reset a member's course/module/lesson/page progress",
+				action: 'Reset course progress',
+			},
+			{
+				name: 'Set Course Progress',
+				value: 'setCourseProgress',
+				description: "Set a member's progress for pages, lessons, modules, or the whole course",
+				action: 'Set course progress',
 			},
 			{ name: 'Update Member', value: 'update', description: 'Update fields of a member', action: 'Update a member' },
 		],
@@ -97,6 +127,11 @@ export const memberProperties: INodeProperties[] = [
 					'removeFromCourses',
 					'getCourses',
 					'getCourseInfo',
+					'getCourseProgress',
+					'getModuleProgress',
+					'getLessonProgress',
+					'setCourseProgress',
+					'resetCourseProgress',
 					'addToBundles',
 					'removeFromBundles',
 					'getBundles',
@@ -451,5 +486,159 @@ export const memberProperties: INodeProperties[] = [
 		default: '',
 		description:
 			'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+	},
+
+	// ── Course Progress ──────────────────────────────────────
+	{
+		displayName: 'Course Name or ID',
+		name: 'courseId',
+		type: 'options',
+		typeOptions: { loadOptionsMethod: 'course_getCourses' },
+		displayOptions: {
+			show: {
+				resource: ['member'],
+				operation: [
+					'getCourseProgress',
+					'getModuleProgress',
+					'getLessonProgress',
+					'setCourseProgress',
+					'resetCourseProgress',
+				],
+			},
+		},
+		default: '',
+		required: true,
+		description:
+			'ID of the course instance. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+	},
+	{
+		displayName: 'Module Name or ID',
+		name: 'moduleId',
+		type: 'options',
+		typeOptions: {
+			loadOptionsMethod: 'course_getModules',
+			loadOptionsDependsOn: ['courseId'],
+		},
+		displayOptions: { show: { resource: ['member'], operation: ['getModuleProgress'] } },
+		default: '',
+		required: true,
+		description:
+			'ID of the module. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+	},
+	{
+		displayName: 'Lesson Name or ID',
+		name: 'lessonId',
+		type: 'options',
+		typeOptions: {
+			loadOptionsMethod: 'course_getLessonsInCourse',
+			loadOptionsDependsOn: ['courseId'],
+		},
+		displayOptions: { show: { resource: ['member'], operation: ['getLessonProgress'] } },
+		default: '',
+		required: true,
+		description:
+			'ID of the lesson. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+	},
+
+	// Set Course Progress
+	{
+		displayName: 'Set For Whole Course',
+		name: 'setForWholeCourse',
+		type: 'boolean',
+		default: false,
+		displayOptions: { show: { resource: ['member'], operation: ['setCourseProgress'] } },
+		description: 'Whether to set the whole course as completed. If true, all other IDs will be ignored.',
+	},
+	{
+		displayName: 'Additional Options',
+		name: 'additionalOptions',
+		type: 'collection',
+		placeholder: 'Add Option',
+		default: {},
+		displayOptions: { show: { resource: ['member'], operation: ['setCourseProgress'] } },
+		options: [
+			{
+				displayName: 'Module Names or IDs to Set Completed',
+				name: 'modulesToSetCompleted',
+				type: 'multiOptions',
+				typeOptions: {
+					loadOptionsMethod: 'course_getModules',
+					loadOptionsDependsOn: ['courseId'],
+				},
+				default: [],
+				description:
+					'Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+			},
+			{
+				displayName: 'Lesson Names or IDs to Set Completed',
+				name: 'lessonsToSetCompleted',
+				type: 'multiOptions',
+				typeOptions: {
+					loadOptionsMethod: 'course_getLessonsInCourse',
+					loadOptionsDependsOn: ['courseId'],
+				},
+				default: [],
+				description:
+					'Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+			},
+			{
+				displayName: 'Page IDs to Set Completed',
+				name: 'pagesToSetCompleted',
+				type: 'string',
+				default: '',
+				description: 'Comma-separated list of page IDs that should be set to completed',
+			},
+		],
+	},
+
+	// Reset Course Progress
+	{
+		displayName: 'Reset For Whole Course',
+		name: 'setForWholeCourse',
+		type: 'boolean',
+		default: false,
+		displayOptions: { show: { resource: ['member'], operation: ['resetCourseProgress'] } },
+		description: 'Whether to reset the whole course progress. If true, all other IDs will be ignored.',
+	},
+	{
+		displayName: 'Additional Options',
+		name: 'additionalOptions',
+		type: 'collection',
+		placeholder: 'Add Option',
+		default: {},
+		displayOptions: { show: { resource: ['member'], operation: ['resetCourseProgress'] } },
+		options: [
+			{
+				displayName: 'Module Names or IDs to Reset',
+				name: 'modulesToResetProgressFor',
+				type: 'multiOptions',
+				typeOptions: {
+					loadOptionsMethod: 'course_getModules',
+					loadOptionsDependsOn: ['courseId'],
+				},
+				default: [],
+				description:
+					'Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+			},
+			{
+				displayName: 'Lesson Names or IDs to Reset',
+				name: 'lessonsToResetProgressFor',
+				type: 'multiOptions',
+				typeOptions: {
+					loadOptionsMethod: 'course_getLessonsInCourse',
+					loadOptionsDependsOn: ['courseId'],
+				},
+				default: [],
+				description:
+					'Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+			},
+			{
+				displayName: 'Page IDs to Reset',
+				name: 'pagesToResetProgressFor',
+				type: 'string',
+				default: '',
+				description: 'Comma-separated list of page IDs for which progress should be reset',
+			},
+		],
 	},
 ];
