@@ -115,6 +115,84 @@ const getCourseInfo: ExecuteHandler = async (ctx, i) => {
 	return await lsRequest.call(ctx, 'GET', `/members/${memberId}/course-info/${courseId}`);
 };
 
+const getCourseProgress: ExecuteHandler = async (ctx, i) => {
+	const memberId = ctx.getNodeParameter('memberId', i) as string;
+	const courseInstanceId = ctx.getNodeParameter('courseId', i) as string;
+	return await lsRequest.call(ctx, 'GET', `/members/${memberId}/course-progress/${courseInstanceId}`);
+};
+
+const getModuleProgress: ExecuteHandler = async (ctx, i) => {
+	const memberId = ctx.getNodeParameter('memberId', i) as string;
+	const courseInstanceId = ctx.getNodeParameter('courseId', i) as string;
+	const moduleId = ctx.getNodeParameter('moduleId', i) as string;
+	return await lsRequest.call(
+		ctx,
+		'GET',
+		`/members/${memberId}/course-progress/${courseInstanceId}/module/${moduleId}`,
+	);
+};
+
+const getLessonProgress: ExecuteHandler = async (ctx, i) => {
+	const memberId = ctx.getNodeParameter('memberId', i) as string;
+	const courseInstanceId = ctx.getNodeParameter('courseId', i) as string;
+	const lessonId = ctx.getNodeParameter('lessonId', i) as string;
+	return await lsRequest.call(
+		ctx,
+		'GET',
+		`/members/${memberId}/course-progress/${courseInstanceId}/lesson/${lessonId}`,
+	);
+};
+
+const setCourseProgress: ExecuteHandler = async (ctx, i) => {
+	const memberId = ctx.getNodeParameter('memberId', i) as string;
+	const courseInstanceId = ctx.getNodeParameter('courseId', i) as string;
+	const setForWholeCourse = ctx.getNodeParameter('setForWholeCourse', i) as boolean;
+	const additionalOptions = ctx.getNodeParameter('additionalOptions', i, {}) as IDataObject;
+
+	const body: IDataObject = {};
+
+	if (setForWholeCourse) {
+		body.setForWholeCourse = true;
+	} else {
+		if (additionalOptions.modulesToSetCompleted) {
+			body.modulesToSetCompleted = toIdArray(additionalOptions.modulesToSetCompleted);
+		}
+		if (additionalOptions.lessonsToSetCompleted) {
+			body.lessonsToSetCompleted = toIdArray(additionalOptions.lessonsToSetCompleted);
+		}
+		if (additionalOptions.pagesToSetCompleted) {
+			body.pagesToSetCompleted = toIdArray(additionalOptions.pagesToSetCompleted);
+		}
+	}
+
+	return await lsRequest.call(ctx, 'PUT', `/members/${memberId}/course-progress/${courseInstanceId}`, { body });
+};
+
+const resetCourseProgress: ExecuteHandler = async (ctx, i) => {
+	const memberId = ctx.getNodeParameter('memberId', i) as string;
+	const courseInstanceId = ctx.getNodeParameter('courseId', i) as string;
+	const setForWholeCourse = ctx.getNodeParameter('setForWholeCourse', i) as boolean;
+	const additionalOptions = ctx.getNodeParameter('additionalOptions', i, {}) as IDataObject;
+
+	const body: IDataObject = {};
+
+	if (setForWholeCourse) {
+		body.setForWholeCourse = true;
+	} else {
+		if (additionalOptions.modulesToResetProgressFor) {
+			body.modulesToResetProgressFor = toIdArray(additionalOptions.modulesToResetProgressFor);
+		}
+		if (additionalOptions.lessonsToResetProgressFor) {
+			body.lessonsToResetProgressFor = toIdArray(additionalOptions.lessonsToResetProgressFor);
+		}
+		if (additionalOptions.pagesToResetProgressFor) {
+			body.pagesToResetProgressFor = toIdArray(additionalOptions.pagesToResetProgressFor);
+		}
+	}
+
+	return await lsRequest.call(ctx, 'DELETE', `/members/${memberId}/course-progress/${courseInstanceId}`, { body });
+};
+
 const addToBundles: ExecuteHandler = async (ctx, i) => {
 	const memberId = ctx.getNodeParameter('memberId', i) as string;
 	const bundles = toIdArray(ctx.getNodeParameter('bundles', i));
@@ -192,6 +270,11 @@ export const memberHandlers = {
 	removeFromCourses,
 	getCourses,
 	getCourseInfo,
+	getCourseProgress,
+	getModuleProgress,
+	getLessonProgress,
+	setCourseProgress,
+	resetCourseProgress,
 	addToBundles,
 	removeFromBundles,
 	getBundles,
