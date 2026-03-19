@@ -181,6 +181,17 @@ function buildDesiredFilter(ctx: any, i: number, eventType: string): IDataObject
 			break;
 		}
 
+		// ---------------- User Activation Status Changed
+		case 'user.activationStatusChanged': {
+			const col = getCol(ctx, i, 'additionalUserActivationStatus') as {
+				action?: string;
+				roleId?: string;
+			};
+			if (col?.action) filter.action = String(col.action);
+			if (col?.roleId) filter.roleId = String(col.roleId);
+			break;
+		}
+
 		default:
 			break;
 	}
@@ -303,6 +314,12 @@ const getSampleData: ExecuteHandler = async (ctx, i) => {
 
 		case 'custom-field-value-changed': {
 			const col = ctx.getNodeParameter('additionalCustomFieldValueChangedSample', i, {}) as IDataObject;
+			qs = col;
+			break;
+		}
+
+		case 'user-activation-status-changed-events': {
+			const col = ctx.getNodeParameter('additionalUserActivationStatusChangedSample', i, {}) as IDataObject;
 			qs = col;
 			break;
 		}
