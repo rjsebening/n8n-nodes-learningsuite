@@ -45,6 +45,7 @@ const INSTANT_EVENTS = new Set<string>([
 	'course.updated',
 	'course.memberAdded',
 	'customField.valueChanged',
+	'user.activationStatusChanged',
 ]);
 
 function buildDesiredFilter(this: IHookFunctions, event: string): { filter: IDataObject; hasFilter: boolean } {
@@ -233,6 +234,17 @@ function buildDesiredFilter(this: IHookFunctions, event: string): { filter: IDat
 		case 'submission.created': {
 			const col = getCol('additionalSubmission');
 			if (col.courseId) filter.courseInstanceId = String(col.courseId);
+			break;
+		}
+
+		// ---------------- User Activation Status Changed
+		case 'user.activationStatusChanged': {
+			const col = getCol('additionalUserActivationStatus') as {
+				action?: string;
+				roleId?: string;
+			};
+			if (col?.action) filter.action = String(col.action);
+			if (col?.roleId) filter.roleId = String(col.roleId);
 			break;
 		}
 		default:
