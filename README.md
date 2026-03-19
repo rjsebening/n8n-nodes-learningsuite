@@ -20,93 +20,122 @@ This community node uses the public LearningSuite API and is not affiliated with
 
 ## 🚀 Features
 
-- **11 resources** fully supported (Member, Course, Group, Bundle, Hub, Module, Community, Popup, Webhook, Role, API Call)
-- **More than 62 operations** for maximum flexibility
-- **Instant trigger (webhook-based)** with 12 event types for real-time automation
-- **Polling trigger** with 8 event types for scheduled polling
+- **14 resources** fully supported (Member, Course, Group, Bundle, Hub, Module, Community, Custom Fields, Popup, Webhook, Role, User, Team Member, AI, API Call)
+- **87 operations** for maximum flexibility
+- **Instant trigger (webhook-based)** with 17 event types for real-time automation
+- **Polling trigger** with 11 event types for scheduled polling
 - **Flexible API call** resource for custom endpoints
 
 ## 📋 Supported Operations
 
-### 👤 **Member** (15 operations)
+### 👤 **Member** (20 operations)
 
-- Get by email, get by ID, get all, create, update, delete
-
+- Get by email, get by ID, get all, create, update, delete, find or create
 - Activate/deactivate, add/remove courses, add/remove bundles
-
-- Get courses, get course information, get packages, search, or create
+- Get courses, get course information, get member bundles
+- Get course progress, get module progress, get lesson progress, set course progress, reset course progress
 
 ### 📚 **Course** (7 operations)
 
-- Publish, fetch Get modules, get modules for members
-
-– Get members, get access requests, get submissions, create a lesson
+- Get published courses, get course modules, get course modules for member
+- Get course members, get course access requests, get course submissions, create lesson
 
 ### 👥 **Group** (12 operations)
 
-– Add packages to the group, add courses to the group, add members to groups, add members to groups (summary), create a group, delete a group, search for a group by name, search for or create a group, get group courses, get many, remove courses from the group, remove members from groups
+- Add bundles to group, add courses to group, add members to groups, add members to groups (summary)
+- Create group, delete group, find group by name, find or create group
+- Get group courses, get many, remove courses from group, remove members from groups
 
-### 📦 **Package** (2 operations)
+### 📦 **Bundle** (2 operations)
 
-– Get all, get members
+- Get all, get bundle members
 
 ### 🏠 **Hub** (6 operations)
 
-– Get all, get templates, create, add access, remove access, get hub template variables
+- Get all, get templates, create, give hub access, remove hub access, get hub template variables
 
 ### 📖 **Module** (3 operations)
 
-– Get lessons, get sections, create unlock overrides
+- Get module lessons, get module sections, change module access for member
 
-### 💬 **Community** (5 operations)
+### 💬 **Community** (7 operations)
 
-– Assign badges to members, get community spaces, get community badges, get community forums Remove Members' Community Badges
+- Assign badges to member, remove community badges from member
+- Get community areas, get community badges, get community forums, get community posts
+- Create community post comment
+
+### 🔧 **Custom Fields** (13 operations)
+
+- Get cards, get cards (expanded), get categories, get definitions
+- Get field values, get store, get store values
+- Get profile by card, get profiles, get profiles (expanded)
+- Set field value, set multiple field values, update profile field
 
 ### 🎯 **Popup** (4 operations)
 
-– Get All, Get Popup, Member Trigger, Remove Member Trigger
+- Get all, get popup, trigger popup for member, delete popup trigger
 
-### 🔗 **Webhook** (6 operations)
+### 🔗 **Webhook** (5 operations)
 
-– Get/Create/Update/Delete Subscriptions, Get Sample Data
+- Get/create/update/delete subscriptions, get sample data
 
-### 🛠️ **Role** (1 operation)
+### 👤 **Team Member** (3 operations)
 
-– Get All
+- Get many, get by email, get by ID
+
+### 📢 **User** (1 operation)
+
+- Send push notification
+
+### 🤖 **AI** (1 operation)
+
+- RAG Chat
+
+### 🛡️ **Role** (1 operation)
+
+- Get all
 
 ### 🛠️ **API Call** (1 operation)
 
-– Make a Request (for any API calls)
+- Make a request (for any API calls)
 
-## 🎣 Webhook Trigger Events
+## 🎣 Trigger Events
 
 The LearningSuite trigger supports the following events:
 
-## ⚡ Immediate Trigger Events (Webhook)
+### ⚡ Instant Trigger Events (Webhook)
 
+- ✅ Community Post Commented
 - ✅ Community Post Created
 - ✅ Community Post Moderated
-- ✅ Course Progress Changed Above Threshold
+- ✅ Course Member Added
+- ✅ Course Progress Changed
+- ✅ Course Updated
+- ✅ Custom Field Value Changed
 - ✅ Custom Popup Interaction
-- ✅ Exam completed
-- ✅ Exam graded
-- ✅ Group user access changed
-- ✅ Lesson completed
-- ✅ New access request created
-- ✅ Feedback created
-- ✅ New login
-- ✅ Submission created
+- ✅ Exam Completed
+- ✅ Exam Graded
+- ✅ Group User Access Changed
+- ✅ Lesson Completed
+- ✅ New Access Request
+- ✅ New Feedback Created
+- ✅ New Login
+- ✅ Submission Created
+- ✅ User Activation Status Changed
 
-## ⏱️ Query trigger events
+### ⏱️ Polling Trigger Events
 
-- ✅ Bundle created (polling variant)
-- ✅ Custom popup created (polling variant)
-- ✅ Group created (survey variant)
-- ✅ New community area
-- ✅ New community badge
-- ✅ New community forum
-- ✅ New member
-- ✅ Member not logged in for X days
+- ✅ Bundle Created
+- ✅ Community Area Created
+- ✅ Community Badge Created
+- ✅ Community Forum Created
+- ✅ Custom Field Card Created
+- ✅ Custom Popup Created
+- ✅ Group Created
+- ✅ Member Created
+- ✅ Member Not Logged In for More Than X Days
+- ✅ Team Member Created
+- ✅ Team Member Updated
 
 ## 💡 Use case examples
 
@@ -329,13 +358,17 @@ npm test
 
 - ✅ Full LearningSuite API integration
 
-- ✅ 11 resources with more than 62 operations
+- ✅ 14 resources with 87 operations
 
-- ✅ Webhook triggers with 12 event types for real-time automation
+- ✅ Webhook triggers with 17 event types for real-time automation
 
-- ✅ Polling triggers with 8 event types
+- ✅ Polling triggers with 11 event types
 
 - ✅ "Find-or-Create" logic for members and groups
+
+- ✅ Custom Fields resource with full CRUD support
+
+- ✅ Course progress management (get/set/reset)
 
 - ✅ Flexible parameter configuration
 
