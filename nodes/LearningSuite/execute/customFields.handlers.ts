@@ -41,8 +41,7 @@ function normalizeSingleFieldValueOrFail(ctx: any, input: unknown, fieldKey: str
 			if (trimmed.startsWith('[') || trimmed.startsWith('{')) {
 				try {
 					value = JSON.parse(trimmed);
-				} catch {
-				}
+				} catch {}
 			}
 		}
 
@@ -173,6 +172,18 @@ const getCategories: ExecuteHandler = async (ctx, i) => {
 const getStore: ExecuteHandler = async (ctx, i) => {
 	const userId = ctx.getNodeParameter('userId', i) as string;
 	return await lsRequest.call(ctx, 'GET', `/custom-fields/store/${userId}`);
+};
+
+const getStoreValues: ExecuteHandler = async (ctx, i) => {
+	const userId = ctx.getNodeParameter('userId', i) as string;
+	const profileIndex = ctx.getNodeParameter('profileIndex', i, null) as number | null;
+
+	const qs: IDataObject = {};
+	if (profileIndex !== null && Number.isFinite(profileIndex)) {
+		qs.profileIndex = profileIndex;
+	}
+
+	return await lsRequest.call(ctx, 'GET', `/custom-fields/store/${userId}/values`, { qs });
 };
 
 const getFieldValues: ExecuteHandler = async (ctx, i) => {
@@ -349,6 +360,7 @@ export const customFieldsHandlers = {
 	getDefinitions,
 	getCategories,
 	getStore,
+	getStoreValues,
 	getFieldValues,
 	setFieldValue,
 	setMultipleFieldValues,
