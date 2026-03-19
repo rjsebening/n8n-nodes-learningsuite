@@ -378,6 +378,37 @@ export const webhookSampleDataProperties: INodeProperties[] = [
 	},
 
 	{
+		displayName: 'User Activation Status Changed Options',
+		name: 'additionalUserActivationStatusChangedSample',
+		type: 'collection',
+		default: {},
+		placeholder: 'Add option',
+		displayOptions: { show: { sampleDataType: ['user-activation-status-changed-events'] } },
+		options: [
+			{
+				displayName: 'User Name or ID',
+				name: 'userId',
+				type: 'options',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				typeOptions: { loadOptionsMethod: 'member_getMembers' },
+				default: '',
+			},
+			{
+				displayName: 'Action',
+				name: 'action',
+				type: 'options',
+				default: 'activated',
+				description: 'The activation status action to use for sample data',
+				options: [
+					{ name: 'Activated', value: 'activated' },
+					{ name: 'Deactivated', value: 'deactivated' },
+				],
+			},
+		],
+	},
+
+	{
 		displayName: 'Custom Field Value Changed Options',
 		name: 'additionalCustomFieldValueChangedSample',
 		type: 'collection',
