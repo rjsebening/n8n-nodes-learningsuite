@@ -99,6 +99,7 @@ export const webhookProperties: INodeProperties[] = [
 			{ name: 'New Feedback Created', value: 'feedback.created' },
 			{ name: 'New Login', value: 'login.new' },
 			{ name: 'Submission Created', value: 'submission.created' },
+			{ name: 'User Activation Status Changed', value: 'user.activationStatusChanged' },
 		],
 	},
 
@@ -126,6 +127,7 @@ export const webhookProperties: INodeProperties[] = [
 			{ name: 'Group User Access Changed Events', value: 'group-user-access-changed-events' },
 			{ name: 'Lesson Completed Events', value: 'lesson-completed-events' },
 			{ name: 'New Login Events', value: 'new-login-events' },
+			{ name: 'User Activation Status Changed Events', value: 'user-activation-status-changed-events' },
 		],
 	},
 
@@ -665,6 +667,44 @@ export const webhookProperties: INodeProperties[] = [
 				default: '',
 				description:
 					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+			},
+		],
+	},
+	// User Activation Status Changed
+	{
+		displayName: 'Activation Status Options',
+		name: 'additionalUserActivationStatus',
+		type: 'collection',
+		default: {},
+		placeholder: 'Add option',
+		displayOptions: {
+			show: {
+				resource: ['webhook'],
+				operation: ['createSubscription', 'updateSubscription'],
+				eventType: ['user.activationStatusChanged'],
+			},
+		},
+		options: [
+			{
+				displayName: 'Action',
+				name: 'action',
+				type: 'options',
+				default: '',
+				description: 'Filter by activation status action',
+				options: [
+					{ name: 'All', value: '' },
+					{ name: 'Activated', value: 'activated' },
+					{ name: 'Deactivated', value: 'deactivated' },
+				],
+			},
+			{
+				displayName: 'Role Name or ID',
+				name: 'roleId',
+				type: 'options',
+				typeOptions: { loadOptionsMethod: 'role_getRoles' },
+				default: '',
+				description:
+					'Filter for a specific user role. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 		],
 	},
