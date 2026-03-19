@@ -81,6 +81,11 @@ export const instantProperties: INodeProperties[] = [
 				value: 'submission.created',
 				description: 'Triggers when a member submits an interactive task (file, audio, video, text)',
 			},
+			{
+				name: 'User Activation Status Changed',
+				value: 'user.activationStatusChanged',
+				description: 'Triggers when a user is activated or deactivated',
+			},
 		],
 	},
 	// New Login
@@ -537,6 +542,39 @@ export const instantProperties: INodeProperties[] = [
 				default: '',
 				description:
 					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+			},
+		],
+	},
+
+	// User Activation Status Changed
+	{
+		displayName: 'Activation Status Options',
+		name: 'additionalUserActivationStatus',
+		type: 'collection',
+		default: {},
+		placeholder: 'Add option',
+		displayOptions: { show: { event: ['user.activationStatusChanged'] } },
+		options: [
+			{
+				displayName: 'Action',
+				name: 'action',
+				type: 'options',
+				default: '',
+				description: 'Filter by activation status action',
+				options: [
+					{ name: 'All', value: '' },
+					{ name: 'Activated', value: 'activated' },
+					{ name: 'Deactivated', value: 'deactivated' },
+				],
+			},
+			{
+				displayName: 'Role Name or ID',
+				name: 'roleId',
+				type: 'options',
+				typeOptions: { loadOptionsMethod: 'role_getRoles' },
+				default: '',
+				description:
+					'Filter for a specific user role. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 		],
 	},
