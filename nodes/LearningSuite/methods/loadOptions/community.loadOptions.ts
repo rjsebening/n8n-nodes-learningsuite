@@ -11,7 +11,9 @@ export async function community_getForums(this: ILoadOptionsFunctions) {
 	try {
 		const areaId = this.getNodeParameter('areaId', 0) as string;
 		if (areaId) qs = { areaId };
-	} catch {}
+	} catch {
+		// Some loadOptions contexts do not expose the optional areaId parameter.
+	}
 	return fetchOptions.call(this, '/community/forums', qs, ['name', 'title'], ['id', 'sid']);
 }
 
@@ -26,10 +28,18 @@ export async function community_getBadges(this: ILoadOptionsFunctions): Promise<
 		if (badgeGroupId) {
 			qs.badgeGroupId = badgeGroupId;
 		}
-	} catch {}
+	} catch {
+		// badgeGroupId is optional and may be unavailable outside the current UI scope.
+	}
 
 	const res = await lsRequest.call(this, 'GET', '/community/badges', { qs });
-	const rows = Array.isArray(res) ? res : (res?.items ?? res ?? []);
+	const rows = Array.isArray(res)
+		? res
+		: typeof res === 'object' && res !== null && Array.isArray((res as IDataObject).items)
+			? ((res as IDataObject).items as IDataObject[])
+			: res
+				? [res]
+				: [];
 	const options: INodePropertyOptions[] = [];
 
 	for (const r of rows as IDataObject[]) {
@@ -51,15 +61,16 @@ export async function community_getBadges(this: ILoadOptionsFunctions): Promise<
 export async function community_getLatestPosts(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 	const qs: IDataObject = { order: 'latest', limit: 100, offset: 0 };
 	const res = await lsRequest.call(this, 'GET', '/community/posts', { qs });
-	const rows = Array.isArray(res) ? res : res ? [res] : [];
+	const rows = (Array.isArray(res) ? res : res ? [res] : []) as IDataObject[];
 	const options: INodePropertyOptions[] = [];
 
 	for (const r of rows) {
-		const id = r?.id as string | undefined;
+		const id = typeof r.id === 'string' ? r.id : typeof r.id === 'number' ? String(r.id) : undefined;
 		if (!id) continue;
 
-		const bodyText = (r?.bodyText as string)?.trim();
-		const author = (r?.author?.fullName as string)?.trim();
+		const bodyText = typeof r.bodyText === 'string' ? r.bodyText.trim() : '';
+		const authorObj = typeof r.author === 'object' && r.author !== null ? (r.author as IDataObject) : undefined;
+		const author = typeof authorObj?.fullName === 'string' ? authorObj.fullName.trim() : '';
 		const name = author ? `${bodyText} - ${author}` : bodyText;
 
 		options.push({ name, value: id });

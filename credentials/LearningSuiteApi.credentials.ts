@@ -1,8 +1,9 @@
-import { ICredentialType, INodeProperties, IAuthenticate, ICredentialTestRequest } from 'n8n-workflow';
+import type { IAuthenticate, ICredentialTestRequest, ICredentialType, Icon, INodeProperties } from 'n8n-workflow';
 
 export class LearningSuiteApi implements ICredentialType {
 	name = 'learningSuiteApi';
 	displayName = 'LearningSuite API';
+	icon: Icon = 'file:learningsuite.svg';
 	documentationUrl = 'https://github.com/rjsebening/n8n-nodes-learningsuite/blob/main/CREDENTIALS.md';
 
 	properties: INodeProperties[] = [

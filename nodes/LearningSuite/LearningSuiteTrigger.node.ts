@@ -4,7 +4,7 @@ import {
 	INodeType,
 	INodeTypeDescription,
 	IWebhookResponseData,
-	NodeConnectionType,
+	NodeConnectionTypes,
 	IDataObject,
 	JsonObject,
 	NodeApiError,
@@ -27,6 +27,20 @@ import * as loRole from './methods/loadOptions/role.loadOptions';
 import * as loWebhook from './methods/loadOptions/webhook.loadOptions';
 import * as loTeamMember from './methods/loadOptions/teamMember.loadOptions';
 import * as loCustomFields from './methods/loadOptions/customFields.loadOptions';
+
+type WebhookSubscriptionResponse = {
+	id?: string;
+	type?: string;
+	url?: string;
+	filter?: IDataObject;
+};
+
+type ApiErrorLike = {
+	statusCode?: number;
+	response?: {
+		statusCode?: number;
+	};
+};
 
 const INSTANT_EVENTS = new Set<string>([
 	'accessRequest.created',
@@ -253,6 +267,10 @@ function buildDesiredFilter(this: IHookFunctions, event: string): { filter: IDat
 	return { filter, hasFilter: true };
 }
 
+function isApiErrorLike(error: unknown): error is ApiErrorLike {
+	return typeof error === 'object' && error !== null;
+}
+
 export class LearningSuiteTrigger implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'LearningSuite Trigger',
@@ -267,16 +285,17 @@ export class LearningSuiteTrigger implements INodeType {
 		subtitle: '={{$parameter["event"]}}',
 		defaults: {
 			name: 'LearningSuite Trigger',
-			// @ts-expect-error -- some linters require this
+			// @ts-expect-error -- description is required by n8n node linting for defaults
 			description: 'Interact with LearningSuite API (powered by agentur-systeme.de)',
 		},
 		inputs: [],
-		outputs: [NodeConnectionType.Main],
+		outputs: [NodeConnectionTypes.Main],
+		usableAsTool: true,
 		credentials: [
 			{
 				name: 'learningSuiteApi',
 				required: true,
-				// @ts-expect-error
+				// @ts-expect-error -- credential description is accepted by n8n but missing from typings here
 				description: 'Uses LearningSuite API Key via header X-API-KEY',
 			},
 		],
@@ -318,14 +337,14 @@ export class LearningSuiteTrigger implements INodeType {
 					desiredFilterRaw && typeof desiredFilterRaw === 'object' ? (desiredFilterRaw as IDataObject) : {};
 
 				try {
-					const remote = await apiRequest.call(this, {
+					const remote = (await apiRequest.call(this, {
 						method: 'GET',
 						path: `/webhooks/subscription/${encodeURIComponent(storedId)}`,
-					});
+					})) as WebhookSubscriptionResponse;
 
-					const remoteType = (remote as any)?.type as string | undefined;
-					const remoteUrl = (remote as any)?.url as string | undefined;
-					const remoteFilter = ((remote as any)?.filter ?? {}) as IDataObject;
+					const remoteType = remote.type;
+					const remoteUrl = remote.url;
+					const remoteFilter = remote.filter ?? {};
 
 					const typeDiffers = remoteType !== event;
 					const urlDiffers = remoteUrl !== desiredHookUrl;
@@ -333,8 +352,8 @@ export class LearningSuiteTrigger implements INodeType {
 					let filterDiffers = false;
 					const keys = new Set<string>([...Object.keys(remoteFilter || {}), ...Object.keys(desiredFilter || {})]);
 					for (const k of keys) {
-						const a = (remoteFilter as any)?.[k];
-						const b = (desiredFilter as any)?.[k];
+						const a = remoteFilter[k];
+						const b = desiredFilter[k];
 						if (a !== b) {
 							filterDiffers = true;
 							break;
@@ -356,8 +375,8 @@ export class LearningSuiteTrigger implements INodeType {
 					}
 
 					return true;
-				} catch (error: any) {
-					if (error?.statusCode === 404 || error?.response?.statusCode === 404) {
+				} catch (error: unknown) {
+					if (isApiErrorLike(error) && (error.statusCode === 404 || error.response?.statusCode === 404)) {
 						delete webhookData.subscriptionId;
 						return false;
 					}
@@ -382,14 +401,14 @@ export class LearningSuiteTrigger implements INodeType {
 				};
 
 				try {
-					const response = await apiRequest.call(this, {
+					const response = (await apiRequest.call(this, {
 						method: 'POST',
 						path: '/webhooks/subscription',
 						body,
-					});
+					})) as WebhookSubscriptionResponse;
 
 					const webhookData = this.getWorkflowStaticData('node');
-					webhookData.subscriptionId = (response as any)?.id;
+					webhookData.subscriptionId = response.id;
 
 					return true;
 				} catch (error) {
@@ -412,8 +431,8 @@ export class LearningSuiteTrigger implements INodeType {
 						method: 'DELETE',
 						path: `/webhooks/subscription/${encodeURIComponent(id)}`,
 					});
-				} catch (error: any) {
-					if (error?.statusCode !== 404 && error?.response?.statusCode !== 404) {
+				} catch (error: unknown) {
+					if (!isApiErrorLike(error) || (error.statusCode !== 404 && error.response?.statusCode !== 404)) {
 						delete webhookData.subscriptionId;
 						throw new NodeApiError(this.getNode(), error as JsonObject, {
 							message: 'Failed to delete webhook subscription',
@@ -430,14 +449,11 @@ export class LearningSuiteTrigger implements INodeType {
 	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
 		const body = this.getBodyData() as unknown;
 		if (Array.isArray(body)) {
-			// @ts-ignore
 			return { workflowData: [this.helpers.returnJsonArray(body as IDataObject[])] };
 		}
 		if (body && typeof body === 'object') {
-			// @ts-ignore
 			return { workflowData: [this.helpers.returnJsonArray([body as IDataObject])] };
 		}
-		// @ts-ignore
 		return { workflowData: [this.helpers.returnJsonArray([{ error: 'No JSON body' }])] };
 	}
 }

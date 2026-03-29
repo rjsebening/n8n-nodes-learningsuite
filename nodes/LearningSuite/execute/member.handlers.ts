@@ -2,6 +2,19 @@ import type { IDataObject } from 'n8n-workflow';
 import { lsRequest, toIdArray, getHttpCode } from '../shared';
 import type { ExecuteHandler } from '../exec.types';
 
+type HttpErrorLike = {
+	httpCode?: number;
+	statusCode?: number;
+	status?: number;
+	response?: {
+		statusCode?: number;
+		status?: number;
+	};
+	errorDetails?: {
+		httpCode?: number;
+	};
+};
+
 const getByEmail: ExecuteHandler = async (ctx, i) => {
 	const email = ctx.getNodeParameter('email', i) as string;
 	const includeGroups = ctx.getNodeParameter('includeGroups', i) as boolean;
@@ -230,11 +243,11 @@ const findOrCreate: ExecuteHandler = async (ctx, i) => {
 
 	try {
 		return await lsRequest.call(ctx, 'GET', '/members/by-email', { qs: { email } });
-	} catch (error: any) {
+	} catch (error: unknown) {
 		const is404 = getHttpCode(error) === 404;
 
 		if (!is404) {
-			throw error;
+			throw error as HttpErrorLike;
 		}
 
 		const firstName = ctx.getNodeParameter('firstName', i, '') as string;

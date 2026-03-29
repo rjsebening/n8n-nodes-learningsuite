@@ -1,7 +1,7 @@
 // n8n-nodes-learningsuite/nodes/LearningSuite/methods/loadOptions/customFields.helpers.ts
 
 import type { ILoadOptionsFunctions } from 'n8n-workflow';
-import { lsRequest } from '.';
+import { lsRequest } from './request';
 import type { LsFieldDefinition } from './customFields.shared';
 import { isLsCard, isLsFieldDefinition } from './customFields.shared';
 
@@ -58,6 +58,8 @@ export function getLsSimpleType(def: LsFieldDefinition): string {
 			return 'images';
 		case 'videos':
 			return 'videos';
+		case 'audio':
+			return 'audio';
 		default:
 			return 'string';
 	}

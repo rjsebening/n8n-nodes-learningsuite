@@ -131,14 +131,25 @@ export const customFieldsProperties: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['customFields'],
-				operation: [
-					'getCategories',
-					'getDefinitions',
-					'getProfiles',
-					'getProfilesExpanded',
-					'getProfileByCard',
-					'updateProfileField',
-				],
+				operation: ['getCategories', 'getDefinitions', 'getProfiles', 'getProfilesExpanded'],
+			},
+		},
+	},
+	{
+		displayName: 'Card Name or ID',
+		name: 'customFieldCardId',
+		type: 'options',
+		required: true,
+		default: '',
+		description:
+			'The custom field card to use. Choose from the list or specify an ID using an expression. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+		typeOptions: {
+			loadOptionsMethod: 'customFields_getCards',
+		},
+		displayOptions: {
+			show: {
+				resource: ['customFields'],
+				operation: ['getProfileByCard', 'updateProfileField'],
 			},
 		},
 	},
@@ -148,7 +159,7 @@ export const customFieldsProperties: INodeProperties[] = [
 		type: 'number',
 		default: null,
 		description:
-			'If specified, the profile with this ID is used. Takes precedence over Profile Name. If not specified or if the index does not exist for a given field key, the value in the default/first profile is returned.',
+			'If specified, the profile with this index is used. Ignored if Profile ID is set. Takes precedence over Profile Name. If not specified or if the index does not exist for a given field key, the value in the default/first profile is returned.',
 		displayOptions: {
 			show: {
 				resource: ['customFields'],
@@ -163,11 +174,30 @@ export const customFieldsProperties: INodeProperties[] = [
 		},
 	},
 	{
+		displayName: 'Profile ID',
+		name: 'profileId',
+		type: 'string',
+		default: '',
+		description:
+			'If specified, the profile with this ID is used. Takes precedence over Profile Index and Profile Name.',
+		displayOptions: {
+			show: {
+				resource: ['customFields'],
+				operation: [
+					'setFieldValue',
+					'setMultipleFieldValues',
+					'getProfileByCard',
+					'updateProfileField',
+				],
+			},
+		},
+	},
+	{
 		displayName: 'Profile Name',
 		name: 'profileName',
 		type: 'string',
 		default: '',
-		description: 'If specified, the first profile with this name is used. Ignored if Profile Index is set.',
+		description: 'If specified, the first profile with this name is used. Ignored if Profile ID or Profile Index is set.',
 		displayOptions: {
 			show: {
 				resource: ['customFields'],
@@ -391,6 +421,30 @@ export const customFieldsProperties: INodeProperties[] = [
 		},
 	},
 	{
+		displayName: 'Field Value (Audio)',
+		name: 'fieldValueAudio',
+		type: 'json',
+		default: `[
+			{
+			// Note: type 'audio' is not supported yet
+			"fileId": "file_audio_001",
+			"mimeType": "audio/mpeg",
+			"fileSize": 8456721,
+			"duration": 183,
+			"peaks": [0.12, 0.45, 0.31, 0.18]
+			}
+		 ]`,
+		required: true,
+		description: 'JSON array of audio objects',
+		displayOptions: {
+			show: {
+				resource: ['customFields'],
+				operation: ['setFieldValue', 'updateProfileField'],
+				fieldType: ['audio'],
+			},
+		},
+	},
+	{
 		displayName: 'Field Value',
 		name: 'fieldValueFallback',
 		type: 'string',
@@ -404,7 +458,7 @@ export const customFieldsProperties: INodeProperties[] = [
 				operation: ['setFieldValue', 'updateProfileField'],
 			},
 			hide: {
-				fieldType: ['string', 'number', 'boolean', 'dateTime', 'option', 'multiOptions', 'files', 'images', 'videos'],
+				fieldType: ['string', 'number', 'boolean', 'dateTime', 'option', 'multiOptions', 'files', 'images', 'videos', 'audio'],
 			},
 		},
 	},

@@ -1,11 +1,24 @@
-import type { IDataObject } from 'n8n-workflow';
+import type { IDataObject, IExecuteFunctions } from 'n8n-workflow';
 import { NodeOperationError } from 'n8n-workflow';
 import { lsRequest } from '../shared';
 import type { ExecuteHandler } from '../exec.types';
 
-type LsType = 'string' | 'number' | 'boolean' | 'date' | 'time' | 'dateTime' | 'select' | 'files' | 'images' | 'videos';
+type LsType =
+	| 'string'
+	| 'number'
+	| 'boolean'
+	| 'date'
+	| 'time'
+	| 'dateTime'
+	| 'select'
+	| 'files'
+	| 'images'
+	| 'videos'
+	| 'audio';
 
-function normalizeSingleFieldValueOrFail(ctx: any, input: unknown, fieldKey: string, lsType: LsType) {
+type ExecuteContext = IExecuteFunctions;
+
+function normalizeSingleFieldValueOrFail(ctx: ExecuteContext, input: unknown, fieldKey: string, lsType: LsType) {
 	if (input === undefined || input === null) {
 		throw new NodeOperationError(ctx.getNode(), `No value provided for custom field "${fieldKey}".`);
 	}
@@ -29,19 +42,23 @@ function normalizeSingleFieldValueOrFail(ctx: any, input: unknown, fieldKey: str
 					if (Array.isArray(parsed)) {
 						return parsed;
 					}
-				} catch {}
+				} catch {
+					// Fall back to treating the incoming value as a single option below.
+				}
 			}
 		}
 		return Array.isArray(value) ? value : [value];
 	}
 
-	if (['files', 'images', 'videos'].includes(lsType)) {
+	if (['files', 'images', 'videos', 'audio'].includes(lsType)) {
 		if (typeof value === 'string') {
 			const trimmed = value.trim();
 			if (trimmed.startsWith('[') || trimmed.startsWith('{')) {
 				try {
 					value = JSON.parse(trimmed);
-				} catch {}
+				} catch {
+					// Keep the original string when it is not valid JSON.
+				}
 			}
 		}
 
@@ -97,12 +114,7 @@ function normalizeCustomFieldValue(response: unknown): IDataObject {
 	return { value: response };
 }
 
-function getProfileIndex(ctx: any, i: number, paramName = 'profileIndex'): number {
-	const value = ctx.getNodeParameter(paramName, i, 0);
-	return typeof value === 'number' ? value : 0;
-}
-
-function readTypedFieldValue(ctx: any, i: number, fieldType: string): unknown {
+function readTypedFieldValue(ctx: ExecuteContext, i: number, fieldType: string): unknown {
 	switch (fieldType) {
 		case 'string':
 			return ctx.getNodeParameter('fieldValueString', i) as string;
@@ -128,6 +140,10 @@ function readTypedFieldValue(ctx: any, i: number, fieldType: string): unknown {
 		}
 		case 'videos': {
 			const parsed = ctx.getNodeParameter('fieldValueVideos', i, []);
+			return Array.isArray(parsed) ? parsed : [parsed];
+		}
+		case 'audio': {
+			const parsed = ctx.getNodeParameter('fieldValueAudio', i, []);
 			return Array.isArray(parsed) ? parsed : [parsed];
 		}
 		default:
@@ -204,11 +220,14 @@ const setFieldValue: ExecuteHandler = async (ctx, i) => {
 		throw new NodeOperationError(ctx.getNode(), `No value provided for custom field "${fieldKey}".`);
 	}
 
+	const profileId = ctx.getNodeParameter('profileId', i, '') as string;
 	const profileIndex = ctx.getNodeParameter('profileIndex', i, null) as number | null;
 	const validProfileIndex = profileIndex !== null && Number.isFinite(profileIndex) ? profileIndex : undefined;
 
 	const body: IDataObject = { fieldValue };
-	if (validProfileIndex !== undefined) {
+	if (profileId) {
+		body.profileId = profileId;
+	} else if (validProfileIndex !== undefined) {
 		body.profileIndex = validProfileIndex;
 	}
 
@@ -240,7 +259,9 @@ function buildFieldTypeMap(
 
 const setMultipleFieldValues: ExecuteHandler = async (ctx, i) => {
 	const userId = ctx.getNodeParameter('userId', i) as string;
-	const profileIndex = getProfileIndex(ctx, i, 'profileIndex');
+	const profileId = ctx.getNodeParameter('profileId', i, '') as string;
+	const profileIndex = ctx.getNodeParameter('profileIndex', i, null) as number | null;
+	const validProfileIndex = profileIndex !== null && Number.isFinite(profileIndex) ? profileIndex : undefined;
 
 	const mapperData = ctx.getNodeParameter('fieldValues', i) as { value?: Record<string, unknown> };
 	const fieldMappings = mapperData?.value || {};
@@ -269,11 +290,18 @@ const setMultipleFieldValues: ExecuteHandler = async (ctx, i) => {
 				throw new NodeOperationError(ctx.getNode(), `Unknown custom field "${fieldKey}".`);
 			}
 
-			return {
+			const entry: IDataObject = {
 				fieldKey,
-				profileIndex,
 				fieldValue: normalizeSingleFieldValueOrFail(ctx, value, fieldKey, lsType),
 			};
+
+			if (profileId) {
+				entry.profileId = profileId;
+			} else if (validProfileIndex !== undefined) {
+				entry.profileIndex = validProfileIndex;
+			}
+
+			return entry;
 		});
 
 	if (!payload.length) {
@@ -309,11 +337,14 @@ const getProfileByCard: ExecuteHandler = async (ctx, i) => {
 	const userId = ctx.getNodeParameter('userId', i) as string;
 	const cardId = ctx.getNodeParameter('customFieldCardId', i) as string;
 
+	const profileId = ctx.getNodeParameter('profileId', i, '') as string;
 	const profileIndex = ctx.getNodeParameter('profileIndex', i, null) as number | null;
 	const profileName = ctx.getNodeParameter('profileName', i, '');
 
 	const qs: IDataObject = {};
-	if (profileIndex !== null && Number.isFinite(profileIndex)) {
+	if (profileId) {
+		qs.profileId = profileId;
+	} else if (profileIndex !== null && Number.isFinite(profileIndex)) {
 		qs.profileIndex = profileIndex;
 	} else if (profileName) {
 		qs.profileName = profileName;
@@ -335,13 +366,16 @@ const updateProfileField: ExecuteHandler = async (ctx, i) => {
 	}
 
 	const body: IDataObject = { fieldKey, fieldValue };
+	const profileId = ctx.getNodeParameter('profileId', i, '') as string;
 
 	const profileIndex = ctx.getNodeParameter('profileIndex', i, null) as number | null;
-	if (profileIndex !== null && Number.isFinite(profileIndex)) {
+	if (profileId) {
+		body.profileId = profileId;
+	} else if (profileIndex !== null && Number.isFinite(profileIndex)) {
 		body.profileIndex = profileIndex;
 	}
 
-	if (body.profileIndex === undefined) {
+	if (body.profileId === undefined && body.profileIndex === undefined) {
 		const profileName = ctx.getNodeParameter('profileName', i, '');
 		if (profileName) {
 			body.profileName = profileName;

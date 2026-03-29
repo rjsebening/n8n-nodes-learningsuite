@@ -1,4 +1,4 @@
-import type { IDataObject } from 'n8n-workflow';
+import type { IDataObject, IExecuteFunctions } from 'n8n-workflow';
 import { lsRequest } from '../shared';
 import type { ExecuteHandler } from '../exec.types';
 import { toIdArray } from '../shared/parsing';
@@ -6,7 +6,14 @@ import { toIdArray } from '../shared/parsing';
 /**
  * Helpers
  */
-const getCol = (ctx: any, i: number, name: string): IDataObject => {
+type ExecuteContext = IExecuteFunctions;
+
+type LegacyCourseContext = {
+	courseId?: string;
+	examModuleId?: string;
+};
+
+const getCol = (ctx: ExecuteContext, i: number, name: string): IDataObject => {
 	try {
 		const v = ctx.getNodeParameter(name, i, {}) as IDataObject | undefined;
 		return v && typeof v === 'object' ? v : {};
@@ -15,7 +22,7 @@ const getCol = (ctx: any, i: number, name: string): IDataObject => {
 	}
 };
 
-const getStr = (ctx: any, i: number, name: string, def = ''): string => {
+const getStr = (ctx: ExecuteContext, i: number, name: string, def = ''): string => {
 	try {
 		const v = ctx.getNodeParameter(name, i, def) as string | undefined;
 		return (v ?? def).toString().trim();
@@ -24,7 +31,7 @@ const getStr = (ctx: any, i: number, name: string, def = ''): string => {
 	}
 };
 
-const getNum = (ctx: any, i: number, name: string, fallback = 0): number => {
+const getNum = (ctx: ExecuteContext, i: number, name: string, fallback = 0): number => {
 	try {
 		const v = ctx.getNodeParameter(name, i, fallback) as number | undefined;
 		return Number.isFinite(v as number) ? (v as number) : fallback;
@@ -33,7 +40,7 @@ const getNum = (ctx: any, i: number, name: string, fallback = 0): number => {
 	}
 };
 
-function buildDesiredFilter(ctx: any, i: number, eventType: string): IDataObject {
+function buildDesiredFilter(ctx: ExecuteContext, i: number, eventType: string): IDataObject {
 	const filter: IDataObject = {};
 
 	switch (eventType) {
@@ -121,8 +128,9 @@ function buildDesiredFilter(ctx: any, i: number, eventType: string): IDataObject
 				courseId?: string;
 				examModuleId?: string;
 			};
-			// Backcompat: ältere Flows hatten 'additionalFeedbackExam' nur mit courseId
-			const legacy = Object.keys(exam).length ? undefined : (getCol(ctx, i, 'additionalFeedbackExam') as any);
+			const legacy = Object.keys(exam).length
+				? undefined
+				: (getCol(ctx, i, 'additionalFeedbackExam') as LegacyCourseContext);
 			const c = (Object.keys(exam).length ? exam : legacy) || {};
 			if (c?.courseId) filter.courseInstanceId = String(c.courseId);
 			if (c?.examModuleId) filter.examModuleId = String(c.examModuleId);
@@ -133,7 +141,9 @@ function buildDesiredFilter(ctx: any, i: number, eventType: string): IDataObject
 		case 'course.memberAdded':
 		case 'course.updated': {
 			const fb = getCol(ctx, i, 'additionalCourseOptions') as { courseId?: string };
-			const legacy = Object.keys(fb).length ? undefined : (getCol(ctx, i, 'additionalCourseOptions') as any);
+			const legacy = Object.keys(fb).length
+				? undefined
+				: (getCol(ctx, i, 'additionalCourseOptions') as LegacyCourseContext);
 			const c = (Object.keys(fb).length ? fb : legacy) || {};
 			if (c?.courseId) filter.courseInstanceId = String(c.courseId);
 			break;
@@ -142,8 +152,9 @@ function buildDesiredFilter(ctx: any, i: number, eventType: string): IDataObject
 		// ---------------- Feedback
 		case 'feedback.created': {
 			const fb = getCol(ctx, i, 'additionalFeedbackOptions') as { courseId?: string };
-			// Backcompat zu 'additionalFeedbackExam'
-			const legacy = Object.keys(fb).length ? undefined : (getCol(ctx, i, 'additionalFeedbackExam') as any);
+			const legacy = Object.keys(fb).length
+				? undefined
+				: (getCol(ctx, i, 'additionalFeedbackExam') as LegacyCourseContext);
 			const c = (Object.keys(fb).length ? fb : legacy) || {};
 			if (c?.courseId) filter.courseInstanceId = String(c.courseId);
 			break;

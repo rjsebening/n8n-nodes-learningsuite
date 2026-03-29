@@ -2,7 +2,7 @@
 import {
 	INodeType,
 	INodeTypeDescription,
-	NodeConnectionType,
+	NodeConnectionTypes,
 	type IPollFunctions,
 	type INodeExecutionData,
 	type IDataObject,
@@ -26,11 +26,41 @@ const TIMELINE_EVENTS = new Set<string>([
 	'teamMember.updated',
 ]);
 
-function extractItems(res: any): any[] {
-	if (Array.isArray(res)) return res;
-	if (Array.isArray(res?.items)) return res.items;
-	if (Array.isArray(res?.data)) return res.data;
+type PollableRecord = IDataObject & {
+	id?: string | number;
+	areaId?: string | number;
+	lastLogin?: string;
+	createdAt?: string;
+	updatedAt?: string;
+};
+
+type PaginatedResponse = {
+	items?: PollableRecord[];
+	data?: PollableRecord[];
+};
+
+function asPollableRecord(value: unknown): PollableRecord | null {
+	if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+		return null;
+	}
+
+	return value as PollableRecord;
+}
+
+function extractItems(res: unknown): PollableRecord[] {
+	if (Array.isArray(res)) return res.map(asPollableRecord).filter((item): item is PollableRecord => item !== null);
+
+	if (typeof res === 'object' && res !== null) {
+		const paginated = res as PaginatedResponse;
+		if (Array.isArray(paginated.items)) return paginated.items;
+		if (Array.isArray(paginated.data)) return paginated.data;
+	}
+
 	return [];
+}
+
+function isDateComparable(value: unknown): value is string | number | Date {
+	return typeof value === 'string' || typeof value === 'number' || value instanceof Date;
 }
 
 async function fetchInactiveMembers(
@@ -58,7 +88,7 @@ async function fetchInactiveMembers(
 			include_never_logged_in: includeNever,
 		};
 
-		const res = await apiRequest.call(self as any, {
+		const res = await apiRequest.call(self, {
 			method: 'GET',
 			path: '/members',
 			qs,
@@ -109,7 +139,7 @@ async function pollFetchCreatedSince(
 			...extraQs,
 		};
 
-		const res = await apiRequest.call(self as any, {
+		const res = await apiRequest.call(self, {
 			method: 'GET',
 			path,
 			qs,
@@ -126,7 +156,7 @@ async function pollFetchCreatedSince(
 			const ts =
 				compareOn === 'createdAt' ? (row?.[createdKey] ?? row?.[updatedKey]) : (row?.[updatedKey] ?? row?.[createdKey]);
 
-			if (!ts) {
+			if (!isDateComparable(ts)) {
 				out.push(row as IDataObject);
 				continue;
 			}
@@ -159,11 +189,12 @@ export class LearningSuitePollingTrigger implements INodeType {
 		subtitle: '={{$parameter["event"]}}',
 		defaults: {
 			name: 'LearningSuite Polling Trigger',
-			// @ts-expect-error -- some linters require this
+			// @ts-expect-error -- description is required by n8n node linting for defaults
 			description: 'Polling Trigger node for LearningSuite API (powered by agentur-systeme.de)',
 		},
 		inputs: [],
-		outputs: [NodeConnectionType.Main],
+		outputs: [NodeConnectionTypes.Main],
+		usableAsTool: true,
 		credentials: [{ name: 'learningSuiteApi', required: true }],
 		properties: pollingProperties,
 	};
@@ -220,7 +251,7 @@ export class LearningSuitePollingTrigger implements INodeType {
 					const areaId = typeof rawAreaId === 'string' ? rawAreaId.trim() : '';
 
 					const all = await pollFetchCreatedSince(this, '/community/forums', lastIso);
-					items = areaId ? (all as any[]).filter((f) => String(f?.areaId ?? '') === areaId) : all;
+					items = areaId ? all.filter((forum) => String(forum.areaId ?? '') === areaId) : all;
 					break;
 				}
 
@@ -277,10 +308,10 @@ export class LearningSuitePollingTrigger implements INodeType {
 				const fresh: IDataObject[] = [];
 
 				for (const row of all) {
-					const userId = String((row as any)?.id ?? '');
+					const userId = String(row.id ?? '');
 					if (!userId) continue;
 
-					const lastLogin = (row as any)?.lastLogin ?? 'never';
+					const lastLogin = row.lastLogin ?? 'never';
 					const phaseKey = `${userId}:${lastLogin}`;
 
 					if (this.getMode() === 'manual') {

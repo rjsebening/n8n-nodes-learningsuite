@@ -1,6 +1,13 @@
-import type { IDataObject, IExecuteFunctions, INodeExecutionData, INodeType, INodeTypeDescription } from 'n8n-workflow';
-import { NodeConnectionType, NodeApiError } from 'n8n-workflow';
-import { NodeOperationError } from 'n8n-workflow';
+import {
+	NodeApiError,
+	NodeConnectionTypes,
+	NodeOperationError,
+	type IDataObject,
+	type IExecuteFunctions,
+	type INodeExecutionData,
+	type INodeType,
+	type INodeTypeDescription,
+} from 'n8n-workflow';
 
 import type { HandlersRegistry } from './exec.types';
 
@@ -91,8 +98,8 @@ export class LearningSuite implements INodeType {
 			// @ts-expect-error -- description required by linter
 			description: 'Interact with LearningSuite API (powered by agentur-systeme.de)',
 		},
-		inputs: [NodeConnectionType.Main],
-		outputs: [NodeConnectionType.Main],
+		inputs: [NodeConnectionTypes.Main],
+		outputs: [NodeConnectionTypes.Main],
 		usableAsTool: true,
 		credentials: [
 			{

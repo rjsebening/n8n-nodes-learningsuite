@@ -2,9 +2,10 @@ import type { ILoadOptionsFunctions, IDataObject, INodePropertyOptions } from 'n
 import { lsRequest } from '../../shared';
 
 export type Option = INodePropertyOptions;
+type LoadOptionRow = IDataObject;
 
 export function toOptions(
-	rows: any[],
+	rows: LoadOptionRow[],
 	labelKeys: string[] = ['name', 'title', 'email'],
 	valueKeys: string[] = ['id', 'sid', 'slug'],
 ): INodePropertyOptions[] {
@@ -27,5 +28,6 @@ export async function fetchOptions(
 	valueKeys?: string[],
 ): Promise<INodePropertyOptions[]> {
 	const res = await lsRequest.call(this, 'GET', endpoint, { qs });
-	return toOptions(ensureArray(res), labelKeys, valueKeys);
+	const rows = ensureArray(res) as LoadOptionRow[];
+	return toOptions(rows, labelKeys, valueKeys);
 }

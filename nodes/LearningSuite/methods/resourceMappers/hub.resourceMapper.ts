@@ -6,7 +6,7 @@ const templateVariablesCache = new Map<string, ResourceMapperFields>();
 export async function getTemplateVariablesResourceMapperFields(
 	this: ILoadOptionsFunctions,
 ): Promise<ResourceMapperFields> {
-	let templateId = this.getCurrentNodeParameter('templateId') as string;
+	const templateId = this.getCurrentNodeParameter('templateId') as string;
 
 	if (templateId === undefined || templateId === null) {
 		return { fields: [] };
@@ -20,9 +20,11 @@ export async function getTemplateVariablesResourceMapperFields(
 		return cached;
 	}
 
-	const raw = await lsRequest.call(this, 'GET', `/hub-template/${templateId}/variables`);
+	const raw = (await lsRequest.call(this, 'GET', `/hub-template/${templateId}/variables`)) as unknown;
 
-	const variables: string[] = Array.isArray(raw) ? raw : [];
+	const variables: string[] = Array.isArray(raw)
+		? raw.filter((variable): variable is string => typeof variable === 'string')
+		: [];
 	const fields: ResourceMapperField[] = variables.map((variable) => ({
 		id: variable,
 		displayName: variable,

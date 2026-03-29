@@ -4,12 +4,16 @@ export function getScopedParam(this: ILoadOptionsFunctions, paramName: string): 
 	try {
 		const local = this.getCurrentNodeParameter(paramName) as unknown;
 		if (typeof local === 'string' && local) return local;
-	} catch {}
+	} catch {
+		// Fall through to broader parameter lookups when the local field is unavailable.
+	}
 
 	try {
 		const rootVal = this.getNodeParameter(paramName, 0, undefined) as unknown;
 		if (typeof rootVal === 'string' && rootVal) return rootVal;
-	} catch {}
+	} catch {
+		// Some loadOptions contexts do not expose root-level parameters directly.
+	}
 
 	try {
 		const params = (this.getNode().parameters ?? {}) as Record<string, unknown>;
@@ -23,7 +27,9 @@ export function getScopedParam(this: ILoadOptionsFunctions, paramName: string): 
 				}
 			}
 		}
-	} catch {}
+	} catch {
+		// If parameter inspection fails, return undefined and let the caller handle it.
+	}
 
 	return undefined;
 }

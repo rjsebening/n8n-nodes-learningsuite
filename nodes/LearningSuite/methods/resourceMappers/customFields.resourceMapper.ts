@@ -37,7 +37,7 @@ export async function getMultipleCustomFieldValueResourceMapperFields(
 		});
 
 		return { fields };
-	} catch (error) {
+	} catch {
 		return { fields: [] };
 	}
 }

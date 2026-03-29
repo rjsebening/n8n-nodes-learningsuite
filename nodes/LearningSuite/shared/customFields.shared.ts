@@ -14,6 +14,7 @@ export interface LsTypeDefinition {
 	maxFiles?: number;
 	maxImages?: number;
 	maxVideos?: number;
+	maxAudio?: number;
 }
 
 export interface LsFieldDefinition {
@@ -39,14 +40,19 @@ export const SIMPLE_TYPE_MAPPING: Record<string, FieldType> = {
 	datetime: 'dateTime',
 };
 
-export const MEDIA_TYPES = ['files', 'images', 'videos'] as const;
+export const MEDIA_TYPES = ['files', 'images', 'videos', 'audio'] as const;
 
 export function isLsCard(value: unknown): value is LsCard {
 	return typeof value === 'object' && value !== null;
 }
 
 export function isLsFieldDefinition(value: unknown): value is LsFieldDefinition {
-	return typeof value === 'object' && value !== null && 'key' in value && typeof (value as any).key === 'string';
+	if (typeof value !== 'object' || value === null || !('key' in value)) {
+		return false;
+	}
+
+	const candidate = value as Record<string, unknown>;
+	return typeof candidate.key === 'string';
 }
 
 export function toOptions(def: LsFieldDefinition): Array<{ name: string; value: string }> | undefined {
@@ -84,8 +90,8 @@ export function mapLsType(def: LsFieldDefinition): MappedTypeResult {
 		return { type: 'options', options };
 	}
 
-	if (MEDIA_TYPES.includes(typeRaw as any)) {
-		const max = td.maxFiles ?? td.maxImages ?? td.maxVideos;
+	if ((MEDIA_TYPES as readonly string[]).includes(typeRaw)) {
+		const max = td.maxFiles ?? td.maxImages ?? td.maxVideos ?? td.maxAudio;
 
 		return {
 			type: 'string',

@@ -21,6 +21,18 @@ export type ApiThis =
 	| ITriggerFunctions
 	| IPollFunctions;
 
+type RequestWithAuthentication = (credentialType: string, options: IDataObject) => Promise<IDataObject | IDataObject[]>;
+
+function hasRequestWithAuthentication(value: ApiThis): value is ApiThis & {
+	helpers: {
+		httpRequestWithAuthentication: RequestWithAuthentication;
+	};
+} {
+	return (
+		typeof value === 'object' && value !== null && typeof value.helpers?.httpRequestWithAuthentication === 'function'
+	);
+}
+
 export function normalizeEndpoint(endpoint: string): string {
 	if (!endpoint) throw new ApplicationError('Missing endpoint');
 	if (/^https?:\/\//i.test(endpoint)) {
@@ -42,7 +54,7 @@ async function requestCore(
 		qs?: IDataObject;
 		body?: IDataObject;
 	},
-): Promise<any> {
+): Promise<IDataObject | IDataObject[]> {
 	const url = normalizeEndpoint(endpoint);
 
 	const creds = (await this.getCredentials('learningSuiteApi')) as IDataObject;
@@ -64,10 +76,9 @@ async function requestCore(
 	}
 
 	try {
-		const rwAuth = (this as any).helpers?.requestWithAuthentication;
-		if (!rwAuth) throw new ApplicationError('No HTTP helper available');
+		if (!hasRequestWithAuthentication(this)) throw new ApplicationError('No HTTP helper available');
 
-		return await rwAuth.call(this, 'learningSuiteApi', options);
+		return await this.helpers.httpRequestWithAuthentication.call(this, 'learningSuiteApi', options);
 	} catch (error) {
 		if (error instanceof NodeApiError) throw error;
 		throw new NodeApiError(this.getNode(), error as JsonObject);
@@ -79,7 +90,7 @@ export async function lsRequest(
 	method: IHttpRequestOptions['method'],
 	endpoint: string,
 	{ qs, body }: { qs?: IDataObject; body?: IDataObject } = {},
-): Promise<any> {
+): Promise<IDataObject | IDataObject[]> {
 	return requestCore.call(this, { method, endpoint, qs, body });
 }
 
@@ -96,6 +107,6 @@ export async function apiRequest(
 		qs?: IDataObject;
 		body?: IDataObject;
 	},
-): Promise<any> {
+): Promise<IDataObject | IDataObject[]> {
 	return requestCore.call(this, { method, endpoint: path, qs, body });
 }
