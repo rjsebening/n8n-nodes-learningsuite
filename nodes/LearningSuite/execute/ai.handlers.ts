@@ -15,7 +15,10 @@ const ragChat: ExecuteHandler = async (ctx, i) => {
 		unlockContentDrip: ctx.getNodeParameter('unlockContentDrip', i, false),
 	};
 
-	return await lsRequest.call(ctx, 'POST', '/ai/rag-chat', { body });
+	// Remove keys with undefined or empty string values so optional params are not sent as empty
+	const cleanBody = Object.fromEntries(Object.entries(body).filter(([, v]) => v !== undefined && v !== ''));
+
+	return await lsRequest.call(ctx, 'POST', '/ai/rag-chat', { body: cleanBody });
 };
 
 export const aiHandlers = {

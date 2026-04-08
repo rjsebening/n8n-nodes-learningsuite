@@ -183,12 +183,7 @@ export const customFieldsProperties: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['customFields'],
-				operation: [
-					'setFieldValue',
-					'setMultipleFieldValues',
-					'getProfileByCard',
-					'updateProfileField',
-				],
+				operation: ['setFieldValue', 'setMultipleFieldValues', 'getProfileByCard', 'updateProfileField'],
 			},
 		},
 	},
@@ -197,7 +192,8 @@ export const customFieldsProperties: INodeProperties[] = [
 		name: 'profileName',
 		type: 'string',
 		default: '',
-		description: 'If specified, the first profile with this name is used. Ignored if Profile ID or Profile Index is set.',
+		description:
+			'If specified, the first profile with this name is used. Ignored if Profile ID or Profile Index is set.',
 		displayOptions: {
 			show: {
 				resource: ['customFields'],
@@ -458,7 +454,18 @@ export const customFieldsProperties: INodeProperties[] = [
 				operation: ['setFieldValue', 'updateProfileField'],
 			},
 			hide: {
-				fieldType: ['string', 'number', 'boolean', 'dateTime', 'option', 'multiOptions', 'files', 'images', 'videos', 'audio'],
+				fieldType: [
+					'string',
+					'number',
+					'boolean',
+					'dateTime',
+					'option',
+					'multiOptions',
+					'files',
+					'images',
+					'videos',
+					'audio',
+				],
 			},
 		},
 	},
