@@ -251,6 +251,12 @@ const getSampleData: ExecuteHandler = async (ctx, i) => {
 	let qs: IDataObject = {};
 
 	switch (sampleDataType) {
+		case 'agent-action-executed-events': {
+			const col = ctx.getNodeParameter('additionalAgentActionExecutedSample', i, {}) as IDataObject;
+			qs = col;
+			break;
+		}
+
 		case 'progress-changed-events': {
 			const col = ctx.getNodeParameter('additionalProgressChangedSample', i, {}) as IDataObject;
 			qs = col;

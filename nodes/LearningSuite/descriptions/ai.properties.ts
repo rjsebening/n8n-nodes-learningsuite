@@ -10,6 +10,18 @@ export const aiProperties: INodeProperties[] = [
 		displayOptions: { show: { resource: ['ai'] } },
 		options: [
 			{
+				name: 'Get Agent Actions',
+				value: 'getAgentActions',
+				description: 'List all agent actions for the tenant',
+				action: 'List agent actions',
+			},
+			{
+				name: 'Get AI Agents',
+				value: 'getAiAgents',
+				description: 'List all enabled AI agents for the tenant',
+				action: 'List AI agents',
+			},
+			{
 				name: 'RAG Chat',
 				value: 'ragChat',
 				description: 'Ask a question using the AI RAG chat endpoint',

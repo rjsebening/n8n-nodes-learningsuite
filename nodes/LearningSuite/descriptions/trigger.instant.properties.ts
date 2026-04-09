@@ -10,6 +10,11 @@ export const instantProperties: INodeProperties[] = [
 		description: 'Select the LearningSuite instant (webhook) event',
 		options: [
 			{
+				name: 'Agent Action Executed',
+				value: 'agentAction.executed',
+				description: 'Triggers when an AI agent action has been executed',
+			},
+			{
 				name: 'Community Post Commented',
 				value: 'communityPost.commented',
 				description: 'Triggers when a community post was commented',

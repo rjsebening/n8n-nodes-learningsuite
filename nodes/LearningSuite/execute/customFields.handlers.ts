@@ -210,7 +210,14 @@ const setFieldValue: ExecuteHandler = async (ctx, i) => {
 	if (FILE_FIELD_TYPES.has(fieldType)) {
 		const binaryPropertyNames = readTypedFieldValue(ctx, i, fieldType) as string;
 		const fileNameOverride = (ctx.getNodeParameter('fieldValueFileName', i, '') as string).trim() || undefined;
-		fieldValue = await uploadFilesFromBinaryProperties(ctx, i, userId, binaryPropertyNames, fieldType, fileNameOverride);
+		fieldValue = await uploadFilesFromBinaryProperties(
+			ctx,
+			i,
+			userId,
+			binaryPropertyNames,
+			fieldType,
+			fileNameOverride,
+		);
 	} else {
 		fieldValue = readTypedFieldValue(ctx, i, fieldType);
 	}
@@ -370,7 +377,14 @@ const updateProfileField: ExecuteHandler = async (ctx, i) => {
 	if (FILE_FIELD_TYPES.has(fieldType)) {
 		const binaryPropertyNames = readTypedFieldValue(ctx, i, fieldType) as string;
 		const fileNameOverride = (ctx.getNodeParameter('fieldValueFileName', i, '') as string).trim() || undefined;
-		fieldValue = await uploadFilesFromBinaryProperties(ctx, i, userId, binaryPropertyNames, fieldType, fileNameOverride);
+		fieldValue = await uploadFilesFromBinaryProperties(
+			ctx,
+			i,
+			userId,
+			binaryPropertyNames,
+			fieldType,
+			fileNameOverride,
+		);
 	} else {
 		fieldValue = readTypedFieldValue(ctx, i, fieldType);
 	}

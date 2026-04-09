@@ -365,8 +365,7 @@ export const customFieldsProperties: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		placeholder: 'e.g. report.pdf',
-		description:
-			'Optional custom file name. If left empty, the original file name from the binary data is used.',
+		description: 'Optional custom file name. If left empty, the original file name from the binary data is used.',
 		displayOptions: {
 			show: {
 				resource: ['customFields'],

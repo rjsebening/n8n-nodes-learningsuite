@@ -43,6 +43,7 @@ type ApiErrorLike = {
 };
 
 const INSTANT_EVENTS = new Set<string>([
+	'agentAction.executed',
 	'accessRequest.created',
 	'communityPost.created',
 	'communityPost.commented',

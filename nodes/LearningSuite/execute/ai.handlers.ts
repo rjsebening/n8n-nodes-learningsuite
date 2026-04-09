@@ -2,6 +2,14 @@ import type { IDataObject } from 'n8n-workflow';
 import { lsRequest } from '../shared';
 import type { ExecuteHandler } from '../exec.types';
 
+const getAgentActions: ExecuteHandler = async (ctx) => {
+	return await lsRequest.call(ctx, 'GET', '/ai/agent-actions');
+};
+
+const getAiAgents: ExecuteHandler = async (ctx) => {
+	return await lsRequest.call(ctx, 'GET', '/ai/ai-agents');
+};
+
 const ragChat: ExecuteHandler = async (ctx, i) => {
 	const body: IDataObject = {
 		question: ctx.getNodeParameter('question', i) as string,
@@ -22,5 +30,7 @@ const ragChat: ExecuteHandler = async (ctx, i) => {
 };
 
 export const aiHandlers = {
+	getAgentActions,
+	getAiAgents,
 	ragChat,
 };

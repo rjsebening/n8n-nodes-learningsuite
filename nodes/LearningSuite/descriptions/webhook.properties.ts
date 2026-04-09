@@ -83,6 +83,7 @@ export const webhookProperties: INodeProperties[] = [
 		displayOptions: { show: { resource: ['webhook'], operation: ['createSubscription', 'updateSubscription'] } },
 		description: 'Type of event to subscribe to',
 		options: [
+			{ name: 'Agent Action Executed', value: 'agentAction.executed' },
 			{ name: 'Community Post Commented', value: 'communityPost.commented' },
 			{ name: 'Community Post Created', value: 'communityPost.created' },
 			{ name: 'Community Post Moderated', value: 'communityPost.moderated' },
@@ -113,6 +114,7 @@ export const webhookProperties: INodeProperties[] = [
 		required: true,
 		description: 'Type of sample data to retrieve',
 		options: [
+			{ name: 'Agent Action Executed Events', value: 'agent-action-executed-events' },
 			{ name: 'Community Post Commented', value: 'community-post-commented-events' },
 			{ name: 'Community Post Created Events', value: 'community-post-created-events' },
 			{ name: 'Community Post Moderated Events', value: 'community-post-moderated-events' },

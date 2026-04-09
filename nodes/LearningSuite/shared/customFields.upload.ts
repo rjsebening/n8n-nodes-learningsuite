@@ -30,11 +30,7 @@ function resolveFileType(fieldType: string): FileType {
  * Creates a file slot in the LearningSuite custom-field store for a given user.
  * Returns the fileId and the uploadSpec describing how/where to upload.
  */
-async function createFileSlot(
-	ctx: IExecuteFunctions,
-	userId: string,
-	isVideo: boolean,
-): Promise<CreateFileResponse> {
+async function createFileSlot(ctx: IExecuteFunctions, userId: string, isVideo: boolean): Promise<CreateFileResponse> {
 	const response = (await lsRequest.call(ctx, 'POST', `/custom-fields/store/${userId}/files`, {
 		body: { isVideo } as unknown as IDataObject,
 	})) as IDataObject;
@@ -43,10 +39,7 @@ async function createFileSlot(
 	const uploadSpec = response.uploadSpec as UploadSpec | undefined;
 
 	if (!fileId || !uploadSpec) {
-		throw new NodeOperationError(
-			ctx.getNode(),
-			'Upload spec or fileId missing in the response from create file API',
-		);
+		throw new NodeOperationError(ctx.getNode(), 'Upload spec or fileId missing in the response from create file API');
 	}
 
 	return { fileId, uploadSpec };
@@ -109,14 +102,11 @@ async function uploadViaTus(
 		returnFullResponse: true,
 	});
 
-	const location: string | undefined =
-		createResponse.headers?.['location'] ?? createResponse.headers?.['Location'];
+	const location: string | undefined = createResponse.headers?.['location'] ?? createResponse.headers?.['Location'];
 	if (!location) {
 		throw new NodeOperationError(ctx.getNode(), 'tus creation response missing Location header');
 	}
-	const uploadUrl = location.startsWith('http')
-		? location
-		: new URL(location, uploadSpec.uploadUrl).toString();
+	const uploadUrl = location.startsWith('http') ? location : new URL(location, uploadSpec.uploadUrl).toString();
 
 	let offset = 0;
 	while (offset < buffer.length) {

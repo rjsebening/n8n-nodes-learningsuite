@@ -4,6 +4,31 @@ import type { INodeProperties } from 'n8n-workflow';
 
 export const webhookSampleDataProperties: INodeProperties[] = [
 	{
+		displayName: 'Agent Action Executed Options',
+		name: 'additionalAgentActionExecutedSample',
+		type: 'collection',
+		default: {},
+		placeholder: 'Add option',
+		displayOptions: { show: { sampleDataType: ['agent-action-executed-events'] } },
+		options: [
+			{
+				displayName: 'Tool Key',
+				name: 'toolKey',
+				type: 'string',
+				default: '',
+				description: 'Optional tool key to filter agent action executions',
+			},
+			{
+				displayName: 'Agent ID',
+				name: 'agentId',
+				type: 'string',
+				default: '',
+				description: 'Optional agent ID to filter agent action executions',
+			},
+		],
+	},
+
+	{
 		displayName: 'Progress Changed Options',
 		name: 'additionalProgressChangedSample',
 		type: 'collection',
