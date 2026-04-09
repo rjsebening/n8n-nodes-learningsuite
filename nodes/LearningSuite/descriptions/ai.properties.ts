@@ -12,13 +12,13 @@ export const aiProperties: INodeProperties[] = [
 			{
 				name: 'Get Agent Actions',
 				value: 'getAgentActions',
-				description: 'List all agent actions for the tenant',
+				description: 'List all agent actions',
 				action: 'List agent actions',
 			},
 			{
 				name: 'Get AI Agents',
 				value: 'getAiAgents',
-				description: 'List all enabled AI agents for the tenant',
+				description: 'List all enabled AI agents',
 				action: 'List AI agents',
 			},
 			{

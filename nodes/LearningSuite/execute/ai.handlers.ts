@@ -3,11 +3,11 @@ import { lsRequest } from '../shared';
 import type { ExecuteHandler } from '../exec.types';
 
 const getAgentActions: ExecuteHandler = async (ctx) => {
-	return await lsRequest.call(ctx, 'GET', '/ai/agent-actions');
+	return await lsRequest.call(ctx, 'GET', '/agent-actions');
 };
 
 const getAiAgents: ExecuteHandler = async (ctx) => {
-	return await lsRequest.call(ctx, 'GET', '/ai/ai-agents');
+	return await lsRequest.call(ctx, 'GET', '/ai-agents');
 };
 
 const ragChat: ExecuteHandler = async (ctx, i) => {
