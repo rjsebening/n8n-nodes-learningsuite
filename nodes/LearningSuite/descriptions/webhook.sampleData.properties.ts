@@ -12,19 +12,21 @@ export const webhookSampleDataProperties: INodeProperties[] = [
 		displayOptions: { show: { sampleDataType: ['agent-action-executed-events'] } },
 		options: [
 			{
-				displayName: 'Tool Key',
+				displayName: 'Tool Key Name or ID',
 				name: 'toolKey',
 				type: 'options',
 				default: '',
-				description: 'Optional tool key to filter agent action executions',
+				description:
+					'Optional tool key to filter agent action executions. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 				typeOptions: { loadOptionsMethod: 'ai_getAgentActions' },
 			},
 			{
-				displayName: 'Agent ID',
+				displayName: 'Agent Name or ID',
 				name: 'agentId',
 				type: 'options',
 				default: '',
-				description: 'Optional agent ID to filter agent action executions',
+				description:
+					'Optional agent ID to filter agent action executions. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 				typeOptions: { loadOptionsMethod: 'ai_getAiAgents' },
 			},
 		],
