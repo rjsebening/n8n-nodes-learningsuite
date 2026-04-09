@@ -14,7 +14,7 @@ export interface LsTypeDefinition {
 	maxFiles?: number;
 	maxImages?: number;
 	maxVideos?: number;
-	maxAudio?: number;
+	maxAudios?: number;
 }
 
 export interface LsFieldDefinition {
@@ -40,7 +40,7 @@ export const SIMPLE_TYPE_MAPPING: Record<string, FieldType> = {
 	datetime: 'dateTime',
 };
 
-export const MEDIA_TYPES = ['files', 'images', 'videos', 'audio'] as const;
+export const MEDIA_TYPES = ['files', 'images', 'videos', 'audios'] as const;
 
 export function isLsCard(value: unknown): value is LsCard {
 	return typeof value === 'object' && value !== null;
@@ -91,7 +91,7 @@ export function mapLsType(def: LsFieldDefinition): MappedTypeResult {
 	}
 
 	if ((MEDIA_TYPES as readonly string[]).includes(typeRaw)) {
-		const max = td.maxFiles ?? td.maxImages ?? td.maxVideos ?? td.maxAudio;
+		const max = td.maxFiles ?? td.maxImages ?? td.maxVideos ?? td.maxAudios;
 
 		return {
 			type: 'string',

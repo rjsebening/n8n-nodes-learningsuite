@@ -1,6 +1,6 @@
 import type { IDataObject, IExecuteFunctions } from 'n8n-workflow';
 import { NodeOperationError } from 'n8n-workflow';
-import { lsRequest } from '../shared';
+import { lsRequest, uploadFilesFromBinaryProperties } from '../shared';
 import type { ExecuteHandler } from '../exec.types';
 
 type LsType =
@@ -14,9 +14,11 @@ type LsType =
 	| 'files'
 	| 'images'
 	| 'videos'
-	| 'audio';
+	| 'audios';
 
 type ExecuteContext = IExecuteFunctions;
+
+const FILE_FIELD_TYPES = new Set(['files', 'images', 'videos', 'audios']);
 
 function normalizeSingleFieldValueOrFail(ctx: ExecuteContext, input: unknown, fieldKey: string, lsType: LsType) {
 	if (input === undefined || input === null) {
@@ -50,7 +52,7 @@ function normalizeSingleFieldValueOrFail(ctx: ExecuteContext, input: unknown, fi
 		return Array.isArray(value) ? value : [value];
 	}
 
-	if (['files', 'images', 'videos', 'audio'].includes(lsType)) {
+	if (['files', 'images', 'videos', 'audios'].includes(lsType)) {
 		if (typeof value === 'string') {
 			const trimmed = value.trim();
 			if (trimmed.startsWith('[') || trimmed.startsWith('{')) {
@@ -130,22 +132,11 @@ function readTypedFieldValue(ctx: ExecuteContext, i: number, fieldType: string):
 		}
 		case 'multiOptions':
 			return ctx.getNodeParameter('fieldValueMultiOptions', i) as string[];
-		case 'files': {
-			const parsed = ctx.getNodeParameter('fieldValueFiles', i, []);
-			return Array.isArray(parsed) ? parsed : [parsed];
-		}
-		case 'images': {
-			const parsed = ctx.getNodeParameter('fieldValueImages', i, []);
-			return Array.isArray(parsed) ? parsed : [parsed];
-		}
-		case 'videos': {
-			const parsed = ctx.getNodeParameter('fieldValueVideos', i, []);
-			return Array.isArray(parsed) ? parsed : [parsed];
-		}
-		case 'audio': {
-			const parsed = ctx.getNodeParameter('fieldValueAudio', i, []);
-			return Array.isArray(parsed) ? parsed : [parsed];
-		}
+		case 'files':
+		case 'images':
+		case 'videos':
+		case 'audios':
+			return ctx.getNodeParameter('fieldValueBinary', i, 'data') as string;
 		default:
 			return ctx.getNodeParameter('fieldValueFallback', i, '') as string;
 	}
@@ -214,7 +205,15 @@ const setFieldValue: ExecuteHandler = async (ctx, i) => {
 	const fieldKey = ctx.getNodeParameter('fieldKey', i) as string;
 	const fieldType = ctx.getNodeParameter('fieldType', i, '') as string;
 
-	const fieldValue = readTypedFieldValue(ctx, i, fieldType);
+	let fieldValue: unknown;
+
+	if (FILE_FIELD_TYPES.has(fieldType)) {
+		const binaryPropertyNames = readTypedFieldValue(ctx, i, fieldType) as string;
+		const fileNameOverride = (ctx.getNodeParameter('fieldValueFileName', i, '') as string).trim() || undefined;
+		fieldValue = await uploadFilesFromBinaryProperties(ctx, i, userId, binaryPropertyNames, fieldType, fileNameOverride);
+	} else {
+		fieldValue = readTypedFieldValue(ctx, i, fieldType);
+	}
 
 	if (fieldValue === undefined || fieldValue === null || fieldValue === '') {
 		throw new NodeOperationError(ctx.getNode(), `No value provided for custom field "${fieldKey}".`);
@@ -281,28 +280,35 @@ const setMultipleFieldValues: ExecuteHandler = async (ctx, i) => {
 
 	const fieldTypeMap = buildFieldTypeMap(cards);
 
-	const payload = Object.entries(fieldMappings)
-		.filter(([, value]) => value !== undefined)
-		.map(([fieldKey, value]) => {
-			const lsType = fieldTypeMap.get(fieldKey);
+	const entries = Object.entries(fieldMappings).filter(([, value]) => value !== undefined);
+	const payload: IDataObject[] = [];
 
-			if (!lsType) {
-				throw new NodeOperationError(ctx.getNode(), `Unknown custom field "${fieldKey}".`);
-			}
+	for (const [fieldKey, value] of entries) {
+		const lsType = fieldTypeMap.get(fieldKey);
 
-			const entry: IDataObject = {
-				fieldKey,
-				fieldValue: normalizeSingleFieldValueOrFail(ctx, value, fieldKey, lsType),
-			};
+		if (!lsType) {
+			throw new NodeOperationError(ctx.getNode(), `Unknown custom field "${fieldKey}".`);
+		}
 
-			if (profileId) {
-				entry.profileId = profileId;
-			} else if (validProfileIndex !== undefined) {
-				entry.profileIndex = validProfileIndex;
-			}
+		let fieldValue: unknown;
 
-			return entry;
-		});
+		if (FILE_FIELD_TYPES.has(lsType)) {
+			const binaryPropertyNames = typeof value === 'string' ? value : 'data';
+			fieldValue = await uploadFilesFromBinaryProperties(ctx, i, userId, binaryPropertyNames, lsType);
+		} else {
+			fieldValue = normalizeSingleFieldValueOrFail(ctx, value, fieldKey, lsType);
+		}
+
+		const entry: IDataObject = { fieldKey, fieldValue: fieldValue as IDataObject };
+
+		if (profileId) {
+			entry.profileId = profileId;
+		} else if (validProfileIndex !== undefined) {
+			entry.profileIndex = validProfileIndex;
+		}
+
+		payload.push(entry);
+	}
 
 	if (!payload.length) {
 		return [];
@@ -359,7 +365,15 @@ const updateProfileField: ExecuteHandler = async (ctx, i) => {
 	const fieldKey = ctx.getNodeParameter('fieldKey', i) as string;
 	const fieldType = ctx.getNodeParameter('fieldType', i, '') as string;
 
-	const fieldValue = readTypedFieldValue(ctx, i, fieldType);
+	let fieldValue: unknown;
+
+	if (FILE_FIELD_TYPES.has(fieldType)) {
+		const binaryPropertyNames = readTypedFieldValue(ctx, i, fieldType) as string;
+		const fileNameOverride = (ctx.getNodeParameter('fieldValueFileName', i, '') as string).trim() || undefined;
+		fieldValue = await uploadFilesFromBinaryProperties(ctx, i, userId, binaryPropertyNames, fieldType, fileNameOverride);
+	} else {
+		fieldValue = readTypedFieldValue(ctx, i, fieldType);
+	}
 
 	if (fieldValue === undefined || fieldValue === null || fieldValue === '') {
 		throw new NodeOperationError(ctx.getNode(), `No value provided for custom field "${fieldKey}".`);

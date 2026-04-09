@@ -343,100 +343,35 @@ export const customFieldsProperties: INodeProperties[] = [
 		},
 	},
 	{
-		displayName: 'Field Value (Files)',
-		name: 'fieldValueFiles',
-		type: 'json',
-		default: `[
-			{
-			// Note: type 'files' is not supported yet
-			"fileId": "file_abc123",
-			"name": "vertrag_2026.pdf",
-			"mimeType": "application/pdf",
-			"fileSize": 234567
-			}
-		 ]`,
-		description: 'JSON array of file objects',
+		displayName: 'Binary Property',
+		name: 'fieldValueBinary',
+		type: 'string',
+		default: 'data',
+		required: true,
+		placeholder: 'data',
+		description:
+			'Name of the binary property containing the file(s) to upload. If the input contains multiple binary properties, separate their names with commas (e.g. "data,file1,file2").',
+		displayOptions: {
+			show: {
+				resource: ['customFields'],
+				operation: ['setFieldValue', 'updateProfileField'],
+				fieldType: ['files', 'images', 'videos', 'audios'],
+			},
+		},
+	},
+	{
+		displayName: 'File Name',
+		name: 'fieldValueFileName',
+		type: 'string',
+		default: '',
+		placeholder: 'e.g. report.pdf',
+		description:
+			'Optional custom file name. If left empty, the original file name from the binary data is used.',
 		displayOptions: {
 			show: {
 				resource: ['customFields'],
 				operation: ['setFieldValue', 'updateProfileField'],
 				fieldType: ['files'],
-			},
-		},
-	},
-	{
-		displayName: 'Field Value (Images)',
-		name: 'fieldValueImages',
-		type: 'json',
-		default: `[
-			{
-			// Note: type 'images' is not supported yet
-			"fileId": "file_img_001",
-			"previewThumb": "https://cdn.example.com/thumbs/file_img_001.jpg",
-			"mimeType": "image/jpeg",
-			"dimensions": {
-				"width": 1200,
-				"height": 800
-			},
-			"meanColor": "#a1b2c3",
-			"dominantColor": "#8899aa",
-			"fileSize": 345678
-			}
-		 ]`,
-		description: 'JSON array of image objects',
-		displayOptions: {
-			show: {
-				resource: ['customFields'],
-				operation: ['setFieldValue', 'updateProfileField'],
-				fieldType: ['images'],
-			},
-		},
-	},
-	{
-		displayName: 'Field Value (Videos)',
-		name: 'fieldValueVideos',
-		type: 'json',
-		default: `[
-			{
-		    // Note: type 'videos' is not supported yet
-			"fileId": "file_vid_001",
-			"thumbnailFileId": "file_thumb_001",
-			"aspectRatio": 1.7777778,
-			"mimeType": "video/mp4",
-			"fileSize": 58234567
-			}
-		 ]`,
-		required: true,
-		description: 'JSON array of video objects',
-		displayOptions: {
-			show: {
-				resource: ['customFields'],
-				operation: ['setFieldValue', 'updateProfileField'],
-				fieldType: ['videos'],
-			},
-		},
-	},
-	{
-		displayName: 'Field Value (Audio)',
-		name: 'fieldValueAudio',
-		type: 'json',
-		default: `[
-			{
-			// Note: type 'audio' is not supported yet
-			"fileId": "file_audio_001",
-			"mimeType": "audio/mpeg",
-			"fileSize": 8456721,
-			"duration": 183,
-			"peaks": [0.12, 0.45, 0.31, 0.18]
-			}
-		 ]`,
-		required: true,
-		description: 'JSON array of audio objects',
-		displayOptions: {
-			show: {
-				resource: ['customFields'],
-				operation: ['setFieldValue', 'updateProfileField'],
-				fieldType: ['audio'],
 			},
 		},
 	},
@@ -464,7 +399,7 @@ export const customFieldsProperties: INodeProperties[] = [
 					'files',
 					'images',
 					'videos',
-					'audio',
+					'audios',
 				],
 			},
 		},

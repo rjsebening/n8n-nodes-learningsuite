@@ -15,14 +15,14 @@ const getSections: ExecuteHandler = async (ctx, i) => {
 const createUnlockOverride: ExecuteHandler = async (ctx, i) => {
 	const moduleId = ctx.getNodeParameter('moduleId', i) as string;
 	const memberId = ctx.getNodeParameter('memberId', i, '') as string;
-	/*const courseInstanceId = ctx.getNodeParameter('courseInstanceId', i, '') as string;*/
+	const courseInstanceId = ctx.getNodeParameter('courseId', i, '') as string;
 	const additionalOptions = ctx.getNodeParameter('additionalOptions', i, {}) as IDataObject;
 	const newModuleAccess = ctx.getNodeParameter('newModuleAccess', i, '') as string;
 
 	const body: IDataObject = {
 		moduleId,
 		userId: memberId || undefined,
-		/*courseInstanceId: courseInstanceId || undefined,*/
+		courseInstanceId: courseInstanceId || undefined,
 		new_module_access: newModuleAccess || undefined,
 		...additionalOptions,
 	};

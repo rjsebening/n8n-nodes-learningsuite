@@ -58,8 +58,8 @@ export function getLsSimpleType(def: LsFieldDefinition): string {
 			return 'images';
 		case 'videos':
 			return 'videos';
-		case 'audio':
-			return 'audio';
+		case 'audios':
+			return 'audios';
 		default:
 			return 'string';
 	}
