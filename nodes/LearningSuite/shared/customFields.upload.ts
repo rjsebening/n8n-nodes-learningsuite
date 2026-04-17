@@ -30,9 +30,19 @@ function resolveFileType(fieldType: string): FileType {
  * Creates a file slot in the LearningSuite custom-field store for a given user.
  * Returns the fileId and the uploadSpec describing how/where to upload.
  */
-async function createFileSlot(ctx: IExecuteFunctions, userId: string, isVideo: boolean): Promise<CreateFileResponse> {
+async function createFileSlot(
+	ctx: IExecuteFunctions,
+	userId: string,
+	customFieldKey: string,
+	fileName?: string,
+): Promise<CreateFileResponse> {
+	const body: IDataObject = { customFieldKey };
+	if (fileName) {
+		body.fileName = fileName;
+	}
+
 	const response = (await lsRequest.call(ctx, 'POST', `/custom-fields/store/${userId}/files`, {
-		body: { isVideo } as unknown as IDataObject,
+		body,
 	})) as IDataObject;
 
 	const fileId = response.fileId as string | undefined;
@@ -212,6 +222,7 @@ async function uploadSingleFile(
 	ctx: IExecuteFunctions,
 	itemIndex: number,
 	userId: string,
+	customFieldKey: string,
 	binaryPropertyName: string,
 	fieldType: string,
 	fileNameOverride?: string,
@@ -220,11 +231,10 @@ async function uploadSingleFile(
 	const buffer = await ctx.helpers.getBinaryDataBuffer(itemIndex, binaryPropertyName);
 
 	const fileType = resolveFileType(fieldType);
-	const isVideo = fileType === 'videos';
 	const mimeType = binaryData.mimeType || 'application/octet-stream';
 	const fileName = fileNameOverride || binaryData.fileName || 'upload';
 
-	const { fileId, uploadSpec } = await createFileSlot(ctx, userId, isVideo);
+	const { fileId, uploadSpec } = await createFileSlot(ctx, userId, customFieldKey, fileName);
 
 	if (uploadSpec.type === 'storage') {
 		await uploadViaStorage(ctx, uploadSpec, buffer, mimeType);
@@ -247,6 +257,7 @@ export async function uploadFilesFromBinaryProperties(
 	ctx: IExecuteFunctions,
 	itemIndex: number,
 	userId: string,
+	customFieldKey: string,
 	binaryPropertyNames: string,
 	fieldType: string,
 	fileNameOverride?: string,
@@ -263,7 +274,7 @@ export async function uploadFilesFromBinaryProperties(
 	const results: UploadedFileValue[] = [];
 
 	for (const name of names) {
-		const value = await uploadSingleFile(ctx, itemIndex, userId, name, fieldType, fileNameOverride);
+		const value = await uploadSingleFile(ctx, itemIndex, userId, customFieldKey, name, fieldType, fileNameOverride);
 		results.push(value);
 	}
 
