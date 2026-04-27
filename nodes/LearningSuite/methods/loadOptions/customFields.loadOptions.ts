@@ -1,6 +1,6 @@
 import type { ILoadOptionsFunctions, INodePropertyOptions } from 'n8n-workflow';
-import { fetchOptions } from './common';
-import { lsRequest } from '../../shared';
+import { fetchOptionsAll } from './common';
+import { lsRequestAll } from '../../shared';
 import { fetchFieldDefinition, getLsSimpleType } from '../../shared/customFields.helpers';
 
 const MEDIA_FIELD_TYPES = new Set(['files', 'images', 'videos', 'audios']);
@@ -32,7 +32,7 @@ function getMediaFieldDetails(fieldType: string, typeDefinition?: Record<string,
 }
 
 export async function customFields_getCards(this: ILoadOptionsFunctions) {
-	return fetchOptions.call(this, '/custom-fields/cards', undefined, ['name', 'title'], ['id']);
+	return fetchOptionsAll.call(this, '/custom-fields/cards', undefined, ['name', 'title'], ['id']);
 }
 
 export async function customFields_getDefinitions(this: ILoadOptionsFunctions) {
@@ -41,10 +41,9 @@ export async function customFields_getDefinitions(this: ILoadOptionsFunctions) {
 
 	const filterCardId = cardId || customFieldCardId;
 
-	const res = await lsRequest.call(this, 'GET', '/custom-fields/definitions', {
+	const definitions = await lsRequestAll.call(this, '/custom-fields/definitions', {
 		qs: filterCardId ? { customFieldCardId: filterCardId } : undefined,
 	});
-	const definitions = Array.isArray(res) ? res : [res];
 
 	return definitions
 		.filter((definition) => typeof definition === 'object' && definition !== null)
@@ -68,11 +67,7 @@ export async function customFields_getDefinitions(this: ILoadOptionsFunctions) {
 }
 
 export async function customFields_getMediaDefinitions(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
-	const cards = await lsRequest.call(this, 'GET', '/custom-fields/cards/expanded');
-
-	if (!Array.isArray(cards)) {
-		return [];
-	}
+	const cards = await lsRequestAll.call(this, '/custom-fields/cards/expanded');
 
 	const options: INodePropertyOptions[] = [];
 
@@ -111,7 +106,7 @@ export async function customFields_getMediaDefinitions(this: ILoadOptionsFunctio
 export async function customFields_getCategories(this: ILoadOptionsFunctions) {
 	const customFieldCardId = this.getCurrentNodeParameter('customFieldCardId') as string | undefined;
 
-	return fetchOptions.call(
+	return fetchOptionsAll.call(
 		this,
 		'/custom-fields/categories',
 		customFieldCardId ? { customFieldCardId } : undefined,

@@ -328,7 +328,11 @@ async function readExistingFileValues(
 		};
 	}
 
-	const existingFieldValues = await lsRequest.call(ctx, 'GET', `/custom-fields/store/${userId}/fields/${customFieldKey}`);
+	const existingFieldValues = await lsRequest.call(
+		ctx,
+		'GET',
+		`/custom-fields/store/${userId}/fields/${customFieldKey}`,
+	);
 	return {
 		existingValues: normalizeStoreFileValuesResponse(existingFieldValues),
 		useProfileContext,
