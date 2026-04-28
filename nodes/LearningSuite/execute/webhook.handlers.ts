@@ -44,6 +44,22 @@ function buildDesiredFilter(ctx: ExecuteContext, i: number, eventType: string): 
 	const filter: IDataObject = {};
 
 	switch (eventType) {
+		// ---------------- Agent Action
+		case 'agentAction.executed': {
+			const col = getCol(ctx, i, 'additionalAgentActionExecuted') as {
+				toolKey?: string;
+				agentId?: string;
+			};
+
+			if (col?.toolKey) {
+				filter.toolKey = String(col.toolKey);
+			}
+			if (col?.agentId) {
+				filter.agentId = String(col.agentId);
+			}
+			break;
+		}
+
 		// ---------------- Community
 		case 'communityPost.commented': {
 			const col = getCol(ctx, i, 'additionalCommunityPostCommented');

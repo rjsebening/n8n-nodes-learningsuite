@@ -135,6 +135,42 @@ export const webhookProperties: INodeProperties[] = [
 
 	// ====== Optionen pro Event (identisch zu instantProperties) ======
 
+	// Agent Action Executed
+	{
+		displayName: 'Agent Action Executed Options',
+		name: 'additionalAgentActionExecuted',
+		type: 'collection',
+		default: {},
+		placeholder: 'Add option',
+		displayOptions: {
+			show: {
+				resource: ['webhook'],
+				operation: ['createSubscription', 'updateSubscription'],
+				eventType: ['agentAction.executed'],
+			},
+		},
+		options: [
+			{
+				displayName: 'Tool Key Name or ID',
+				name: 'toolKey',
+				type: 'options',
+				default: '',
+				description:
+					'Optional: Only trigger for a specific agent action. Leave empty to trigger for all actions.  Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+				typeOptions: { loadOptionsMethod: 'ai_getAgentActions' },
+			},
+			{
+				displayName: 'Agent Name or ID',
+				name: 'agentId',
+				type: 'options',
+				default: '',
+				description:
+					'Optional: Only trigger for actions executed by a specific AI agent. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+				typeOptions: { loadOptionsMethod: 'ai_getAiAgents' },
+			},
+		],
+	},
+
 	// Login Options
 	{
 		displayName: 'Login Options',
