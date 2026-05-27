@@ -282,6 +282,16 @@ export const communityProperties: INodeProperties[] = [
 		description: 'Content of the post as a JSON array of objects, for example Slate content',
 	},
 	{
+		displayName: 'Element JSON',
+		name: 'elementJson',
+		type: 'json',
+		typeOptions: { rows: 4 },
+		displayOptions: { show: { resource: ['community'], operation: ['createCommunityPost'] } },
+		default: '{}',
+		description:
+			'Optional post element as a JSON object, for example a content link. Only applicable to feed posts.',
+	},
+	{
 		displayName: 'Order',
 		name: 'order',
 		type: 'options',

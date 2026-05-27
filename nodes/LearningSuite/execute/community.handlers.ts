@@ -110,6 +110,19 @@ const createCommunityPost: ExecuteHandler = async (ctx, i) => {
 		body.answerToPostId = answerToPostId;
 	}
 
+	const elementJson = String(ctx.getNodeParameter('elementJson', i, '{}') || '').trim();
+	if (elementJson && elementJson !== '{}') {
+		try {
+			const element = JSON.parse(elementJson) as IDataObject;
+			if (!element || Array.isArray(element) || typeof element !== 'object') {
+				throw new Error('Element JSON must be an object.');
+			}
+			body.element = element;
+		} catch (err) {
+			throw new NodeOperationError(ctx.getNode(), `Invalid JSON in element: ${String(err)}`);
+		}
+	}
+
 	return lsRequest.call(ctx, 'POST', '/community/posts', { body });
 };
 
